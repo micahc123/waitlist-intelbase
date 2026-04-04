@@ -57,7 +57,9 @@ export function Hero() {
           className="mt-8 flex flex-wrap items-center justify-center gap-3"
         >
           <a
-            href="#contact"
+            href="https://cal.com/intelbase/discovery-call"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-black transition-all hover:bg-neutral-200"
           >
             Book a Discovery Call

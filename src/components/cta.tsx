@@ -63,7 +63,9 @@ export function CTA() {
               className="mt-10 flex flex-wrap items-center justify-center gap-3"
             >
               <a
-                href="mailto:info@intelbase-ai.com"
+                href="https://cal.com/intelbase/discovery-call"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition-all hover:bg-neutral-200"
               >
                 Book a Discovery Call

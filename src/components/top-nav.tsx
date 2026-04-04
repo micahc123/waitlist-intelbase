@@ -30,7 +30,7 @@ export function TopNav() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-            <NavbarButton href="#contact" variant="primary">
+            <NavbarButton href="https://cal.com/intelbase/discovery-call" target="_blank" rel="noopener noreferrer" variant="primary">
               Book a Call
             </NavbarButton>
           </div>
@@ -60,7 +60,7 @@ export function TopNav() {
               </a>
             ))}
             <NavbarButton
-              href="#contact"
+              href="https://cal.com/intelbase/discovery-call" target="_blank" rel="noopener noreferrer"
               onClick={() => setIsMobileMenuOpen(false)}
               variant="primary"
               className="w-full"

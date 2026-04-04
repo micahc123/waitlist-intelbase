@@ -23,7 +23,7 @@ const steps = [
     num: "03",
     icon: Rocket,
     title: "Deploy",
-    desc: "Production system live in 2\u20134 weeks.",
+    desc: "Production system live in 1\u20132 weeks.",
     detail: "VPS deployment, monitoring, logging, error tracking",
   },
   {
