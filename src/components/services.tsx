@@ -48,18 +48,18 @@ export function Services() {
           transition={{ duration: 0.5 }}
           className="mb-4 text-center"
         >
-          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-neutral-500">
+          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-neutral-400">
             What We Build
           </p>
           <h2 className="text-3xl font-medium tracking-tight text-white sm:text-4xl">
-            Real systems. <span className="text-neutral-500">Not chatbots.</span>
+            Real systems. <span className="text-neutral-400">Not chatbots.</span>
           </h2>
         </motion.div>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mx-auto mb-14 max-w-lg text-center text-[15px] text-neutral-500"
+          className="mx-auto mb-14 max-w-lg text-center text-[15px] text-neutral-300"
         >
           End-to-end AI infrastructure that connects to your existing tools and
           actually runs your business processes.
@@ -77,16 +77,16 @@ export function Services() {
                   duration: 0.5,
                   delay: 0.2 + i * 0.1,
                 }}
-                className="group relative flex flex-col justify-between rounded-xl border border-white/[0.06] bg-[#111214]/80 p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/[0.12] hover:bg-[#141518]/80"
+                className="group relative flex flex-col justify-between rounded-xl border border-white/[0.08] bg-[#111214] p-6 transition-all duration-300 hover:border-white/[0.15] hover:bg-[#161719]"
               >
                 <div>
-                  <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03]">
-                    <Icon className="h-5 w-5 text-neutral-400 transition-colors group-hover:text-white" />
+                  <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04]">
+                    <Icon className="h-5 w-5 text-neutral-300 transition-colors group-hover:text-white" />
                   </div>
                   <h3 className="mb-2 text-lg font-medium text-white">
                     {s.title}
                   </h3>
-                  <p className="text-sm leading-relaxed text-neutral-500">
+                  <p className="text-sm leading-relaxed text-neutral-300">
                     {s.body}
                   </p>
                 </div>
@@ -96,13 +96,13 @@ export function Services() {
                     {s.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-md border border-white/[0.06] bg-white/[0.02] px-2 py-0.5 text-[11px] text-neutral-500"
+                        className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 text-[11px] text-neutral-400"
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
-                  <ArrowRight className="h-4 w-4 text-neutral-700 transition-all group-hover:translate-x-0.5 group-hover:text-neutral-400" />
+                  <ArrowRight className="h-4 w-4 text-neutral-600 transition-all group-hover:translate-x-0.5 group-hover:text-neutral-300" />
                 </div>
               </motion.div>
             );

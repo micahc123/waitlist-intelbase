@@ -17,7 +17,7 @@ export function CTA() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0c0d0f]/80 backdrop-blur-sm"
+          className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12]"
         >
           {/* Glow effects */}
           <div className="pointer-events-none absolute inset-x-0 -bottom-32 h-[500px]">
@@ -31,7 +31,7 @@ export function CTA() {
               initial={{ opacity: 0, y: 15 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="mb-4 text-xs font-medium uppercase tracking-widest text-neutral-500"
+              className="mb-4 text-xs font-medium uppercase tracking-widest text-neutral-400"
             >
               Let&apos;s Talk
             </motion.p>
@@ -50,7 +50,7 @@ export function CTA() {
               initial={{ opacity: 0, y: 15 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-neutral-400"
+              className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-neutral-300"
             >
               30-minute discovery call. No sales pressure. Just clarity on
               whether this makes sense for your business.
@@ -71,7 +71,7 @@ export function CTA() {
               </a>
               <a
                 href="mailto:info@intelbase-ai.com"
-                className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-white/[0.08]"
+                className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.05] px-6 py-3 text-sm font-medium text-neutral-200 transition-all hover:bg-white/[0.1]"
               >
                 info@intelbase-ai.com
               </a>
