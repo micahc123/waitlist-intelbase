@@ -3,13 +3,6 @@
 import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 
-const techStack = [
-  "FastAPI",
-  "Supabase Vector DB",
-  "OpenRouter",
-  "n8n",
-  "VPS Deploy",
-];
 
 export function Hero() {
   return (
@@ -35,8 +28,8 @@ export function Hero() {
           transition={{ duration: 0.6 }}
           className="text-[clamp(2rem,5.5vw,3.75rem)] font-medium leading-[1.15] tracking-[-0.02em] text-white"
         >
-          The backend behind every{" "}
-          <span className="font-semibold">intelligent system.</span>
+          Fully automate your{" "}
+          <span className="font-semibold">entire business.</span>
         </motion.h1>
 
         <motion.p
@@ -45,9 +38,9 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.15 }}
           className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-neutral-400"
         >
-          We build production-ready AI infrastructure — persistent memory,
-          business logic APIs, and multi-agent orchestration — so your AI
-          actually works beyond the demo phase.
+          We build production-ready AI infrastructure and offer done-for-you
+          AI services — from OpenClaw setups to n8n workflow automation — so
+          your AI actually works beyond the demo phase.
         </motion.p>
 
         <motion.div
@@ -62,7 +55,7 @@ export function Hero() {
             rel="noopener noreferrer"
             className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-black transition-all hover:bg-neutral-200"
           >
-            Book a Discovery Call
+            Book a Free Discovery Call
             <ArrowUpRight className="h-3.5 w-3.5" />
           </a>
           <a
@@ -73,21 +66,36 @@ export function Hero() {
           </a>
         </motion.div>
 
+        {/* Social proof */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2"
+          className="mt-10 flex flex-col items-center gap-3"
         >
-          {techStack.map((tech) => (
-            <span
-              key={tech}
-              className="text-xs font-medium uppercase tracking-widest text-neutral-600"
-            >
-              {tech}
-            </span>
-          ))}
+          <div className="flex items-center -space-x-2.5">
+            {[
+              { bg: "from-amber-400 to-orange-500", initials: "JM" },
+              { bg: "from-blue-400 to-indigo-500", initials: "SK" },
+              { bg: "from-emerald-400 to-teal-500", initials: "AR" },
+              { bg: "from-violet-400 to-purple-500", initials: "TL" },
+              { bg: "from-rose-400 to-pink-500", initials: "DP" },
+            ].map((person, i) => (
+              <div
+                key={person.initials}
+                className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#08090a] bg-gradient-to-br ${person.bg} text-[10px] font-bold text-white shadow-lg`}
+                style={{ zIndex: 5 - i }}
+              >
+                {person.initials}
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-neutral-400">
+            <span className="font-medium text-white">100+ setups completed.</span>{" "}
+            Join them.
+          </p>
         </motion.div>
+
       </div>
     </section>
   );

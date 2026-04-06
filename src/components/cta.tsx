@@ -41,9 +41,9 @@ export function CTA() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-3xl font-medium tracking-tight text-white sm:text-4xl md:text-5xl"
             >
-              Ready to move from AI experiments
+              Ready to automate?
               <br className="hidden sm:block" />
-              to production?
+              Let&apos;s make it happen.
             </motion.h2>
 
             <motion.p
@@ -52,7 +52,7 @@ export function CTA() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-neutral-300"
             >
-              30-minute discovery call. No sales pressure. Just clarity on
+              30-minute free discovery call. No sales pressure. Just clarity on
               whether this makes sense for your business.
             </motion.p>
 
@@ -68,14 +68,16 @@ export function CTA() {
                 rel="noopener noreferrer"
                 className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition-all hover:bg-neutral-200"
               >
-                Book a Discovery Call
+                Book a Free Discovery Call
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
               <a
-                href="mailto:info@intelbase-ai.com"
+                href="https://wa.me/85290123551"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.05] px-6 py-3 text-sm font-medium text-neutral-200 transition-all hover:bg-white/[0.1]"
               >
-                info@intelbase-ai.com
+                Message us on WhatsApp
               </a>
             </motion.div>
           </div>

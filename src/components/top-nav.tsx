@@ -15,7 +15,7 @@ import {
 
 const navItems = [
   { name: "Services", link: "#services" },
-  { name: "Process", link: "#process" },
+  { name: "How It Works", link: "#how-it-works" },
   { name: "Contact", link: "#contact" },
 ];
 
@@ -31,7 +31,7 @@ export function TopNav() {
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
             <NavbarButton href="https://cal.com/intelbase/discovery-call" target="_blank" rel="noopener noreferrer" variant="primary">
-              Book a Call
+              Free Discovery Call
             </NavbarButton>
           </div>
         </NavBody>
@@ -65,7 +65,7 @@ export function TopNav() {
               variant="primary"
               className="w-full"
             >
-              Book a Call
+              Free Discovery Call
             </NavbarButton>
           </MobileNavMenu>
         </MobileNav>

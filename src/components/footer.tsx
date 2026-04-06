@@ -2,24 +2,15 @@
 
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
-import { Mail, Globe } from "lucide-react";
+import { MessageCircle, Globe } from "lucide-react";
 
 const footerLinks = [
   {
     title: "Company",
     links: [
       { label: "Services", href: "#services" },
-      { label: "Process", href: "#process" },
+      { label: "How It Works", href: "#how-it-works" },
       { label: "Contact", href: "#contact" },
-    ],
-  },
-  {
-    title: "Stack",
-    links: [
-      { label: "FastAPI", href: "#services" },
-      { label: "Supabase", href: "#services" },
-      { label: "OpenRouter", href: "#services" },
-      { label: "n8n", href: "#services" },
     ],
   },
 ];
@@ -58,25 +49,28 @@ export function Footer() {
               <span className="text-sm font-medium text-white">Intelbase</span>
             </div>
             <p className="mb-5 max-w-xs text-[13px] leading-relaxed text-neutral-500">
-              The backend behind every intelligent system. Production-ready AI
-              infrastructure for businesses that need more than a chatbot.
+              Fully automate your entire business. Production-ready AI
+              infrastructure and done-for-you services — from OpenClaw setups
+              to n8n workflow automation.
             </p>
             <div className="flex flex-col gap-2">
               <a
-                href="mailto:info@intelbase-ai.com"
+                href="https://wa.me/85290123551"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-[13px] text-neutral-500 transition-colors hover:text-white"
               >
-                <Mail className="h-3.5 w-3.5" />
-                info@intelbase-ai.com
+                <MessageCircle className="h-3.5 w-3.5" />
+                Message us on WhatsApp
               </a>
               <a
-                href="https://intelbase-ai.com"
+                href="https://intelbase.co"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-[13px] text-neutral-500 transition-colors hover:text-white"
               >
                 <Globe className="h-3.5 w-3.5" />
-                intelbase-ai.com
+                intelbase.co
               </a>
             </div>
           </div>

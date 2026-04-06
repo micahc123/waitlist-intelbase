@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Intelbase — The Backend Behind Every Intelligent System",
+  title: "Intelbase — Fully Automate Your Entire Business",
   description:
-    "We build production-ready AI infrastructure — persistent memory, business logic APIs, and multi-agent orchestration — so your AI actually works beyond the demo phase.",
+    "We build production-ready AI infrastructure and offer done-for-you AI services — OpenClaw setups, n8n workflow automation, and multi-agent orchestration — so your AI actually works beyond the demo phase.",
   keywords: [
     "AI infrastructure",
     "AI agency",
@@ -23,6 +23,9 @@ export const metadata: Metadata = {
     "Supabase",
     "multi-agent orchestration",
     "AI backend",
+    "OpenClaw",
+    "n8n workflows",
+    "AI services",
   ],
 };
 
