@@ -8,9 +8,11 @@ const footerLinks = [
   {
     title: "Company",
     links: [
-      { label: "Services", href: "#services" },
-      { label: "How It Works", href: "#how-it-works" },
-      { label: "Contact", href: "#contact" },
+      { label: "Services", href: "/#services" },
+      { label: "Pricing", href: "/#pricing" },
+      { label: "Showcase", href: "/showcase" },
+      { label: "Courses", href: "/courses" },
+      { label: "Contact", href: "/#contact" },
     ],
   },
 ];

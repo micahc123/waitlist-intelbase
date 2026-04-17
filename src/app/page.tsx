@@ -1,7 +1,7 @@
 import { TopNav } from "@/components/top-nav";
 import { Hero } from "@/components/hero";
 import { Services } from "@/components/services";
-import { HowItWorks } from "@/components/how-it-works";
+import { Pricing } from "@/components/pricing";
 import { CTA } from "@/components/cta";
 import { Footer } from "@/components/footer";
 
@@ -22,7 +22,7 @@ export default function Home() {
       <main className="relative z-10">
         <Hero />
         <Services />
-        <HowItWorks />
+        <Pricing />
         <CTA />
       </main>
       <Footer />

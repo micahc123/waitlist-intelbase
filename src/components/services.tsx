@@ -2,15 +2,37 @@
 
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
-import { ArrowRight, Settings, Zap, Bot } from "lucide-react";
+import {
+  ArrowRight,
+  Settings,
+  Zap,
+  Mail,
+  Megaphone,
+  Brain,
+  Sparkles,
+} from "lucide-react";
 
 const services = [
   {
     icon: Settings,
     title: "OpenClaw Full Setup",
-    body: "Full OpenClaw deployment on your Mac Mini, VPS, or any system — configured, integrated, and ready to go. We can have you up and running in 30 minutes.",
+    body: "Full OpenClaw deployment on your Mac Mini, VPS, or any system — configured, integrated, and ready to go. Live in 30 minutes.",
     tags: ["OpenClaw", "30 min setup", "Any system"],
     emphasized: true,
+  },
+  {
+    icon: Mail,
+    title: "Business Automation",
+    body: "Lead capture, email sequences, CRM syncing, and cold email campaigns — the whole back-office running itself while you sleep.",
+    tags: ["Leads", "Email", "CRM", "Cold outreach"],
+    emphasized: false,
+  },
+  {
+    icon: Megaphone,
+    title: "Social Media & AI Ads",
+    body: "Content + ad generation with Higgsfield and OpenClaw. We build the full pipeline — scripting, visuals, posting, and paid ad campaigns on autopilot.",
+    tags: ["Higgsfield", "OpenClaw", "Ad campaigns"],
+    emphasized: false,
   },
   {
     icon: Zap,
@@ -20,10 +42,17 @@ const services = [
     emphasized: false,
   },
   {
-    icon: Bot,
-    title: "AI Infrastructure",
-    body: "Production-ready backends with persistent memory, business logic APIs, and multi-agent orchestration — built for serious businesses only.",
-    tags: ["FastAPI", "Supabase", "Multi-agent"],
+    icon: Brain,
+    title: "Custom LLM & RAG",
+    body: "Train a model on your business data. RAG pipelines that know your products, policies, and history — so your AI answers like it works there.",
+    tags: ["RAG", "Fine-tune", "Vector DB"],
+    emphasized: false,
+  },
+  {
+    icon: Sparkles,
+    title: "Custom AI Solutions",
+    body: "Anything outside the box — multi-agent systems, internal tools, workflow copilots. We scope it, build it, ship it.",
+    tags: ["Bespoke", "Multi-agent", "End-to-end"],
     emphasized: false,
   },
 ];
@@ -44,7 +73,7 @@ export function Services() {
 
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
 
-      <div ref={ref} className="mx-auto max-w-5xl">
+      <div ref={ref} className="mx-auto max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -68,7 +97,7 @@ export function Services() {
           to your existing tools and actually run your business processes.
         </motion.p>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {services.map((s, i) => {
             const Icon = s.icon;
             return (
@@ -78,7 +107,7 @@ export function Services() {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{
                   duration: 0.5,
-                  delay: 0.2 + i * 0.1,
+                  delay: 0.2 + i * 0.08,
                 }}
                 className={`group relative flex flex-col justify-between rounded-xl border p-6 transition-all duration-300 ${
                   s.emphasized
@@ -132,3 +161,4 @@ export function Services() {
     </section>
   );
 }
+

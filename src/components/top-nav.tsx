@@ -14,9 +14,11 @@ import {
 } from "@/components/ui/resizable-navbar";
 
 const navItems = [
-  { name: "Services", link: "#services" },
-  { name: "How It Works", link: "#how-it-works" },
-  { name: "Contact", link: "#contact" },
+  { name: "Services", link: "/#services" },
+  { name: "Pricing", link: "/#pricing" },
+  { name: "Showcase", link: "/showcase" },
+  { name: "Courses", link: "/courses" },
+  { name: "Contact", link: "/#contact" },
 ];
 
 export function TopNav() {

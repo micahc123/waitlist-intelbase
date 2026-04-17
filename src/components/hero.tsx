@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Star } from "lucide-react";
 
 
 export function Hero() {
@@ -94,6 +94,27 @@ export function Hero() {
             <span className="font-medium text-white">100+ setups completed.</span>{" "}
             Join them.
           </p>
+
+          <a
+            href="https://www.trustpilot.com/review/intelbase.co"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[12px] text-neutral-300 transition-all hover:border-white/[0.15] hover:bg-white/[0.06]"
+          >
+            <span className="flex items-center gap-0.5">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <Star
+                  key={i}
+                  className="h-3 w-3 fill-[#00b67a] text-[#00b67a]"
+                />
+              ))}
+            </span>
+            <span>
+              <span className="font-medium text-white">Excellent</span> on
+              Trustpilot
+            </span>
+            <ArrowUpRight className="h-3 w-3 text-neutral-400" />
+          </a>
         </motion.div>
 
       </div>
