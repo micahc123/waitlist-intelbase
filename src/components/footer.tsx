@@ -10,7 +10,8 @@ const footerLinks = [
     links: [
       { label: "Services", href: "/#services" },
       { label: "Pricing", href: "/#pricing" },
-      { label: "Courses", href: "/courses" },
+      { label: "Showcase", href: "/showcase" },
+      { label: "Courses", href: "/courses", hidden: true },
       { label: "Contact", href: "/#contact" },
     ],
   },
@@ -83,7 +84,7 @@ export function Footer() {
                 {col.title}
               </p>
               <ul className="flex flex-col gap-2.5">
-                {col.links.map((link) => (
+                {col.links.filter((l) => !l.hidden).map((link) => (
                   <li key={link.label}>
                     <a
                       href={link.href}

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { ArrowUpRight, Star } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 
 export function Hero() {
@@ -66,33 +66,34 @@ export function Hero() {
           </a>
         </motion.div>
 
-        {/* Trustpilot */}
+        {/* Social proof */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="mt-10 flex justify-center"
+          className="mt-10 flex flex-col items-center gap-3"
         >
-          <a
-            href="https://www.trustpilot.com/review/intelbase.co"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[12px] text-neutral-300 transition-all hover:border-white/[0.15] hover:bg-white/[0.06]"
-          >
-            <span className="flex items-center gap-0.5">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <Star
-                  key={i}
-                  className="h-3 w-3 fill-[#00b67a] text-[#00b67a]"
-                />
-              ))}
-            </span>
-            <span>
-              <span className="font-medium text-white">Excellent</span> on
-              Trustpilot
-            </span>
-            <ArrowUpRight className="h-3 w-3 text-neutral-400" />
-          </a>
+          <div className="flex items-center -space-x-2.5">
+            {[
+              { bg: "from-amber-400 to-orange-500", initials: "JM" },
+              { bg: "from-blue-400 to-indigo-500", initials: "SK" },
+              { bg: "from-emerald-400 to-teal-500", initials: "AR" },
+              { bg: "from-violet-400 to-purple-500", initials: "TL" },
+              { bg: "from-rose-400 to-pink-500", initials: "DP" },
+            ].map((person, i) => (
+              <div
+                key={person.initials}
+                className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#08090a] bg-gradient-to-br ${person.bg} text-[10px] font-bold text-white shadow-lg`}
+                style={{ zIndex: 5 - i }}
+              >
+                {person.initials}
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-neutral-400">
+            <span className="font-medium text-white">50+ setups completed.</span>{" "}
+            Join them.
+          </p>
         </motion.div>
 
       </div>
