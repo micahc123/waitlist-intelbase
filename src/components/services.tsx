@@ -83,7 +83,7 @@ export function Services() {
           <p className="mb-3 text-xs font-medium uppercase tracking-widest text-neutral-400">
             What We Build & Deliver
           </p>
-          <h2 className="text-3xl font-medium tracking-tight text-white sm:text-4xl">
+          <h2 className="text-4xl font-medium tracking-tight text-white sm:text-5xl">
             Real systems. <span className="text-neutral-400">Not chatbots.</span>
           </h2>
         </motion.div>
@@ -91,10 +91,10 @@ export function Services() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mx-auto mb-14 max-w-lg text-center text-[15px] text-neutral-300"
+          className="mx-auto mb-14 max-w-xl text-center text-[17px] leading-relaxed text-neutral-300"
         >
-          End-to-end AI infrastructure and done-for-you services that connect
-          to your existing tools and actually run your business processes.
+          End-to-end AI infrastructure and done-for-you services that plug into
+          your stack and actually run your business.
         </motion.p>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -128,10 +128,10 @@ export function Services() {
                       s.emphasized ? "text-blue-400" : "text-neutral-300"
                     }`} />
                   </div>
-                  <h3 className="mb-2 text-lg font-medium text-white">
+                  <h3 className="mb-2 text-[19px] font-semibold text-white">
                     {s.title}
                   </h3>
-                  <p className="text-sm leading-relaxed text-neutral-300">
+                  <p className="text-[14.5px] leading-relaxed text-neutral-300">
                     {s.body}
                   </p>
                 </div>

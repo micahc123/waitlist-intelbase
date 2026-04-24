@@ -31,29 +31,33 @@ export function CTA() {
               initial={{ opacity: 0, y: 15 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="mb-4 text-xs font-medium uppercase tracking-widest text-neutral-400"
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.03] px-3 py-1 text-[12px] text-neutral-300"
             >
-              Let&apos;s Talk
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              We take a limited number of clients per month
             </motion.p>
             <motion.h2
               initial={{ opacity: 0, y: 15 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-3xl font-medium tracking-tight text-white sm:text-4xl md:text-5xl"
+              className="text-4xl font-medium tracking-tight text-white sm:text-5xl md:text-6xl"
             >
-              Ready to automate?
+              Automate your
               <br className="hidden sm:block" />
-              Let&apos;s make it happen.
+              entire business.
             </motion.h2>
 
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-neutral-300"
+              className="mx-auto mt-6 max-w-md text-[17px] leading-relaxed text-neutral-300"
             >
-              30-minute free discovery call. No sales pressure. Just clarity on
-              whether this makes sense for your business.
+              Book a free 30-min call. We scope the build, send a flat quote within
+              24 hours, and ship it.
             </motion.p>
 
             <motion.div
@@ -66,20 +70,29 @@ export function CTA() {
                 href="https://cal.com/intelbase/discovery-call"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition-all hover:bg-neutral-200"
+                className="group inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-[15px] font-semibold text-black shadow-[0_0_40px_-5px_rgba(255,255,255,0.3)] transition-all hover:bg-neutral-100 hover:shadow-[0_0_60px_-5px_rgba(255,255,255,0.45)]"
               >
-                Book a Free Discovery Call
-                <ArrowUpRight className="h-3.5 w-3.5" />
+                Book Your Free Discovery Call
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </a>
               <a
                 href="https://wa.me/85290123551"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.05] px-6 py-3 text-sm font-medium text-neutral-200 transition-all hover:bg-white/[0.1]"
+                className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.05] px-5 py-3.5 text-[14px] font-medium text-neutral-200 transition-all hover:bg-white/[0.1]"
               >
-                Message us on WhatsApp
+                WhatsApp instead
               </a>
             </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="mt-6 text-[13.5px] text-neutral-500"
+            >
+              No pressure · Quote in 24 hrs
+            </motion.p>
           </div>
         </motion.div>
       </div>

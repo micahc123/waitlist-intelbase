@@ -35,14 +35,14 @@ export function Pricing() {
           <p className="mb-3 text-xs font-medium uppercase tracking-widest text-neutral-400">
             Pricing
           </p>
-          <h2 className="text-3xl font-medium tracking-tight text-white sm:text-4xl">
+          <h2 className="text-4xl font-medium tracking-tight text-white sm:text-5xl">
             Every business is different.
             <br className="hidden sm:block" />
             <span className="text-neutral-400">So is every quote.</span>
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-neutral-400">
+          <p className="mx-auto mt-6 max-w-xl text-[17px] leading-relaxed text-neutral-300">
             We don&apos;t sell shrink-wrapped packages. We scope to your stack,
-            your team size, your data, and your goals — then send a flat quote
+            your team, your data, and your goals — then send a flat quote
             before any work starts.
           </p>
         </motion.div>
@@ -66,9 +66,9 @@ export function Pricing() {
                   Custom
                 </span>
               </div>
-              <p className="mt-3 text-[14px] leading-relaxed text-neutral-400">
-                Flat fee, no retainers. We look at what you actually need and
-                quote it. Most projects land between <span className="text-neutral-200">$500 and $8k</span>,
+              <p className="mt-3 text-[15px] leading-relaxed text-neutral-300">
+                We quote what you actually need. Most
+                projects land between <span className="font-medium text-white">$500 and $8k</span>,
                 depending on scope.
               </p>
             </div>
@@ -81,7 +81,7 @@ export function Pricing() {
                 {inclusions.map((item) => (
                   <li
                     key={item}
-                    className="flex items-start gap-2 text-[14px] text-neutral-300"
+                    className="flex items-start gap-2 text-[15px] text-neutral-200"
                   >
                     <span className="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-blue-400/80" />
                     {item}
@@ -96,19 +96,19 @@ export function Pricing() {
               href="https://cal.com/intelbase/discovery-call"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-black transition-all hover:bg-neutral-200"
+              className="group inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white px-6 py-3 text-[14px] font-semibold text-black shadow-[0_0_30px_-5px_rgba(255,255,255,0.25)] transition-all hover:bg-neutral-100"
             >
-              Get a free quote
-              <ArrowUpRight className="h-3.5 w-3.5" />
+              Get My Free Quote
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
             <a
               href="https://wa.me/85290123551"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-5 py-2.5 text-sm font-medium text-neutral-200 transition-all hover:bg-white/[0.08]"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-5 py-3 text-[14px] font-medium text-neutral-200 transition-all hover:bg-white/[0.08]"
             >
               <MessageCircle className="h-3.5 w-3.5" />
-              Message on WhatsApp
+              WhatsApp
             </a>
           </div>
         </motion.div>
@@ -121,6 +121,20 @@ export function Pricing() {
         >
           30-minute discovery call · No sales pressure · Quote within 24 hours
         </motion.p>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="mt-3 flex justify-center"
+        >
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[12px] text-neutral-400">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            </span>
+            We take a limited number of clients per month
+          </div>
+        </motion.div>
       </div>
     </section>
   );
