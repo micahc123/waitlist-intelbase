@@ -113,11 +113,11 @@ export function Hero() {
         >
           <div className="flex items-center -space-x-2.5">
             {[
-              { bg: "from-amber-400 to-orange-500", initials: "JM" },
-              { bg: "from-blue-400 to-indigo-500", initials: "SK" },
-              { bg: "from-emerald-400 to-teal-500", initials: "AR" },
+              { bg: "from-blue-400 to-indigo-500", initials: "EH" },
+              { bg: "from-amber-400 to-orange-500", initials: "TC" },
+              { bg: "from-emerald-400 to-teal-500", initials: "TJ" },
               { bg: "from-violet-400 to-purple-500", initials: "TL" },
-              { bg: "from-rose-400 to-pink-500", initials: "DP" },
+              { bg: "from-rose-400 to-pink-500", initials: "MR" },
             ].map((person, i) => (
               <div
                 key={person.initials}

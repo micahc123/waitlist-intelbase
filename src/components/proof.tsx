@@ -14,26 +14,26 @@ const testimonials = [
   {
     quote:
       "Paid for itself in six weeks. Replaced three SaaS tools and a VA.",
-    name: "Marcus Webb",
-    role: "Head of Ops, Arcline",
+    name: "Eric Hong",
+    role: "CEO, FindYourCareer",
     bg: "from-blue-400 to-indigo-500",
-    initials: "MW",
+    initials: "EH",
   },
   {
     quote:
       "Live the day after our call. Cold email replies doubled the next week.",
-    name: "Sarah Chen",
-    role: "Founder, Luminary",
+    name: "Timothy Chen",
+    role: "Head of Global Sales & Marketing, VIA Technologies",
     bg: "from-amber-400 to-orange-500",
-    initials: "SC",
+    initials: "TC",
   },
   {
     quote:
       "Wasted six months on a custom build. They shipped our RAG in 72 hours.",
-    name: "David Park",
-    role: "CTO, Helix Labs",
+    name: "Trenton Johnson",
+    role: "Founder, BizGenius",
     bg: "from-emerald-400 to-teal-500",
-    initials: "DP",
+    initials: "TJ",
   },
 ];
 
