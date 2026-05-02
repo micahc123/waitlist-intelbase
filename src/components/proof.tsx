@@ -1,130 +1,155 @@
 "use client";
 
-import { motion, useInView } from "motion/react";
-import { useRef } from "react";
+import { motion } from "motion/react";
+
+const tickerItems = [
+  "50+ BUSINESSES AUTOMATED",
+  "QUOTE IN 24H",
+  "4.9/5 RATING",
+  "YOU OWN EVERYTHING",
+  "NO RETAINERS",
+  "SHIP IN 72H AVG",
+  "OPENCLAW · n8n · LANGGRAPH",
+];
 
 const stats = [
-  { value: "50+", label: "Automated" },
-  { value: "24 hrs", label: "Quote" },
-  { value: "4.9/5", label: "Rating" },
-  { value: "Limited", label: "Spots/Month" },
+  { value: "50+", label: "Businesses automated" },
+  { value: "24h", label: "Quote turnaround" },
+  { value: "4.9", sub: "/5", label: "Average rating" },
+  { value: "6", label: "Spots open this month" },
 ];
 
 const testimonials = [
   {
-    quote:
-      "Paid for itself in six weeks. Replaced three SaaS tools and a VA.",
+    quote: "Paid for itself in six weeks. Replaced three SaaS tools and a VA.",
     name: "Eric Hong",
     role: "CEO, FindYourCareer",
-    bg: "from-blue-400 to-indigo-500",
-    initials: "EH",
   },
   {
-    quote:
-      "Live the day after our call. Cold email replies doubled the next week.",
+    quote: "Live the day after our call. Cold email replies doubled the next week.",
     name: "Timothy Chen",
     role: "Head of Global Sales & Marketing, VIA Technologies",
-    bg: "from-amber-400 to-orange-500",
-    initials: "TC",
   },
   {
-    quote:
-      "Wasted six months on a custom build. They shipped our RAG in 72 hours.",
+    quote: "Wasted six months on a custom build. They shipped our RAG in 72 hours.",
     name: "Trenton Johnson",
     role: "Founder, BizGenius",
-    bg: "from-emerald-400 to-teal-500",
-    initials: "TJ",
   },
 ];
 
-export function Proof() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-
+function Reveal({
+  children,
+  delay = 0,
+  className,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
   return (
-    <section className="relative px-6 py-20 sm:py-24">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.6, delay, ease: [0.2, 0.7, 0.2, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
-      <div ref={ref} className="mx-auto max-w-6xl">
-        {/* Stats strip */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-16 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.04] sm:grid-cols-4"
-        >
-          {stats.map((s) => (
-            <div
-              key={s.label}
-              className="bg-[#0e0f12] px-5 py-8 text-center"
-            >
-              <div className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                {s.value}
-              </div>
-              <div className="mt-2 text-[13px] uppercase tracking-wider text-neutral-500">
-                {s.label}
-              </div>
-            </div>
-          ))}
-        </motion.div>
-
-        {/* Testimonials */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-10 text-center"
-        >
-          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-neutral-400">
-            What founders say
-          </p>
-          <h2 className="text-4xl font-medium tracking-tight text-white sm:text-5xl">
-            Real systems. <span className="text-neutral-400">Real ROI.</span>
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-neutral-400">
-            Founders who stopped shipping demos and started shipping systems that
-            actually run their business.
-          </p>
-        </motion.div>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          {testimonials.map((t, i) => (
-            <motion.div
-              key={t.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.2 + i * 0.08 }}
-              className="flex flex-col justify-between rounded-xl border border-white/[0.08] bg-[#111214] p-6 transition-colors hover:border-white/[0.15]"
-            >
-              <div>
-                <div className="mb-3 flex text-amber-400">
-                  {[...Array(5)].map((_, idx) => (
-                    <svg key={idx} className="h-3.5 w-3.5 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.098 9.1c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="text-[15.5px] leading-relaxed text-neutral-200">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-              </div>
-              <div className="mt-6 flex items-center gap-3 border-t border-white/[0.06] pt-5">
-                <div
-                  className={`flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br ${t.bg} text-[11px] font-bold text-white`}
-                >
-                  {t.initials}
-                </div>
-                <div>
-                  <div className="text-[13px] font-medium text-white">
-                    {t.name}
-                  </div>
-                  <div className="text-[12px] text-neutral-500">{t.role}</div>
-                </div>
-              </div>
-            </motion.div>
+export function Proof() {
+  return (
+    <>
+      {/* Ticker */}
+      <div className="overflow-hidden border-b border-ink/100 bg-ink py-3.5 text-paper">
+        <div className="flex w-max animate-swiss-ticker gap-14 whitespace-nowrap font-mono text-[13px] uppercase tracking-[1.5px]">
+          {[...tickerItems, ...tickerItems, ...tickerItems].map((it, i) => (
+            <span key={i} className="inline-flex items-center gap-4">
+              {it}
+              <span className="text-brand">●</span>
+            </span>
           ))}
         </div>
       </div>
-    </section>
+
+      {/* Stats */}
+      <section className="grid grid-cols-2 border-b border-ink/100 px-6 py-16 sm:grid-cols-4 sm:px-12">
+        {stats.map((s, i) => (
+          <Reveal
+            key={s.label}
+            delay={i * 0.06}
+            className={`px-6 sm:px-8 ${i < stats.length - 1 ? "border-r border-ink/15" : ""} ${
+              i % 2 === 0 ? "border-r border-ink/15 sm:border-r" : ""
+            }`}
+          >
+            <div className="mb-4 font-mono text-[10.5px] uppercase tracking-[1.2px] text-ink/60">
+              KPI · 0{i + 1}
+            </div>
+            <div className="flex items-baseline text-[clamp(56px,8vw,96px)] font-semibold leading-[0.9] tracking-[-0.05em]">
+              {s.value}
+              {s.sub && <span className="ml-1 text-2xl text-ink/40">{s.sub}</span>}
+            </div>
+            <div className="mt-3 text-[13px] leading-[1.4] text-ink">{s.label}</div>
+          </Reveal>
+        ))}
+      </section>
+
+      {/* Testimonials */}
+      <section className="border-b border-ink/100 px-6 py-24 sm:px-12">
+        <div className="mb-14 grid grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-3">
+            <Reveal>
+              <div className="font-mono text-[11px] uppercase tracking-[1.4px] text-ink/60">
+                [02] · What founders say
+              </div>
+            </Reveal>
+          </div>
+          <div className="col-span-12 lg:col-span-9">
+            <Reveal delay={0.06}>
+              <h2 className="text-[clamp(48px,7vw,120px)] font-bold leading-[0.9] tracking-[-0.05em]">
+                Real systems.
+                <br />
+                Real <span className="text-brand">ROI</span>.
+              </h2>
+            </Reveal>
+            <Reveal delay={0.14}>
+              <p className="mt-6 max-w-xl text-[16px] leading-[1.55] text-ink/80">
+                Founders who stopped shipping demos and started shipping systems
+                that actually run their business.
+              </p>
+            </Reveal>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 border-t border-ink/100 md:grid-cols-3">
+          {testimonials.map((t, i) => (
+            <Reveal
+              key={t.name}
+              delay={i * 0.1}
+              className={`group flex min-h-[360px] cursor-default flex-col p-8 transition-colors duration-200 hover:bg-ink hover:text-paper ${
+                i < testimonials.length - 1 ? "border-b border-ink/100 md:border-b-0 md:border-r" : ""
+              }`}
+            >
+              <div className="mb-5 flex items-center justify-between font-mono text-[10.5px] uppercase tracking-[1.2px] text-ink/60 group-hover:text-paper/60">
+                <span>CASE · 0{i + 1}</span>
+                <span className="text-brand">★★★★★</span>
+              </div>
+              <p
+                className="flex-1 font-serif text-[26px] font-normal leading-[1.25] tracking-[-0.02em]"
+                style={{ textWrap: "pretty" }}
+              >
+                &ldquo;{t.quote}&rdquo;
+              </p>
+              <div className="mt-7 border-t border-ink/15 pt-5 font-mono text-[12.5px] group-hover:border-paper/15">
+                <div className="font-semibold uppercase tracking-[0.8px]">{t.name}</div>
+                <div className="mt-1 text-ink/60 group-hover:text-paper/60">{t.role}</div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+    </>
   );
 }

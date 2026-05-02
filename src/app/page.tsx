@@ -6,22 +6,12 @@ import { Pricing } from "@/components/pricing";
 import { CTA } from "@/components/cta";
 import { Footer } from "@/components/footer";
 import { StickyCta } from "@/components/sticky-cta";
-import { DiscountPopup } from "@/components/discount-popup";
 
 export default function Home() {
   return (
     <>
-      <div
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{
-          backgroundImage:
-            "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-        }}
-      />
-
       <TopNav />
-      <main className="relative z-10">
+      <main>
         <Hero />
         <Proof />
         <Services />
@@ -30,7 +20,6 @@ export default function Home() {
       </main>
       <Footer />
       <StickyCta />
-      <DiscountPopup />
     </>
   );
 }

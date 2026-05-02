@@ -1,114 +1,87 @@
 "use client";
 
-import { motion, useInView } from "motion/react";
-import { useRef } from "react";
-import { MessageCircle, Globe } from "lucide-react";
+import Link from "next/link";
 
-const footerLinks = [
-  {
-    title: "Company",
-    links: [
-      { label: "Services", href: "/#services" },
-      { label: "Work", href: "/#work" },
-      { label: "Pricing", href: "/#pricing" },
-      { label: "Courses", href: "/courses", hidden: true },
-      { label: "Contact", href: "/#contact" },
-    ],
-  },
+const cols = [
+  { t: "Intelbase", l: [
+    { label: "Manifesto", href: "/#about" },
+    { label: "Use cases", href: "/work" },
+    { label: "Process", href: "/#services" },
+  ]},
+  { t: "Build", l: [
+    { label: "Agents", href: "/#services" },
+    { label: "RAG", href: "/#services" },
+    { label: "Workflows", href: "/#services" },
+    { label: "Outbound", href: "/#services" },
+  ]},
+  { t: "Talk", l: [
+    { label: "Email", href: "mailto:hello@intelbase.co" },
+    { label: "WhatsApp", href: "https://wa.me/85290123551" },
+    { label: "Calendly", href: "https://cal.com/intelbase/discovery-call" },
+  ]},
 ];
 
 export function Footer() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
-
   return (
-    <footer ref={ref} className="relative z-10 px-6 pb-8 pt-16">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+    <footer className="grid grid-cols-12 gap-6 bg-paper px-6 pb-8 pt-12 sm:px-12">
+      <div className="col-span-12 md:col-span-4">
+        <div className="mb-3 flex items-center gap-3">
+          <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden>
+            <rect width="32" height="32" rx="6" className="fill-ink" />
+            <rect x="6" y="6" width="8" height="8" rx="2" className="fill-paper" />
+            <rect x="18" y="6" width="8" height="8" rx="2" className="fill-paper" fillOpacity="0.4" />
+            <rect x="6" y="18" width="8" height="8" rx="2" className="fill-paper" fillOpacity="0.4" />
+            <rect x="18" y="18" width="8" height="8" rx="2" className="fill-paper" fillOpacity="0.2" />
+          </svg>
+          <span className="text-[16px] font-bold tracking-[-0.3px]">INTELBASE STUDIO</span>
+        </div>
+        <div className="font-mono text-[12.5px] leading-[1.6] text-ink/60">
+          AI · OPS · INFRASTRUCTURE
+          <br />
+          For operators who ship.
+        </div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.5 }}
-        className="mx-auto max-w-5xl"
-      >
-        <div className="mb-12 grid gap-10 sm:grid-cols-[1.5fr_1fr_1fr]">
-          {/* Brand */}
-          <div>
-            <div className="mb-4 flex items-center gap-2.5">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                className="text-white"
-              >
-                <rect width="20" height="20" rx="5" fill="currentColor" fillOpacity="0.15" />
-                <rect x="4" y="4" width="5" height="5" rx="1.5" fill="currentColor" />
-                <rect x="11" y="4" width="5" height="5" rx="1.5" fill="currentColor" fillOpacity="0.4" />
-                <rect x="4" y="11" width="5" height="5" rx="1.5" fill="currentColor" fillOpacity="0.4" />
-                <rect x="11" y="11" width="5" height="5" rx="1.5" fill="currentColor" fillOpacity="0.2" />
-              </svg>
-              <span className="text-sm font-medium text-white">Intelbase</span>
-            </div>
-            <p className="mb-5 max-w-xs text-[13px] leading-relaxed text-neutral-500">
-              Fully automate your entire business. Production-ready AI
-              infrastructure and done-for-you services — from OpenClaw setups
-              to n8n workflow automation.
-            </p>
-            <div className="flex flex-col gap-2">
-              <a
-                href="https://wa.me/85290123551"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-[13px] text-neutral-500 transition-colors hover:text-white"
-              >
-                <MessageCircle className="h-3.5 w-3.5" />
-                Message us on WhatsApp
-              </a>
-              <a
-                href="https://intelbase.co"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-[13px] text-neutral-500 transition-colors hover:text-white"
-              >
-                <Globe className="h-3.5 w-3.5" />
-                intelbase.co
-              </a>
-            </div>
+      {cols.map((c, i) => (
+        <div key={c.t} className={`col-span-6 md:col-span-2 ${i === 0 ? "md:col-start-5" : ""}`}>
+          <div className="mb-3.5 border-b border-ink pb-2.5 font-mono text-[11px] uppercase tracking-[1.2px] text-ink/60">
+            {c.t}
           </div>
-
-          {/* Link columns */}
-          {footerLinks.map((col) => (
-            <div key={col.title}>
-              <p className="mb-4 text-xs font-medium uppercase tracking-widest text-neutral-600">
-                {col.title}
-              </p>
-              <ul className="flex flex-col gap-2.5">
-                {col.links.filter((l) => !l.hidden).map((link) => (
-                  <li key={link.label}>
+          <ul className="grid gap-2.5">
+            {c.l.map((x) => {
+              const external = x.href.startsWith("http") || x.href.startsWith("mailto:");
+              return (
+                <li key={x.label}>
+                  {external ? (
                     <a
-                      href={link.href}
-                      className="text-[13px] text-neutral-500 transition-colors hover:text-white"
+                      href={x.href}
+                      target={x.href.startsWith("http") ? "_blank" : undefined}
+                      rel={x.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      className="font-mono text-[13px] text-ink hover:text-brand"
                     >
-                      {link.label}
+                      → {x.label}
                     </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+                  ) : (
+                    <Link href={x.href} className="font-mono text-[13px] text-ink hover:text-brand">
+                      → {x.label}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         </div>
+      ))}
 
-        {/* Bottom bar */}
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-6 sm:flex-row">
-          <p className="text-xs text-neutral-600">
-            &copy; {new Date().getFullYear()} Intelbase. All rights reserved.
-          </p>
-          <p className="text-xs text-neutral-700">
-            Built with precision.
-          </p>
+      <div className="col-span-12 md:col-span-2">
+        <div className="font-mono text-[11px] uppercase tracking-[1px] text-ink/60">
+          © {new Date().getFullYear()} INTELBASE
+          <br />
+          ALL RIGHTS RESERVED
+          <br />
+          <span className="text-brand">● ONLINE</span>
         </div>
-      </motion.div>
+      </div>
     </footer>
   );
 }

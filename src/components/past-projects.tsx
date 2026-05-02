@@ -1,9 +1,11 @@
 "use client";
 
-import { motion, useInView, AnimatePresence } from "motion/react";
-import { useRef, useState } from "react";
-import { Lock, ArrowUpRight, MapPin } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { useState } from "react";
+import { Lock, MapPin } from "lucide-react";
 import { projects, type ServiceKey } from "@/lib/projects-data";
+
+const CAL_URL = "https://cal.com/intelbase/discovery-call";
 
 type Filter = ServiceKey | "all";
 
@@ -19,142 +21,138 @@ const filters: { key: Filter; label: string }[] = [
 ];
 
 export function PastProjects() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
   const [activeFilter, setActiveFilter] = useState<Filter>("all");
-
-  const visible = activeFilter === "all"
-    ? projects
-    : projects.filter((p) => p.service === activeFilter);
+  const visible =
+    activeFilter === "all" ? projects : projects.filter((p) => p.service === activeFilter);
 
   return (
-    <section id="work" className="relative px-6 py-24 sm:py-32">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+    <section id="work" className="border-b border-ink/100 px-6 py-24 sm:px-12">
+      <div className="mb-12 grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-3">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="font-mono text-[11px] uppercase tracking-[1.4px] text-ink/60"
+          >
+            [W] · Recent work
+          </motion.div>
+        </div>
+        <div className="col-span-12 lg:col-span-9">
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: 0.06 }}
+            className="text-[clamp(48px,7vw,120px)] font-bold leading-[0.9] tracking-[-0.05em]"
+          >
+            30+ businesses,
+            <br />
+            already <span className="text-brand">shipped</span>.
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: 0.14 }}
+            className="mt-6 max-w-2xl text-[16px] leading-[1.55] text-ink/80"
+          >
+            All client details are kept confidential. Here&apos;s what industries
+            we&apos;ve worked across and the problems we&apos;ve solved.
+          </motion.p>
+        </div>
+      </div>
 
-      <div ref={ref} className="mx-auto max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-12 text-center"
-        >
-          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-neutral-400">
-            Recent Work
-          </p>
-          <h2 className="text-4xl font-medium tracking-tight text-white sm:text-5xl">
-            30+ businesses, <span className="text-neutral-400">already shipped.</span>
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-neutral-400">
-            All client details are kept confidential. Here&apos;s what industries we&apos;ve worked
-            across and the problems we&apos;ve solved.
-          </p>
-        </motion.div>
-
-        {/* Filter bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.4, delay: 0.15 }}
-          className="mb-8 flex flex-wrap justify-center gap-2"
-        >
-          {filters.map((f) => (
+      {/* Filter bar */}
+      <div className="mb-8 flex flex-wrap gap-1.5 border-y border-ink py-3">
+        {filters.map((f) => {
+          const count = f.key === "all" ? projects.length : projects.filter((p) => p.service === f.key).length;
+          const active = activeFilter === f.key;
+          return (
             <button
               key={f.key}
               onClick={() => setActiveFilter(f.key)}
-              className={`rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-all ${
-                activeFilter === f.key
-                  ? "border-white/30 bg-white text-black"
-                  : "border-white/[0.08] bg-white/[0.03] text-neutral-400 hover:border-white/20 hover:text-neutral-200"
+              className={`cursor-pointer border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[1px] transition-colors ${
+                active
+                  ? "border-ink bg-ink text-paper"
+                  : "border-ink/15 text-ink/70 hover:border-ink hover:text-ink"
               }`}
             >
               {f.label}
-              {f.key !== "all" && (
-                <span className={`ml-1.5 text-[10px] ${activeFilter === f.key ? "text-neutral-500" : "text-neutral-600"}`}>
-                  {projects.filter((p) => p.service === f.key).length}
-                </span>
-              )}
+              <span
+                className={`ml-2 text-[10px] ${active ? "text-paper/60" : "text-ink/40"}`}
+              >
+                {count}
+              </span>
             </button>
+          );
+        })}
+      </div>
+
+      {/* Project grid */}
+      <AnimatePresence mode="popLayout">
+        <motion.div
+          key={activeFilter}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="grid gap-px bg-ink/15 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {visible.map((p, i) => (
+            <motion.div
+              key={`${p.role}-${p.location}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: Math.min(i * 0.03, 0.3) }}
+              className="group bg-paper p-6 transition-colors hover:bg-ink hover:text-paper"
+            >
+              <div className="mb-3 flex items-start justify-between gap-2">
+                <span className="border border-ink/15 px-1.5 py-0.5 font-mono text-[10.5px] text-ink/70 group-hover:border-paper/30 group-hover:text-paper/70">
+                  {p.role}
+                </span>
+                <div className="flex shrink-0 items-center gap-1 text-ink/50 group-hover:text-paper/50">
+                  <MapPin className="h-2.5 w-2.5" />
+                  <span className="font-mono text-[10.5px]">{p.location}</span>
+                </div>
+              </div>
+
+              <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.8px] text-ink/50 group-hover:text-paper/50">
+                Wanted to automate
+              </p>
+              <p className="mb-3 text-[13px] leading-snug text-ink/80 group-hover:text-paper/80">
+                {p.problem}
+              </p>
+
+              <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.8px] text-ink/50 group-hover:text-paper/50">
+                What we built
+              </p>
+              <p className="text-[13px] font-medium leading-snug">{p.built}</p>
+
+              <div className="mt-4 flex items-center gap-1.5 text-ink/50 group-hover:text-paper/50">
+                <Lock className="h-2.5 w-2.5" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.8px]">
+                  NDA — client details confidential
+                </span>
+              </div>
+            </motion.div>
           ))}
         </motion.div>
+      </AnimatePresence>
 
-        {/* Project grid */}
-        <AnimatePresence mode="popLayout">
-          <motion.div
-            key={activeFilter}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {visible.map((p, i) => (
-              <motion.div
-                key={`${p.role}-${p.location}`}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, delay: Math.min(i * 0.04, 0.3) }}
-                className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 transition-colors hover:border-white/[0.16]"
-              >
-                <div className={`pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r ${p.tint} opacity-60`} />
-
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="rounded-md border border-white/[0.08] bg-white/[0.03] px-1.5 py-0.5 text-[10.5px] text-neutral-400">
-                      {p.role}
-                    </span>
-                    <div className="flex shrink-0 items-center gap-1">
-                      <MapPin className="h-2.5 w-2.5 text-neutral-600" />
-                      <span className="text-[10.5px] text-neutral-500">{p.location}</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-neutral-600">
-                      Wanted to automate
-                    </p>
-                    <p className="text-[13px] leading-snug text-neutral-400">
-                      {p.problem}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-neutral-600">
-                      What we built
-                    </p>
-                    <p className="text-[13px] font-medium leading-snug text-neutral-200">
-                      {p.built}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 pt-1">
-                    <Lock className="h-2.5 w-2.5 text-neutral-600" />
-                    <span className="text-[10.5px] text-neutral-600">NDA — client details confidential</span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </AnimatePresence>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-12 flex flex-col items-center gap-2"
+      <div className="mt-12 flex flex-col items-center gap-3 border-t border-ink pt-12">
+        <a
+          href={CAL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex cursor-pointer items-center gap-3 bg-ink px-7 py-4 font-mono text-[12.5px] uppercase tracking-[1.2px] text-paper transition-opacity hover:opacity-90"
         >
-          <a
-            href="https://cal.com/intelbase/discovery-call"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-[14px] font-semibold text-black transition-all hover:bg-neutral-100"
-          >
-            Your business next
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
-          <p className="text-[12px] text-neutral-500">
-            30 recent builds across 20+ industries.
-          </p>
-        </motion.div>
+          <span className="inline-block h-2 w-2 bg-brand" /> Your business next →
+        </a>
+        <p className="font-mono text-[11px] uppercase tracking-[1px] text-ink/60">
+          {projects.length} recent builds across 20+ industries.
+        </p>
       </div>
     </section>
   );

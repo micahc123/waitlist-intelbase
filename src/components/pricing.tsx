@@ -1,10 +1,12 @@
 "use client";
 
-import { motion, useInView } from "motion/react";
-import { useRef } from "react";
-import { ArrowUpRight, MessageCircle } from "lucide-react";
+import { motion } from "motion/react";
+import { MessageCircle } from "lucide-react";
 
-const inclusions = [
+const CAL_URL = "https://cal.com/intelbase/discovery-call";
+const WA_URL = "https://wa.me/85290123551";
+
+const includes = [
   "Full scoping & architecture",
   "Setup, integration, deployment",
   "Your stack, your accounts",
@@ -13,129 +15,126 @@ const inclusions = [
 ];
 
 export function Pricing() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-
   return (
-    <section id="pricing" className="relative px-6 py-24 sm:py-32">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-
-      {/* Ambient glow */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2">
-        <div className="absolute inset-0 rounded-[50%] bg-blue-600/[0.05] blur-[110px]" />
+    <section id="pricing" className="border-b border-ink/100 px-6 py-24 sm:px-12">
+      <div className="mb-14 grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-3">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="font-mono text-[11px] uppercase tracking-[1.4px] text-ink/60"
+          >
+            [04] · Pricing
+          </motion.div>
+        </div>
+        <div className="col-span-12 lg:col-span-9">
+          <motion.h2
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: 0.06 }}
+            className="text-[clamp(40px,5.6vw,96px)] font-bold leading-[0.95] tracking-[-0.04em]"
+          >
+            Every business is different.
+            <br />
+            So is every <span className="text-brand">quote</span>.
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: 0.14 }}
+            className="mt-6 max-w-2xl text-[17px] leading-[1.55] text-ink/80"
+          >
+            We don&apos;t sell shrink-wrapped packages. We scope to your stack, your team,
+            your data, and your goals — then send a flat quote before any work starts.
+          </motion.p>
+        </div>
       </div>
 
-      <div ref={ref} className="relative mx-auto max-w-3xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-12 text-center"
-        >
-          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-neutral-400">
-            Pricing
-          </p>
-          <h2 className="text-4xl font-medium tracking-tight text-white sm:text-5xl">
-            Every business is different.
-            <br className="hidden sm:block" />
-            <span className="text-neutral-400">So is every quote.</span>
-          </h2>
-          <p className="mx-auto mt-6 max-w-xl text-[17px] leading-relaxed text-neutral-300">
-            We don&apos;t sell shrink-wrapped packages. We scope to your stack,
-            your team, your data, and your goals — then send a flat quote
-            before any work starts.
-          </p>
-        </motion.div>
+      {/* Invoice card */}
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.6, delay: 0.18 }}
+        className="border border-ink"
+      >
+        {/* Invoice header */}
+        <div className="grid grid-cols-3 border-b border-ink px-6 py-4 font-mono text-[11px] uppercase tracking-[1.2px] text-ink/60 sm:px-7">
+          <span>QUOTE / INV-2026-0XXX</span>
+          <span className="text-center">
+            STATUS · <span className="text-brand">OPEN</span>
+          </span>
+          <span className="text-right">PREPARED FOR · YOU</span>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-8 sm:p-10"
-        >
-          <div className="pointer-events-none absolute -left-24 -top-24 h-[280px] w-[280px] rounded-full bg-blue-500/[0.07] blur-[70px]" />
-          <div className="pointer-events-none absolute -right-20 -bottom-20 h-[240px] w-[240px] rounded-full bg-cyan-600/[0.06] blur-[70px]" />
-
-          <div className="relative grid gap-8 sm:grid-cols-2 sm:gap-10">
-            <div>
-              <span className="inline-block rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] font-medium uppercase tracking-widest text-neutral-400">
-                Custom quote
-              </span>
-              <div className="mt-5 flex items-baseline gap-2">
-                <span className="text-5xl font-semibold tracking-tight text-white">
-                  Custom
-                </span>
-              </div>
-              <p className="mt-3 text-[15px] leading-relaxed text-neutral-300">
-                We quote what you actually need. Most
-                projects land between <span className="font-medium text-white">$500 and $8k</span>,
-                depending on scope.
-              </p>
+        {/* Body */}
+        <div className="grid grid-cols-1 border-b border-ink lg:grid-cols-[1.4fr_1fr]">
+          <div className="border-b border-ink p-8 sm:p-10 lg:border-b-0 lg:border-r">
+            <div className="mb-4 font-mono text-[11px] uppercase tracking-[1.2px] text-ink/60">
+              Custom quote
             </div>
-
-            <div>
-              <p className="mb-3 text-xs font-medium uppercase tracking-widest text-neutral-500">
-                Every quote includes
-              </p>
-              <ul className="space-y-2.5">
-                {inclusions.map((item) => (
-                  <li
-                    key={item}
-                    className="flex items-start gap-2 text-[15px] text-neutral-200"
-                  >
-                    <span className="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-blue-400/80" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
+            <div className="text-[clamp(80px,12vw,200px)] font-bold leading-[0.85] tracking-[-0.05em]">
+              Custom<span className="text-brand">.</span>
             </div>
+            <div className="mt-3 font-mono text-[13.5px] text-ink/60">
+              ~$500 – $8,000 USD · flat · pre-quoted
+            </div>
+            <p className="mt-5 max-w-md text-[15px] leading-[1.55] text-ink/80">
+              We quote what you actually need. Most projects land between $500 and
+              $8k, depending on scope.
+            </p>
           </div>
+          <div className="p-8 sm:p-10">
+            <div className="mb-4 font-mono text-[11px] uppercase tracking-[1.2px] text-ink/60">
+              Line items · Included
+            </div>
+            <table className="w-full border-collapse text-[13.5px]">
+              <tbody>
+                {includes.map((it, i) => (
+                  <tr
+                    key={it}
+                    className={`${i === 0 ? "border-t border-ink" : ""} border-b border-ink`}
+                  >
+                    <td className="w-10 py-3 font-mono text-ink/60">0{i + 1}</td>
+                    <td className="py-3">{it}</td>
+                    <td className="py-3 text-right font-mono text-brand">✓</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-          <div className="relative mt-10 flex flex-wrap items-center gap-3 border-t border-white/[0.06] pt-8">
+        {/* Footer row */}
+        <div className="flex flex-wrap items-center justify-between gap-4 p-6 sm:p-7">
+          <div className="font-mono text-[11.5px] uppercase tracking-[1px] text-ink/60">
+            30-minute discovery call · No sales pressure · Quote within 24 hours
+          </div>
+          <div className="flex flex-wrap gap-2.5">
             <a
-              href="https://cal.com/intelbase/discovery-call"
+              href={CAL_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white px-6 py-3 text-[14px] font-semibold text-black shadow-[0_0_30px_-5px_rgba(255,255,255,0.25)] transition-all hover:bg-neutral-100"
+              className="inline-flex cursor-pointer items-center gap-2 bg-brand px-6 py-4 font-mono text-[12.5px] font-semibold uppercase tracking-[1.2px] text-ink transition-opacity hover:opacity-90"
             >
-              Get My Free Quote
-              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              Get my free quote →
             </a>
             <a
-              href="https://wa.me/85290123551"
+              href={WA_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-5 py-3 text-[14px] font-medium text-neutral-200 transition-all hover:bg-white/[0.08]"
+              className="inline-flex cursor-pointer items-center gap-2 border border-ink px-5 py-4 font-mono text-[12.5px] uppercase tracking-[1.2px] text-ink transition-colors hover:bg-ink hover:text-paper"
             >
               <MessageCircle className="h-3.5 w-3.5" />
-              WhatsApp
+              WhatsApp →
             </a>
           </div>
-        </motion.div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-6 text-center text-[13px] text-neutral-500"
-        >
-          30-minute discovery call · No sales pressure · Quote within 24 hours
-        </motion.p>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-3 flex justify-center"
-        >
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[12px] text-neutral-400">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            </span>
-            We take a limited number of clients per month
-          </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
     </section>
   );
 }
