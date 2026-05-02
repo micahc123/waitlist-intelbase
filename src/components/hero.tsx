@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { MessageCircle } from "lucide-react";
 
 const CAL_URL = "https://cal.com/intelbase/discovery-call";
-const WA_URL = "https://wa.me/85290123551";
+const WA_URL = "https://wa.me/85290123551?text=Hi%20I%27d%20like%20to%20automate%20my%20business.";
 
 const bullets = ["No pressure", "24hr quote", "You own everything"];
 
@@ -12,11 +12,11 @@ export function Hero() {
   return (
     <section
       id="about"
-      className="relative flex min-h-[calc(100svh-100px)] flex-col border-b border-ink/100 px-6 pb-12 pt-10 sm:px-12 sm:pb-16 sm:pt-12"
+      className="relative flex min-h-[calc(100svh-150px)] flex-col border-b border-ink/100 px-6 pb-12 pt-10 sm:px-12 sm:pb-16 sm:pt-12"
     >
       <div className="grid grid-cols-12 gap-6">
         {/* Left brief column */}
-        <div className="col-span-12 lg:col-span-3">
+        <div className="col-span-12 lg:col-span-4">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -31,10 +31,11 @@ export function Hero() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, delay: 0.08 }}
-            className="mt-5 text-[19px] leading-[1.45] tracking-[-0.01em] text-ink sm:text-[21px]"
+            className="mt-5 text-[18px] leading-[1.45] tracking-[-0.01em] text-ink sm:text-[20px]"
           >
-            We are a small studio that ships AI systems for operators. Not chatbots.
-            Not demos. Production infrastructure that runs your business while you sleep.
+            We are a small studio that builds AI systems for businesses that want
+            to automate. Not chatbots. Not demos. Production infrastructure that
+            runs your business while you sleep.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -52,19 +53,19 @@ export function Hero() {
         </div>
 
         {/* Right H1 column */}
-        <div className="col-span-12 lg:col-span-9">
+        <div className="col-span-12 lg:col-span-8">
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, delay: 0.12 }}
-            className="text-[clamp(64px,9.6vw,184px)] font-bold leading-[0.86] tracking-[-0.055em] text-ink"
+            className="text-[clamp(72px,10.6vw,200px)] font-bold leading-[0.86] tracking-[-0.055em] text-ink"
           >
             Automate
             <br />
             your entire
             <br />
-            <span className="inline-block bg-ink px-[0.18em] leading-[0.95] text-paper">
+            <span className="mt-1.5 inline-block translate-y-1 bg-ink px-[0.18em] leading-[0.95] text-paper">
               business<span className="text-brand">.</span>
             </span>
           </motion.h1>
@@ -99,17 +100,17 @@ export function Hero() {
               href={CAL_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex cursor-pointer items-center gap-3 bg-ink px-7 py-4 font-mono text-[12.5px] uppercase tracking-[1.2px] text-paper transition-opacity hover:opacity-90"
+              className="inline-flex cursor-pointer items-center gap-3 bg-ink px-9 py-5 font-mono text-[14px] uppercase tracking-[1.2px] text-paper transition-opacity hover:opacity-90"
             >
-              <span className="inline-block h-2 w-2 bg-brand" /> Get my free quote →
+              <span className="inline-block h-2.5 w-2.5 bg-brand" /> Get my free quote →
             </a>
             <a
               href={WA_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex cursor-pointer items-center gap-2 border border-ink bg-transparent px-5 py-4 font-mono text-[12.5px] uppercase tracking-[1.2px] text-ink transition-colors hover:bg-ink hover:text-paper"
+              className="inline-flex cursor-pointer items-center gap-2.5 border border-ink bg-transparent px-7 py-5 font-mono text-[14px] uppercase tracking-[1.2px] text-ink transition-colors hover:bg-ink hover:text-paper"
             >
-              <MessageCircle className="h-3.5 w-3.5" />
+              <MessageCircle className="h-4 w-4" />
               WhatsApp →
             </a>
           </motion.div>

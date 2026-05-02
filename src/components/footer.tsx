@@ -15,9 +15,8 @@ const cols = [
     { label: "Outbound", href: "/#services" },
   ]},
   { t: "Talk", l: [
-    { label: "Email", href: "mailto:hello@intelbase.co" },
-    { label: "WhatsApp", href: "https://wa.me/85290123551" },
-    { label: "Calendly", href: "https://cal.com/intelbase/discovery-call" },
+    { label: "Cal.", href: "https://cal.com/intelbase/discovery-call" },
+    { label: "WhatsApp", href: "https://wa.me/85290123551?text=Hi%20I%27d%20like%20to%20automate%20my%20business." },
   ]},
 ];
 
@@ -38,7 +37,7 @@ export function Footer() {
         <div className="font-mono text-[12.5px] leading-[1.6] text-ink/60">
           AI · OPS · INFRASTRUCTURE
           <br />
-          For operators who ship.
+          For businesses that want to automate.
         </div>
       </div>
 

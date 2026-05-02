@@ -9,7 +9,7 @@ const tickerItems = [
   "YOU OWN EVERYTHING",
   "NO RETAINERS",
   "SHIP IN 72H AVG",
-  "OPENCLAW · n8n · LANGGRAPH",
+  "OPENCLAW · n8n · CLAUDE CODE",
 ];
 
 const stats = [

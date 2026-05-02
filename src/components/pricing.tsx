@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { MessageCircle } from "lucide-react";
 
 const CAL_URL = "https://cal.com/intelbase/discovery-call";
-const WA_URL = "https://wa.me/85290123551";
+const WA_URL = "https://wa.me/85290123551?text=Hi%20I%27d%20like%20to%20automate%20my%20business.";
 
 const includes = [
   "Full scoping & architecture",
