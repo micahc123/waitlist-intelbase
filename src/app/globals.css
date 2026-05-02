@@ -100,6 +100,12 @@
   }
   html {
     @apply font-sans scroll-smooth;
+    scroll-padding-top: 110px;
+  }
+  @media (max-width: 640px) {
+    html {
+      scroll-padding-top: 72px;
+    }
   }
 }
 

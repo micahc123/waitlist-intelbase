@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const cols = [
   { t: "Intelbase", l: [
-    { label: "Manifesto", href: "/#about" },
+    { label: "Manifesto", href: "/" },
     { label: "Use cases", href: "/work" },
     { label: "Process", href: "/#services" },
   ]},
@@ -61,7 +61,20 @@ export function Footer() {
                       → {x.label}
                     </a>
                   ) : (
-                    <Link href={x.href} className="font-mono text-[13px] text-ink hover:text-brand">
+                    <Link
+                      href={x.href}
+                      onClick={(e) => {
+                        if (
+                          x.href === "/" &&
+                          typeof window !== "undefined" &&
+                          window.location.pathname === "/"
+                        ) {
+                          e.preventDefault();
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }
+                      }}
+                      className="font-mono text-[13px] text-ink hover:text-brand"
+                    >
                       → {x.label}
                     </Link>
                   )}

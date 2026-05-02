@@ -42,7 +42,16 @@ export function TopNav() {
 
       {/* Main nav */}
       <div className="flex items-center justify-between border-b border-ink/100 bg-paper px-5 py-4 sm:px-8">
-        <Link href="/" className="flex items-center gap-3">
+        <Link
+          href="/"
+          onClick={(e) => {
+            if (typeof window !== "undefined" && window.location.pathname === "/") {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          }}
+          className="flex items-center gap-3"
+        >
           <LogoMark />
           <span className="text-[16px] font-bold tracking-[-0.4px]">INTELBASE</span>
         </Link>
