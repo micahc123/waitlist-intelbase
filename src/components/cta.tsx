@@ -23,7 +23,7 @@ export function CTA() {
           <div className="pointer-events-none absolute inset-x-0 -bottom-32 h-[500px]">
             <div className="mx-auto h-full w-[700px] rounded-[50%] bg-blue-600/[0.10] blur-[100px]" />
           </div>
-          <div className="pointer-events-none absolute -left-32 -top-32 h-[400px] w-[400px] rounded-full bg-violet-500/[0.07] blur-[80px]" />
+          <div className="pointer-events-none absolute -left-32 -top-32 h-[400px] w-[400px] rounded-full bg-cyan-600/[0.07] blur-[80px]" />
           <div className="pointer-events-none absolute -right-20 top-1/3 h-[350px] w-[350px] rounded-full bg-indigo-500/[0.06] blur-[70px]" />
 
           <div className="relative px-6 py-20 text-center sm:px-12 sm:py-24">

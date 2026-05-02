@@ -16,10 +16,10 @@ export function Hero() {
       <div className="pointer-events-none absolute bottom-0 left-1/2 h-[700px] w-[1000px] -translate-x-1/2 translate-y-[25%]">
         <div className="absolute inset-0 rounded-[50%] bg-blue-600/25 blur-[80px]" />
         <div className="absolute inset-x-[10%] inset-y-[5%] rounded-[50%] bg-indigo-500/20 blur-[60px]" />
-        <div className="absolute inset-x-[25%] inset-y-[15%] rounded-[50%] bg-violet-500/15 blur-[50px]" />
+        <div className="absolute inset-x-[25%] inset-y-[15%] rounded-[50%] bg-cyan-600/15 blur-[50px]" />
       </div>
       {/* Side glows */}
-      <div className="pointer-events-none absolute -left-20 top-1/3 h-[400px] w-[400px] rounded-full bg-violet-500/[0.05] blur-[90px]" />
+      <div className="pointer-events-none absolute -left-20 top-1/3 h-[400px] w-[400px] rounded-full bg-cyan-600/[0.05] blur-[90px]" />
       <div className="pointer-events-none absolute -right-20 top-1/2 h-[350px] w-[350px] rounded-full bg-blue-500/[0.04] blur-[80px]" />
 
       {/* Edge fades */}
@@ -116,7 +116,7 @@ export function Hero() {
               { bg: "from-blue-400 to-indigo-500", initials: "EH" },
               { bg: "from-amber-400 to-orange-500", initials: "TC" },
               { bg: "from-emerald-400 to-teal-500", initials: "TJ" },
-              { bg: "from-violet-400 to-purple-500", initials: "TL" },
+              { bg: "from-teal-400 to-cyan-500", initials: "TL" },
               { bg: "from-rose-400 to-pink-500", initials: "MR" },
             ].map((person, i) => (
               <div
@@ -128,18 +128,24 @@ export function Hero() {
               </div>
             ))}
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex text-amber-400">
+          {/* Trustpilot badge */}
+          <a
+            href="https://www.trustpilot.com/review/intelbase.co"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 transition-colors hover:bg-white/[0.06]"
+          >
+            <div className="flex">
               {[...Array(5)].map((_, i) => (
-                <svg key={i} className="h-3.5 w-3.5 fill-current" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.098 9.1c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z" />
+                <svg key={i} className="h-4 w-4" viewBox="0 0 24 24" fill="#00B67A">
+                  <path d="M12 2l2.582 7.953H22l-6.291 4.573 2.583 7.953L12 18.012l-6.292 4.467 2.583-7.953L2 10.047h7.418z" />
                 </svg>
               ))}
             </div>
-            <p className="text-[14.5px] text-neutral-400">
-              <span className="font-semibold text-white">50+ businesses</span> automated · 4.9/5 rating
-            </p>
-          </div>
+            <span className="text-[13px] font-semibold text-white">Excellent</span>
+            <span className="text-[12px] text-neutral-400">on</span>
+            <span className="text-[13px] font-bold tracking-tight" style={{ color: "#00B67A" }}>Trustpilot</span>
+          </a>
         </motion.div>
       </div>
     </section>

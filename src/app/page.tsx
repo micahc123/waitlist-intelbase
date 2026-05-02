@@ -6,6 +6,7 @@ import { Pricing } from "@/components/pricing";
 import { CTA } from "@/components/cta";
 import { Footer } from "@/components/footer";
 import { StickyCta } from "@/components/sticky-cta";
+import { DiscountPopup } from "@/components/discount-popup";
 
 export default function Home() {
   return (
@@ -29,6 +30,7 @@ export default function Home() {
       </main>
       <Footer />
       <StickyCta />
+      <DiscountPopup />
     </>
   );
 }

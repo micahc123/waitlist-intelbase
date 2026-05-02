@@ -44,7 +44,7 @@ export function Services() {
           <div className="absolute inset-0 rounded-[50%] bg-blue-600/[0.07] blur-[100px]" />
         </div>
         <div className="pointer-events-none absolute right-0 bottom-0 h-[400px] w-[500px] translate-x-1/4 translate-y-1/4">
-          <div className="absolute inset-0 rounded-[50%] bg-violet-500/[0.06] blur-[90px]" />
+          <div className="absolute inset-0 rounded-[50%] bg-cyan-600/[0.06] blur-[90px]" />
         </div>
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
 

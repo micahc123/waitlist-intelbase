@@ -54,7 +54,7 @@ export function Pricing() {
           className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-8 sm:p-10"
         >
           <div className="pointer-events-none absolute -left-24 -top-24 h-[280px] w-[280px] rounded-full bg-blue-500/[0.07] blur-[70px]" />
-          <div className="pointer-events-none absolute -right-20 -bottom-20 h-[240px] w-[240px] rounded-full bg-violet-500/[0.06] blur-[70px]" />
+          <div className="pointer-events-none absolute -right-20 -bottom-20 h-[240px] w-[240px] rounded-full bg-cyan-600/[0.06] blur-[70px]" />
 
           <div className="relative grid gap-8 sm:grid-cols-2 sm:gap-10">
             <div>
