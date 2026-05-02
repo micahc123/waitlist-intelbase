@@ -12,7 +12,7 @@ export function Hero() {
   return (
     <section
       id="about"
-      className="relative flex min-h-[calc(100svh-150px)] flex-col border-b border-ink/100 px-6 pb-12 pt-10 sm:px-12 sm:pb-16 sm:pt-12"
+      className="relative flex flex-col border-b border-ink/100 px-6 pb-12 pt-10 sm:px-12 sm:pb-16 sm:pt-12 lg:min-h-[calc(100svh-150px)]"
     >
       <div className="grid grid-cols-12 gap-6">
         {/* Left brief column */}
@@ -59,13 +59,13 @@ export function Hero() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, delay: 0.12 }}
-            className="text-[clamp(72px,10.6vw,200px)] font-bold leading-[0.86] tracking-[-0.055em] text-ink"
+            className="text-[clamp(56px,10.6vw,200px)] font-bold leading-[0.86] tracking-[-0.055em] text-ink"
           >
             Automate
             <br />
             your entire
             <br />
-            <span className="mt-1.5 inline-block translate-y-1 bg-ink px-[0.18em] leading-[0.95] text-paper">
+            <span className="mt-3 inline-block translate-y-2 bg-ink px-[0.18em] leading-[0.95] text-paper">
               business<span className="text-brand">.</span>
             </span>
           </motion.h1>
@@ -73,7 +73,7 @@ export function Hero() {
       </div>
 
       {/* Bottom row pinned to viewport bottom */}
-      <div className="mt-auto grid grid-cols-12 gap-6 pt-12">
+      <div className="mt-auto grid grid-cols-12 gap-6 pt-8 lg:pt-12">
         <div className="col-span-12 lg:col-span-7">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
