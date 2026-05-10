@@ -35,6 +35,11 @@ export const metadata: Metadata = {
     "n8n workflows",
     "AI services",
   ],
+  verification: {
+    other: {
+      "facebook-domain-verification": "agiirshj5un6c8cddfagfn20q2kx3f",
+    },
+  },
 };
 
 export default function RootLayout({
