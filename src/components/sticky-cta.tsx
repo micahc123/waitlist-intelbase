@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { trackLead } from "@/lib/meta-pixel";
 
 const CAL_URL = "https://cal.com/intelbase/discovery-call";
 
@@ -27,6 +28,7 @@ export function StickyCta() {
         href={CAL_URL}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={trackLead}
         className="pointer-events-auto mx-auto flex max-w-sm items-center justify-between gap-3 bg-ink px-5 py-4 font-mono text-[12.5px] uppercase tracking-[1.2px] text-paper shadow-[0_8px_24px_rgba(10,10,10,0.18)]"
       >
         <span className="flex items-center gap-2.5">

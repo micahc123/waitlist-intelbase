@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { MessageCircle } from "lucide-react";
+import { trackLead, trackContact } from "@/lib/meta-pixel";
 
 const CAL_URL = "https://cal.com/intelbase/discovery-call";
 const WA_URL = "https://wa.me/85290123551?text=Hi%20I%27d%20like%20to%20automate%20my%20business.";
@@ -119,6 +120,7 @@ export function Pricing() {
               href={CAL_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={trackLead}
               className="inline-flex cursor-pointer items-center gap-2 bg-brand px-6 py-4 font-mono text-[12.5px] font-semibold uppercase tracking-[1.2px] text-ink transition-opacity hover:opacity-90"
             >
               Get my free quote →
@@ -127,6 +129,7 @@ export function Pricing() {
               href={WA_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={trackContact}
               className="inline-flex cursor-pointer items-center gap-2 border border-ink px-5 py-4 font-mono text-[12.5px] uppercase tracking-[1.2px] text-ink transition-colors hover:bg-ink hover:text-paper"
             >
               <MessageCircle className="h-3.5 w-3.5" />

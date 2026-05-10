@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { MessageCircle } from "lucide-react";
+import { trackLead, trackContact } from "@/lib/meta-pixel";
 
 const CAL_URL = "https://cal.com/intelbase/discovery-call";
 const WA_URL =
@@ -99,6 +100,7 @@ export function Hero() {
             href={CAL_URL}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={trackLead}
             className="inline-flex cursor-pointer items-center justify-center gap-3 bg-ink px-10 py-6 font-mono text-[15px] uppercase tracking-[1.2px] text-paper transition-opacity hover:opacity-90"
           >
             <span className="inline-block h-2.5 w-2.5 bg-brand" /> Get my free quote →
@@ -107,6 +109,7 @@ export function Hero() {
             href={WA_URL}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={trackContact}
             className="inline-flex cursor-pointer items-center justify-center gap-2.5 border border-ink bg-transparent px-8 py-6 font-mono text-[15px] uppercase tracking-[1.2px] text-ink transition-colors hover:bg-ink hover:text-paper"
           >
             <MessageCircle className="h-4 w-4" />

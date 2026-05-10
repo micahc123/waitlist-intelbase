@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
+import { MetaPixel } from "@/components/analytics/meta-pixel";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -46,7 +47,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">{children}</body>
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+        <MetaPixel />
+        {children}
+      </body>
     </html>
   );
 }

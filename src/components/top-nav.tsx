@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { trackLead } from "@/lib/meta-pixel";
 
 const navItems = [
   { name: "Index", href: "/#about" },
@@ -73,6 +74,7 @@ export function TopNav() {
           href={CAL_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={trackLead}
           className="hidden cursor-pointer bg-ink px-4 py-2.5 font-mono text-[11.5px] uppercase tracking-wider text-paper transition-opacity hover:opacity-90 md:inline-block"
         >
           Request quote →
@@ -105,7 +107,10 @@ export function TopNav() {
               href={CAL_URL}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                trackLead();
+                setOpen(false);
+              }}
               className="bg-ink px-5 py-4 font-mono text-[12px] uppercase tracking-wider text-paper"
             >
               Request quote →
