@@ -88,29 +88,29 @@ export function Hero() {
       </div>
 
       {/* CTAs: mobile third (right after H1+subcopy), desktop bottom-right */}
-      <div className="order-3 flex flex-col items-stretch gap-3 lg:order-none lg:col-span-5 lg:row-start-2 lg:mt-auto lg:items-end">
+      <div className="order-3 flex flex-col items-stretch gap-3 lg:order-none lg:col-span-5 lg:row-start-2 lg:mt-auto">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, delay: 0.28 }}
-          className="flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap lg:w-auto"
+          className="flex w-full flex-col gap-3 sm:flex-row"
         >
           <a
             href={CAL_URL}
             target="_blank"
             rel="noopener noreferrer"
             onClick={trackLead}
-            className="inline-flex cursor-pointer items-center justify-center gap-3 bg-ink px-10 py-6 font-mono text-[15px] uppercase tracking-[1.2px] text-paper transition-opacity hover:opacity-90"
+            className="inline-flex flex-1 cursor-pointer items-center justify-center gap-3 bg-brand px-10 py-7 font-mono text-[16px] uppercase tracking-[1.2px] text-paper shadow-[0_6px_0_0_var(--ink)] transition-transform hover:-translate-y-0.5 sm:text-[17px]"
           >
-            <span className="inline-block h-2.5 w-2.5 bg-brand" /> Get my free quote →
+            <span className="inline-block h-2.5 w-2.5 bg-ink" /> Get my free quote →
           </a>
           <a
             href={WA_URL}
             target="_blank"
             rel="noopener noreferrer"
             onClick={trackContact}
-            className="inline-flex cursor-pointer items-center justify-center gap-2.5 border border-ink bg-transparent px-8 py-6 font-mono text-[15px] uppercase tracking-[1.2px] text-ink transition-colors hover:bg-ink hover:text-paper"
+            className="inline-flex cursor-pointer items-center justify-center gap-2.5 border border-ink bg-transparent px-8 py-7 font-mono text-[15px] uppercase tracking-[1.2px] text-ink transition-colors hover:bg-ink hover:text-paper"
           >
             <MessageCircle className="h-4 w-4" />
             WhatsApp →
