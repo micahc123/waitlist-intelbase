@@ -14,10 +14,10 @@ export function Hero() {
   return (
     <section
       id="about"
-      className="relative flex flex-col gap-8 border-b border-ink/100 px-6 pb-12 pt-10 sm:px-12 sm:pb-16 sm:pt-12 lg:grid lg:min-h-[calc(100svh-150px)] lg:grid-cols-12 lg:gap-x-6 lg:gap-y-10"
+      className="relative mx-auto flex w-full max-w-[1200px] flex-col items-center gap-10 border-b border-ink/100 px-6 pb-14 pt-12 text-center sm:gap-12 sm:px-12 sm:pb-20 sm:pt-16"
     >
-      {/* Brief: mobile-last, desktop top-left */}
-      <div className="order-4 lg:order-none lg:col-span-4 lg:row-start-1">
+      {/* Brief: stacked last */}
+      <div className="order-4 mx-auto w-full max-w-[640px]">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -53,14 +53,14 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* H1: mobile-first, desktop top-right */}
-      <div className="order-1 lg:order-none lg:col-span-8 lg:row-start-1">
+      {/* H1 */}
+      <div className="order-1">
         <motion.h1
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, delay: 0.12 }}
-          className="text-[clamp(56px,10.6vw,200px)] font-bold leading-[0.86] tracking-[-0.055em] text-ink"
+          className="text-[clamp(56px,9.2vw,128px)] font-bold leading-[0.88] tracking-[-0.05em] text-ink"
         >
           Automate
           <br />
@@ -72,14 +72,14 @@ export function Hero() {
         </motion.h1>
       </div>
 
-      {/* Subcopy: mobile second, desktop bottom-left */}
-      <div className="order-2 lg:order-none lg:col-span-7 lg:row-start-2 lg:mt-auto">
+      {/* Subcopy */}
+      <div className="order-2">
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-[17px] leading-[1.45] text-ink sm:text-[18px]"
+          className="mx-auto max-w-[640px] text-[17px] leading-[1.5] text-ink sm:text-[19px]"
           style={{ textWrap: "pretty" }}
         >
           Production-grade AI that actually runs your business. n8n workflows,
@@ -87,14 +87,14 @@ export function Hero() {
         </motion.p>
       </div>
 
-      {/* CTAs: mobile third (right after H1+subcopy), desktop bottom-right */}
-      <div className="order-3 flex flex-col items-stretch gap-3 lg:order-none lg:col-span-5 lg:row-start-2 lg:mt-auto">
+      {/* CTAs */}
+      <div className="order-3 mx-auto flex w-full max-w-[760px] flex-col items-stretch gap-3">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, delay: 0.28 }}
-          className="flex w-full flex-col gap-3 sm:flex-row"
+          className="flex w-full max-w-[760px] flex-col gap-3 sm:flex-row"
         >
           <a
             href={CAL_URL}
