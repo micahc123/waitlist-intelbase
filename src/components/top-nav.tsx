@@ -43,8 +43,8 @@ export function TopNav({
             <Image
               src="/intelbase-logo.png"
               alt="Intelbase logo"
-              width={88}
-              height={88}
+              width={128}
+              height={128}
               priority
             />
           </span>
