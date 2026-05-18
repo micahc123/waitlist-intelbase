@@ -1,29 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
 
-const geistSans = Geist({
-  variable: "--font-sans",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Intelbase — Fully Automate Your Entire Business",
+  title: "Intelbase — Automate your entire business.",
   description:
-    "We build production-ready AI infrastructure and offer done-for-you AI services — OpenClaw setups, n8n workflow automation, and multi-agent orchestration — so your AI actually works beyond the demo phase.",
+    "Production-grade AI that actually runs your business. n8n workflows, custom agents, RAG over your data — built and shipped end-to-end. Not chatbots. Not demos.",
   keywords: [
     "AI infrastructure",
     "AI agency",
@@ -48,11 +38,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+    <html lang="en" className={jakarta.variable}>
+      <body>
         <MetaPixel />
         {children}
       </body>

@@ -1,195 +1,301 @@
 "use client";
 
-import { motion, AnimatePresence } from "motion/react";
-import { useState } from "react";
-import { X, MapPin, Lock } from "lucide-react";
-import { services, projects, type ServiceDef } from "@/lib/projects-data";
+import { useEffect, useState } from "react";
+import { Icon } from "@/components/icons";
 
-const CAL_URL = "https://cal.com/intelbase/discovery-call";
+type IconName =
+  | "bolt"
+  | "node"
+  | "sparkles"
+  | "brain"
+  | "box"
+  | "share"
+  | "code";
 
-const tagFor: Record<ServiceDef["key"], string> = {
-  openclaw: "OpenClaw",
-  automation: "Automation",
-  "social-ads": "Social",
-  n8n: "n8n",
-  "llm-rag": "RAG",
-  "custom-ai": "Custom",
-  claude: "Claude",
+type Service = {
+  icon: IconName;
+  tag: string;
+  title: string;
+  desc: string;
+  meta: string;
+  longDesc: string;
+  includes: string[];
+  outcomes: string[];
 };
 
-export function Services() {
-  const [active, setActive] = useState<ServiceDef | null>(null);
-  const related = active ? projects.filter((p) => p.service === active.key) : [];
+const services: Service[] = [
+  {
+    icon: "bolt",
+    tag: "OpenClaw",
+    title: "OpenClaw Full Setup",
+    desc: "Full OpenClaw deployment on your Mac Mini, VPS, or any system — configured, integrated, and ready to go.",
+    meta: "Live in 30 min",
+    longDesc:
+      "We deploy OpenClaw end-to-end on your hardware or cloud, wire it into your stack, and hand you the keys with a full walk-through.",
+    includes: [
+      "Install + configure OpenClaw on Mac Mini, VPS, or your cloud",
+      "Connect your data sources, auth, and existing tooling",
+      "Custom system prompts, agents, and tools wired to your workflow",
+      "30-min walk-through + documentation so your team owns it",
+    ],
+    outcomes: [
+      "A production agent platform on your hardware",
+      "Live in 30 minutes from start to handoff",
+      "No vendor lock-in — you own everything",
+    ],
+  },
+  {
+    icon: "share",
+    tag: "Automation",
+    title: "Business Automation",
+    desc: "Lead capture, email sequences, CRM syncing, cold email — your whole back-office running itself while you sleep.",
+    meta: "Ships in 72h",
+    longDesc:
+      "We map your back-office, kill the time-sink steps, and automate the parts that humans shouldn't be doing — without breaking the parts that work.",
+    includes: [
+      "Lead capture, scoring, and routing across your funnel",
+      "CRM sync, deal-stage automation, and email sequences",
+      "Cold outbound: list-building, personalization, deliverability",
+      "Slack / WhatsApp / email notifications when humans are needed",
+    ],
+    outcomes: [
+      "Save 8–20 hrs/week of back-office work",
+      "Faster response time → higher conversion",
+      "Pipeline that runs without manual babysitting",
+    ],
+  },
+  {
+    icon: "sparkles",
+    tag: "Social",
+    title: "Social Media & AI Ads",
+    desc: "Content + ad generation with Higgsfield and OpenClaw. Scripting, visuals, posting, paid campaigns on autopilot.",
+    meta: "Pipeline in 5d",
+    longDesc:
+      "A content + ad engine that ships consistently — scripts, visuals, and creatives generated, scheduled, and posted automatically.",
+    includes: [
+      "Higgsfield + OpenClaw pipelines for video, image, and copy",
+      "Brand-tuned voice, hooks, and CTAs across IG / TikTok / X / LinkedIn",
+      "Paid ad creative generation + variant testing",
+      "Auto-posting + analytics dashboards",
+    ],
+    outcomes: [
+      "Daily posting cadence without a content team",
+      "More creative tests per dollar of ad spend",
+      "Your brand voice, not generic AI slop",
+    ],
+  },
+  {
+    icon: "node",
+    tag: "n8n",
+    title: "n8n Workflow Automation",
+    desc: "Custom n8n workflows for lead routing, data syncing, notifications, and AI-powered pipelines.",
+    meta: "Done in <1h",
+    longDesc:
+      "We build production n8n workflows that connect your tools, sync your data, and add AI where it actually helps — hosted on your stack.",
+    includes: [
+      "Self-hosted or cloud n8n setup, secured properly",
+      "Custom workflows for routing, syncing, alerting, and enrichment",
+      "AI nodes for classification, extraction, and summarization",
+      "Error handling, retries, and observability built in",
+    ],
+    outcomes: [
+      "No more glue-code in 5 different SaaS tools",
+      "Workflows you can read, edit, and own",
+      "Drop-in AI steps where they earn their keep",
+    ],
+  },
+  {
+    icon: "brain",
+    tag: "RAG",
+    title: "Custom LLM & RAG",
+    desc: "Train a model on your business data. RAG pipelines that know your products, policies, and history — so AI answers like it works there.",
+    meta: "Ships in 72h",
+    longDesc:
+      "We build retrieval pipelines tuned to your data so the model answers like it works at your company — not a generic chatbot.",
+    includes: [
+      "Ingest + chunk + embed your docs, products, tickets, history",
+      "Hybrid search (vector + keyword) tuned to your domain",
+      "Eval harness: ground-truth questions, scored answers, regression tests",
+      "Frontend or API delivery, wired into your tools",
+    ],
+    outcomes: [
+      "Accurate answers from your real data",
+      "Cited sources — no hallucinations the team can't verify",
+      "Quality stays high as your data grows",
+    ],
+  },
+  {
+    icon: "box",
+    tag: "Custom",
+    title: "Custom AI Solutions",
+    desc: "Anything outside the box — multi-agent systems, internal tools, workflow copilots. We scope it, build it, ship it.",
+    meta: "Scoped to brief",
+    longDesc:
+      "When the off-the-shelf answer doesn't fit, we design and build the system from scratch — agents, internal tools, copilots, weird stuff.",
+    includes: [
+      "Discovery + architecture for the problem you actually have",
+      "Multi-agent orchestration, tool-use, and custom evals",
+      "Internal tools, dashboards, or copilots wired into your stack",
+      "Flat quote, fixed scope, hand-off when it ships",
+    ],
+    outcomes: [
+      "A bespoke system that fits your business",
+      "No 'AI features bolted onto SaaS' tax",
+      "You own the code and the IP",
+    ],
+  },
+  {
+    icon: "code",
+    tag: "Claude",
+    title: "Claude Systems & MCP",
+    desc: "Claude Code setups, MCP server builds, and Claude-powered agents wired into your tools. From dev copilots to autonomous pipelines.",
+    meta: "Ships in 5d",
+    longDesc:
+      "We design Claude-powered systems for engineering teams and ops: dev copilots, MCP servers, autonomous pipelines, and agentic workflows.",
+    includes: [
+      "Claude Code rollout: settings, skills, hooks, slash commands",
+      "Custom MCP servers exposing your tools to Claude safely",
+      "Subagents + agent SDK pipelines for autonomous work",
+      "Guardrails, eval suites, and observability for production use",
+    ],
+    outcomes: [
+      "Engineers ship faster with Claude wired into their workflow",
+      "Internal tools accessible to AI without security holes",
+      "Reliable agentic pipelines instead of brittle prompts",
+    ],
+  },
+];
+
+export function Services({ onQuote }: { onQuote: () => void }) {
+  const [active, setActive] = useState<Service | null>(null);
+
+  useEffect(() => {
+    if (!active) return;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActive(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [active]);
 
   return (
     <>
-      <section id="services" className="border-b border-ink/100 px-6 py-24 sm:px-12">
-        <div className="mb-16 grid grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-span-3">
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.6 }}
-              className="font-mono text-[11px] uppercase tracking-[1.4px] text-ink/60"
-            >
-              [03] · What we build & deliver
-            </motion.div>
-          </div>
-          <div className="col-span-12 lg:col-span-9">
-            <motion.h2
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.6, delay: 0.06 }}
-              className="text-[clamp(48px,7vw,120px)] font-bold leading-[0.9] tracking-[-0.05em]"
-            >
-              Real systems.
-              <br />
-              Not{" "}
-              <span className="underline decoration-brand decoration-[6px] underline-offset-[12px]">
-                chatbots
-              </span>
-              .
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.6, delay: 0.14 }}
-              className="mt-7 max-w-2xl text-[17px] leading-[1.55] text-ink/80"
-            >
-              End-to-end AI infrastructure and done-for-you services that plug into
-              your stack and actually run your business.
-            </motion.p>
-          </div>
+      <section className="section" id="services">
+        <div className="section-head reveal">
+          <span className="section-tag">What we build</span>
+          <h2 className="section-title">
+            Real systems. <span className="accent">Not chatbots.</span>
+          </h2>
+          <p className="section-sub">
+            End-to-end AI infrastructure and done-for-you services that plug into
+            your stack and actually run your business.
+          </p>
         </div>
-
-        <div className="border-y border-ink/100">
-          {services.map((s, i) => (
-            <motion.button
-              key={s.key}
+        <div className="services reveal">
+          {services.map((s) => (
+            <button
+              type="button"
+              className="service"
+              key={s.title}
               onClick={() => setActive(s)}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.5, delay: i * 0.04 }}
-              className={`group grid w-full cursor-pointer grid-cols-[44px_1fr_60px] items-center gap-4 px-2 py-6 text-left transition-colors duration-200 hover:bg-ink hover:text-paper sm:grid-cols-[60px_1fr_2fr_120px_60px] sm:gap-5 ${
-                i < services.length - 1 ? "border-b border-ink/15" : ""
-              }`}
+              aria-label={`Learn more about ${s.title}`}
             >
-              <span className="font-mono text-[11px] text-ink/60 group-hover:text-paper/60">
-                S/0{i + 1}
-              </span>
-              <span className="text-[20px] font-medium tracking-[-0.4px] sm:text-[22px]">
-                {s.title}
-              </span>
-              <span className="hidden text-[14.5px] leading-[1.5] text-ink/70 group-hover:text-paper/70 sm:block">
-                {s.shortBody}
-              </span>
-              <span className="hidden border border-ink px-2.5 py-1 font-mono text-[10.5px] uppercase tracking-[1px] group-hover:border-paper/60 sm:inline-block sm:justify-self-start">
-                {tagFor[s.key]}
-              </span>
-              <span className="text-right text-[18px] transition-transform group-hover:translate-x-1 group-hover:text-brand">
-                →
-              </span>
-            </motion.button>
+              <div className="service-icon">
+                <Icon name={s.icon} />
+              </div>
+              <h3 className="service-title">{s.title}</h3>
+              <p className="service-desc">{s.desc}</p>
+              <div className="service-foot">
+                <span className="service-meta">{s.meta}</span>
+                <span className="service-arrow">
+                  <Icon name="arrow" />
+                </span>
+              </div>
+            </button>
           ))}
         </div>
       </section>
 
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setActive(null)}
-            className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/60 p-4 backdrop-blur-sm sm:p-6"
-          >
-            <motion.div
-              initial={{ scale: 0.97, opacity: 0, y: 8 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.97, opacity: 0, y: 8 }}
-              transition={{ duration: 0.2 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative my-auto w-full max-w-2xl border border-ink bg-paper"
-            >
-              <button
-                onClick={() => setActive(null)}
-                aria-label="Close"
-                className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 cursor-pointer items-center justify-center border border-ink bg-paper text-ink transition-colors hover:bg-ink hover:text-paper"
-              >
-                <X className="h-4 w-4" />
-              </button>
-
-              <div className="border-b border-ink p-6 sm:p-8">
-                <div className="mb-3 font-mono text-[11px] uppercase tracking-[1.2px] text-ink/60">
-                  S · {tagFor[active.key]}
+      <div
+        className={"modal-backdrop" + (active ? " open" : "")}
+        onClick={() => setActive(null)}
+        aria-hidden={!active}
+      >
+        <div
+          className="modal"
+          onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+        >
+          {active && (
+            <>
+              <div className="modal-head">
+                <div>
+                  <span className="service-detail-tag">
+                    <Icon name={active.icon} /> {active.tag}
+                  </span>
+                  <h3 className="service-detail-title">{active.title}</h3>
+                  <p className="service-detail-desc">{active.longDesc}</p>
                 </div>
-                <h3 className="text-[28px] font-bold tracking-[-0.5px] sm:text-[32px]">
-                  {active.title}
-                </h3>
-                <p className="mt-4 text-[15px] leading-[1.6] text-ink/80">{active.longBody}</p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {active.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="border border-ink px-2.5 py-1 font-mono text-[10.5px] uppercase tracking-[1px]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                <button
+                  className="modal-close"
+                  onClick={() => setActive(null)}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
               </div>
 
-              <div className="p-6 sm:p-8">
-                <div className="mb-4 font-mono text-[11px] uppercase tracking-[1.2px] text-ink/60">
-                  Related builds ({related.length})
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {related.slice(0, 6).map((p, i) => (
-                    <div key={i} className="border border-ink/15 p-4">
-                      <div className="mb-2 flex items-start justify-between gap-2">
-                        <span className="border border-ink/15 bg-paper px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.8px]">
-                          {p.role}
-                        </span>
-                        <div className="flex items-center gap-1 text-ink/60">
-                          <MapPin className="h-2.5 w-2.5" />
-                          <span className="text-[10px]">{p.location}</span>
-                        </div>
-                      </div>
-                      <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.8px] text-ink/50">
-                        Problem
-                      </p>
-                      <p className="mb-3 text-[12px] leading-snug text-ink/80">{p.problem}</p>
-                      <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.8px] text-ink/50">
-                        Built
-                      </p>
-                      <p className="text-[12px] font-medium leading-snug">{p.built}</p>
-                      <div className="mt-2.5 flex items-center gap-1 text-ink/50">
-                        <Lock className="h-2.5 w-2.5" />
-                        <span className="text-[9.5px]">NDA</span>
-                      </div>
-                    </div>
+              <div className="service-detail-section">
+                <h5>What&apos;s included</h5>
+                <ul className="service-detail-list">
+                  {active.includes.map((it) => (
+                    <li key={it}>
+                      <Icon name="check" />
+                      <span>{it}</span>
+                    </li>
                   ))}
-                </div>
-
-                <div className="mt-6 border-t border-ink pt-6">
-                  <a
-                    href={CAL_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex cursor-pointer items-center gap-3 bg-ink px-5 py-3 font-mono text-[12px] uppercase tracking-[1.2px] text-paper transition-opacity hover:opacity-90"
-                  >
-                    <span className="inline-block h-2 w-2 bg-brand" /> Get a quote for this →
-                  </a>
-                </div>
+                </ul>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+              <div className="service-detail-section">
+                <h5>Outcomes</h5>
+                <ul className="service-detail-list">
+                  {active.outcomes.map((it) => (
+                    <li key={it}>
+                      <Icon name="check" />
+                      <span>{it}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="service-detail-foot">
+                <span
+                  className="modal-eyebrow"
+                  style={{ alignSelf: "center" }}
+                >
+                  {active.meta}
+                </span>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setActive(null);
+                    onQuote();
+                  }}
+                  style={{ marginLeft: "auto" }}
+                >
+                  Get a quote for this <span className="arr">→</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </>
   );
 }
