@@ -15,7 +15,7 @@ export function Hero({ onQuote }: { onQuote: () => void }) {
       </div>
 
       <button
-        className="hero-eyebrow reveal"
+        className="hero-eyebrow"
         onClick={() => {
           trackLead();
           onQuote();
@@ -29,18 +29,18 @@ export function Hero({ onQuote }: { onQuote: () => void }) {
         <span>Book now →</span>
       </button>
 
-      <h1 className="hero-title reveal">
+      <h1 className="hero-title">
         We help companies <span className="accent">scale</span> without hiring more.
       </h1>
 
-      <p className="hero-lede reveal">
+      <p className="hero-lede">
         We design and ship <strong>AI automation services</strong> that take the
         repetitive work off your team — lead routing, back-office ops, content,
         and custom agents wired into your stack. Less time spent on busywork,
         more capacity to grow.
       </p>
 
-      <div className="hero-cta-row reveal">
+      <div className="hero-cta-row">
         <button
           className="btn btn-primary btn-xl"
           onClick={() => {
@@ -61,7 +61,7 @@ export function Hero({ onQuote }: { onQuote: () => void }) {
         </a>
       </div>
 
-      <div className="hero-stats reveal">
+      <div className="hero-stats">
         <div className="hero-stat">
           <div className="val">
             50<span className="unit">+</span>
