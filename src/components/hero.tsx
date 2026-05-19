@@ -30,18 +30,19 @@ export function Hero({ onQuote }: { onQuote: () => void }) {
       </button>
 
       <h1 className="hero-title reveal">
-        <span className="accent">Automate</span> your entire business.
+        We help companies <span className="accent">scale</span> without hiring more.
       </h1>
 
       <p className="hero-lede reveal">
-        Production-grade AI that actually runs your business.{" "}
-        <strong>n8n workflows, custom agents, RAG over your data</strong> — built
-        and shipped end-to-end. Not chatbots. Not demos.
+        We design and ship <strong>AI automation services</strong> that take the
+        repetitive work off your team — lead routing, back-office ops, content,
+        and custom agents wired into your stack. Less time spent on busywork,
+        more capacity to grow.
       </p>
 
       <div className="hero-cta-row reveal">
         <button
-          className="btn btn-primary btn-lg"
+          className="btn btn-primary btn-xl"
           onClick={() => {
             trackLead();
             onQuote();
@@ -50,7 +51,7 @@ export function Hero({ onQuote }: { onQuote: () => void }) {
           Book a free call <span className="arr">→</span>
         </button>
         <a
-          className="btn btn-ghost btn-lg"
+          className="btn btn-ghost btn-xl"
           href={WA_URL}
           target="_blank"
           rel="noopener noreferrer"
