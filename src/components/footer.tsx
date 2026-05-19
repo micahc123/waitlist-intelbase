@@ -91,7 +91,7 @@ export function Footer({ onQuote }: { onQuote: () => void }) {
               </a>
             </li>
             <li>
-              <a href="mailto:hello@intelbase.studio">hello@intelbase.studio</a>
+              <a href="mailto:intelbase952@gmail.com">intelbase952@gmail.com</a>
             </li>
           </ul>
         </div>
