@@ -2,7 +2,6 @@
 
 import { TopNav } from "@/components/top-nav";
 import { Hero } from "@/components/hero";
-import { Logos } from "@/components/logos";
 import { Services } from "@/components/services";
 import { Process } from "@/components/process";
 import { KPIs, Testimonials } from "@/components/proof";
@@ -29,7 +28,6 @@ export default function Home() {
     <div className="shell">
       <TopNav onQuote={openCal} active={active} />
       <Hero onQuote={openCal} />
-      <Logos />
       <Services onQuote={openCal} />
       <Process />
       <KPIs />
