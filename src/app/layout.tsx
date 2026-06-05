@@ -10,21 +10,45 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+const SITE_URL = "https://intelbase.studio";
+const OG_TITLE = "intelbase. The Autonomous AI Operating System for Your Business.";
+const OG_DESCRIPTION =
+  "intelbase OS runs your front office and growth on autopilot: an AI that answers visitors, qualifies leads, books calls, nurtures follow-ups, and runs your ads, with guardrails. See it all on one dashboard.";
+
 export const metadata: Metadata = {
-  title: "Intelbase — Automate your entire business.",
-  description:
-    "Production-grade AI that actually runs your business. n8n workflows, custom agents, RAG over your data — built and shipped end-to-end. Not chatbots. Not demos.",
+  metadataBase: new URL(SITE_URL),
+  title: "intelbase. The Autonomous AI Operating System for Your Business.",
+  description: OG_DESCRIPTION,
   keywords: [
-    "AI infrastructure",
-    "AI agency",
-    "FastAPI",
-    "Supabase",
-    "multi-agent orchestration",
-    "AI backend",
-    "OpenClaw",
-    "n8n workflows",
-    "AI services",
+    "autonomous AI operating system",
+    "AI for business",
+    "AI lead generation",
+    "AI website chatbot",
+    "AI front office",
+    "autonomous outbound",
+    "AI ad automation",
   ],
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "intelbase",
+    title: OG_TITLE,
+    description: OG_DESCRIPTION,
+    images: [
+      {
+        url: "/intelbase-logo.png",
+        width: 1200,
+        height: 630,
+        alt: "intelbase. The Autonomous AI Operating System for Your Business.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: OG_TITLE,
+    description: OG_DESCRIPTION,
+    images: ["/intelbase-logo.png"],
+  },
   verification: {
     other: {
       "facebook-domain-verification": "agiirshj5un6c8cddfagfn20q2kx3f",

@@ -21,8 +21,9 @@ export function Footer({ onQuote }: { onQuote: () => void }) {
             Intelbase
           </div>
           <div className="desc">
-            We build AI systems for businesses that want to automate. Production
-            infrastructure that runs your business while you sleep.
+            intelbase OS runs your front office autonomously. It answers every
+            visitor, qualifies every lead, books your calls, and runs your ads,
+            with guardrails, on one dashboard.
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             <button
@@ -37,19 +38,22 @@ export function Footer({ onQuote }: { onQuote: () => void }) {
           </div>
         </div>
         <div className="foot-col">
-          <h6>Services</h6>
+          <h6>The OS</h6>
           <ul>
             <li>
-              <a href="#services">Business Automation</a>
+              <a href="#services">AI Website Concierge</a>
             </li>
             <li>
-              <a href="#services">n8n Workflows</a>
+              <a href="#services">Autonomous Lead Generation</a>
             </li>
             <li>
-              <a href="#services">Custom LLM &amp; RAG</a>
+              <a href="#services">Lead Nurture on Autopilot</a>
             </li>
             <li>
-              <a href="#services">Claude &amp; MCP</a>
+              <a href="#services">AI Ad Engine</a>
+            </li>
+            <li>
+              <a href="#services">One Control Dashboard</a>
             </li>
           </ul>
         </div>

@@ -3,7 +3,7 @@
 import { trackLead, trackContact } from "@/lib/meta-pixel";
 
 const WA_URL =
-  "https://wa.me/85290123551?text=Hi%20I%27d%20like%20to%20automate%20my%20business.";
+  "https://wa.me/85290123551?text=Hi%2C%20I%20want%20intelbase%20OS%20to%20run%20my%20front%20office%20autonomously.";
 
 export function CTA({ onQuote }: { onQuote: () => void }) {
   return (
@@ -13,11 +13,11 @@ export function CTA({ onQuote }: { onQuote: () => void }) {
           <span className="dot" /> Limited clients per month
         </span>
         <h2 className="final-cta-title">
-          Automate. Ship. <span className="accent">Repeat.</span>
+          Switch on the OS. <span className="accent">Let it run.</span>
         </h2>
         <p className="final-cta-sub">
-          Book a free 30-min call. We scope the build, send a flat quote within
-          24 hours, and ship it.
+          Book a free 30-minute call. We map your business, scope the OS, and get
+          it live, answering visitors and booking calls on its own.
         </p>
         <div className="final-cta-actions">
           <button
@@ -40,7 +40,7 @@ export function CTA({ onQuote }: { onQuote: () => void }) {
           </a>
         </div>
         <div className="final-cta-foot">
-          No pressure · Quote in 24 hrs · You own everything
+          No pressure · Autonomous, with guardrails · You keep your accounts
         </div>
       </div>
     </section>

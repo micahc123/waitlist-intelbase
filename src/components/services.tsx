@@ -25,143 +25,103 @@ type Service = {
 
 const services: Service[] = [
   {
-    icon: "bolt",
-    tag: "OpenClaw",
-    title: "OpenClaw Full Setup",
-    desc: "Full OpenClaw deployment on your Mac Mini, VPS, or any system — configured, integrated, and ready to go.",
-    meta: "Live in 30 min",
+    icon: "sparkles",
+    tag: "Concierge",
+    title: "AI Website Concierge",
+    desc: "Answers visitors, qualifies them, and books calls 24/7. No forms left unanswered, no lead lost at midnight.",
+    meta: "Answers in seconds",
     longDesc:
-      "We deploy OpenClaw end-to-end on your hardware or cloud, wire it into your stack, and hand you the keys with a full walk-through.",
+      "The OS greets every visitor the moment they land, answers their questions in your voice, qualifies them, and books the call. It runs around the clock, so no form sits unanswered and no lead is lost at midnight. When it is unsure of something that matters, it hands off to you instead of guessing.",
     includes: [
-      "Install + configure OpenClaw on Mac Mini, VPS, or your cloud",
-      "Connect your data sources, auth, and existing tooling",
-      "Custom system prompts, agents, and tools wired to your workflow",
-      "30-min walk-through + documentation so your team owns it",
+      "Replies to every visitor in seconds, day or night",
+      "Qualifies leads with questions tuned to your offer",
+      "Books calls straight onto your calendar",
+      "Hands off to you the moment it is unsure, never invents a price",
     ],
     outcomes: [
-      "A production agent platform on your hardware",
-      "Live in 30 minutes from start to handoff",
-      "No vendor lock-in — you own everything",
+      "Every visitor answered, not just the ones who fill a form",
+      "Calls booked while you sleep",
+      "Guardrails keep it on-script, so you can trust it",
+    ],
+  },
+  {
+    icon: "bolt",
+    tag: "Lead Gen",
+    title: "Autonomous Lead Generation",
+    desc: "Finds your buyers and reaches out for you, filling the calendar with qualified calls.",
+    meta: "Fills the calendar",
+    longDesc:
+      "The OS finds the people who match your buyer and reaches out for you, Apollo-powered, so the calendar fills with qualified calls without a sales hire. It runs the outbound on its own and only surfaces the conversations worth your time.",
+    includes: [
+      "Builds and works target lists from your ideal-customer profile",
+      "Apollo-powered outbound that runs on its own",
+      "Qualifies replies and books the call",
+      "Routes anything off-script back to you",
+    ],
+    outcomes: [
+      "A calendar that fills without a sales hire",
+      "Outbound that runs while you do the work",
+      "More qualified calls, less manual prospecting",
     ],
   },
   {
     icon: "share",
-    tag: "Automation",
-    title: "Business Automation",
-    desc: "Lead capture, email sequences, CRM syncing, cold email — your whole back-office running itself while you sleep.",
-    meta: "Ships in 72h",
+    tag: "Nurture",
+    title: "Lead Nurture on Autopilot",
+    desc: "Follows up across channels until a lead books or opts out, without you remembering to.",
+    meta: "Never goes cold",
     longDesc:
-      "We map your back-office, kill the time-sink steps, and automate the parts that humans shouldn't be doing — without breaking the parts that work.",
+      "Most leads die in an inbox. The OS follows up across email and SMS until the lead books or opts out, so nothing goes cold waiting on a human to remember. It keeps every conversation moving on its own.",
     includes: [
-      "Lead capture, scoring, and routing across your funnel",
-      "CRM sync, deal-stage automation, and email sequences",
-      "Cold outbound: list-building, personalization, deliverability",
-      "Slack / WhatsApp / email notifications when humans are needed",
+      "Multi-channel follow-up triggered the moment a lead comes in",
+      "Keeps going until the lead books or opts out",
+      "CRM sync so context is never lost",
+      "Stops cleanly on an opt-out, every time",
     ],
     outcomes: [
-      "Save 8–20 hrs/week of back-office work",
-      "Faster response time → higher conversion",
-      "Pipeline that runs without manual babysitting",
-    ],
-  },
-  {
-    icon: "sparkles",
-    tag: "Social",
-    title: "Social Media & AI Ads",
-    desc: "Content + ad generation with Higgsfield and OpenClaw. Scripting, visuals, posting, paid campaigns on autopilot.",
-    meta: "Pipeline in 5d",
-    longDesc:
-      "A content + ad engine that ships consistently — scripts, visuals, and creatives generated, scheduled, and posted automatically.",
-    includes: [
-      "Higgsfield + OpenClaw pipelines for video, image, and copy",
-      "Brand-tuned voice, hooks, and CTAs across IG / TikTok / X / LinkedIn",
-      "Paid ad creative generation + variant testing",
-      "Auto-posting + analytics dashboards",
-    ],
-    outcomes: [
-      "Daily posting cadence without a content team",
-      "More creative tests per dollar of ad spend",
-      "Your brand voice, not generic AI slop",
-    ],
-  },
-  {
-    icon: "node",
-    tag: "n8n",
-    title: "n8n Workflow Automation",
-    desc: "Custom n8n workflows for lead routing, data syncing, notifications, and AI-powered pipelines.",
-    meta: "Done in <1h",
-    longDesc:
-      "We build production n8n workflows that connect your tools, sync your data, and add AI where it actually helps — hosted on your stack.",
-    includes: [
-      "Self-hosted or cloud n8n setup, secured properly",
-      "Custom workflows for routing, syncing, alerting, and enrichment",
-      "AI nodes for classification, extraction, and summarization",
-      "Error handling, retries, and observability built in",
-    ],
-    outcomes: [
-      "No more glue-code in 5 different SaaS tools",
-      "Workflows you can read, edit, and own",
-      "Drop-in AI steps where they earn their keep",
+      "Fewer leads lost between first touch and booked call",
+      "Follow-up that never forgets and never sleeps",
+      "Faster booking, which lifts conversion",
     ],
   },
   {
     icon: "brain",
-    tag: "RAG",
-    title: "Custom LLM & RAG",
-    desc: "Train a model on your business data. RAG pipelines that know your products, policies, and history — so AI answers like it works there.",
-    meta: "Ships in 72h",
+    tag: "Ads",
+    title: "AI Ad Engine",
+    desc: "Generates the creative and runs the campaigns, optimizing spend on its own.",
+    meta: "Runs your ads",
     longDesc:
-      "We build retrieval pipelines tuned to your data so the model answers like it works at your company — not a generic chatbot.",
+      "The OS generates the ad creative and runs the campaigns, testing variations and moving budget to what works, on its own. It tests 30 to 50 ad variations a month where a human team runs a handful, so winners surface faster and losers get cut before they burn spend.",
     includes: [
-      "Ingest + chunk + embed your docs, products, tickets, history",
-      "Hybrid search (vector + keyword) tuned to your domain",
-      "Eval harness: ground-truth questions, scored answers, regression tests",
-      "Frontend or API delivery, wired into your tools",
+      "Generates video and image creative, 30 to 50 variations a month",
+      "Runs and structures the campaigns end to end",
+      "Optimizes budget toward the winners automatically",
+      "Feeds the leads it wins straight into the rest of the OS",
     ],
     outcomes: [
-      "Accurate answers from your real data",
-      "Cited sources — no hallucinations the team can't verify",
-      "Quality stays high as your data grows",
+      "Far more creative tested than a human team can run",
+      "Spend that moves to what works, every week",
+      "Ads, leads, and follow-up running as one loop",
     ],
   },
   {
-    icon: "box",
-    tag: "Custom",
-    title: "Custom AI Solutions",
-    desc: "Anything outside the box — multi-agent systems, internal tools, workflow copilots. We scope it, build it, ship it.",
-    meta: "Scoped to brief",
+    icon: "node",
+    tag: "Dashboard",
+    title: "One Control Dashboard",
+    desc: "The whole autonomous loop in one view: conversations, qualified leads, booked calls, ad performance, ROI.",
+    meta: "One source of truth",
     longDesc:
-      "When the off-the-shelf answer doesn't fit, we design and build the system from scratch — agents, internal tools, copilots, weird stuff.",
+      "You watch the whole OS work from one screen: conversations, qualified leads, booked calls, ad performance, and ROI, updated as it happens. The autonomous loop runs itself and the dashboard shows you exactly what it is doing.",
     includes: [
-      "Discovery + architecture for the problem you actually have",
-      "Multi-agent orchestration, tool-use, and custom evals",
-      "Internal tools, dashboards, or copilots wired into your stack",
-      "Flat quote, fixed scope, hand-off when it ships",
+      "Live view of conversations, qualified leads, and booked calls",
+      "Ad performance and ROI in the same place",
+      "See where the OS handed off to you and why",
+      "Replaces the spreadsheets and scattered tools",
     ],
     outcomes: [
-      "A bespoke system that fits your business",
-      "No 'AI features bolted onto SaaS' tax",
-      "You own the code and the IP",
-    ],
-  },
-  {
-    icon: "code",
-    tag: "Claude",
-    title: "Claude Systems & MCP",
-    desc: "Claude Code setups, MCP server builds, and Claude-powered agents wired into your tools. From dev copilots to autonomous pipelines.",
-    meta: "Ships in 5d",
-    longDesc:
-      "We design Claude-powered systems for engineering teams and ops: dev copilots, MCP servers, autonomous pipelines, and agentic workflows.",
-    includes: [
-      "Claude Code rollout: settings, skills, hooks, slash commands",
-      "Custom MCP servers exposing your tools to Claude safely",
-      "Subagents + agent SDK pipelines for autonomous work",
-      "Guardrails, eval suites, and observability for production use",
-    ],
-    outcomes: [
-      "Engineers ship faster with Claude wired into their workflow",
-      "Internal tools accessible to AI without security holes",
-      "Reliable agentic pipelines instead of brittle prompts",
+      "The whole autonomous loop in one view",
+      "Know what the OS is doing without chasing tabs",
+      "Trust the autonomy because you can see it work",
     ],
   },
 ];
@@ -186,13 +146,14 @@ export function Services({ onQuote }: { onQuote: () => void }) {
     <>
       <section className="section" id="services">
         <div className="section-head reveal">
-          <span className="section-tag">What we build</span>
+          <span className="section-tag">What it runs</span>
           <h2 className="section-title">
-            Real systems. <span className="accent">Not chatbots.</span>
+            One OS. <span className="accent">Five things it runs for you.</span>
           </h2>
           <p className="section-sub">
-            End-to-end AI infrastructure and done-for-you services that plug into
-            your stack and actually run your business.
+            intelbase OS answers visitors, finds buyers, follows up, and runs
+            your ads, on its own. When it is unsure of something that matters, it
+            hands off to you. Autonomous, not reckless.
           </p>
         </div>
         <div className="services reveal">

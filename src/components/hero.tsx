@@ -1,9 +1,6 @@
 "use client";
 
-import { trackLead, trackContact } from "@/lib/meta-pixel";
-
-const WA_URL =
-  "https://wa.me/85290123551?text=Hi%20I%27d%20like%20to%20automate%20my%20business.";
+import { trackLead } from "@/lib/meta-pixel";
 
 export function Hero({ onQuote }: { onQuote: () => void }) {
   return (
@@ -23,21 +20,21 @@ export function Hero({ onQuote }: { onQuote: () => void }) {
         type="button"
       >
         <span className="badge">
-          <span className="pulse" /> 6 spots open
+          <span className="pulse" /> Autonomous, with guardrails
         </span>
         <span className="sep" />
-        <span>Book now →</span>
+        <span>6 spots open</span>
       </button>
 
       <h1 className="hero-title">
-        We help companies <span className="accent">scale</span> without hiring more.
+        An AI operating system that runs your front office,{" "}
+        <span className="accent">autonomously.</span>
       </h1>
 
       <p className="hero-lede">
-        We design and ship <strong>AI automation services</strong> that take the
-        repetitive work off your team — lead routing, back-office ops, content,
-        and custom agents wired into your stack. Less time spent on busywork,
-        more capacity to grow.
+        intelbase OS answers every visitor, qualifies every lead, books your
+        calls, and runs your ads, on its own. You watch the whole thing work on
+        one dashboard.
       </p>
 
       <div className="hero-cta-row">
@@ -50,29 +47,20 @@ export function Hero({ onQuote }: { onQuote: () => void }) {
         >
           Book a free call <span className="arr">→</span>
         </button>
-        <a
-          className="btn btn-ghost btn-xl"
-          href={WA_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={trackContact}
-        >
-          WhatsApp <span className="arr">→</span>
-        </a>
       </div>
 
       <div className="hero-stats">
         <div className="hero-stat">
           <div className="val">
-            50<span className="unit">+</span>
+            24<span className="unit">/7</span>
           </div>
-          <div className="lbl">Businesses automated</div>
+          <div className="lbl">Every visitor answered in seconds</div>
         </div>
         <div className="hero-stat">
           <div className="val">
-            72<span className="unit">h</span>
+            5<span className="unit"> in 1</span>
           </div>
-          <div className="lbl">Avg ship time</div>
+          <div className="lbl">Concierge, lead gen, nurture, ads, dashboard</div>
         </div>
         <div className="hero-stat">
           <div className="val">
@@ -82,9 +70,9 @@ export function Hero({ onQuote }: { onQuote: () => void }) {
         </div>
         <div className="hero-stat">
           <div className="val">
-            24<span className="unit">h</span>
+            0<span className="unit"> hires</span>
           </div>
-          <div className="lbl">Quote turnaround</div>
+          <div className="lbl">Front office that runs itself</div>
         </div>
       </div>
     </section>

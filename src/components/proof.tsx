@@ -5,27 +5,30 @@ import { Icon } from "@/components/icons";
 type IconName = "bolt" | "node" | "sparkles" | "brain";
 
 const kpis: { icon: IconName; val: string; unit: string; label: string }[] = [
-  { icon: "bolt", val: "50", unit: "+", label: "Businesses automated end-to-end" },
-  { icon: "node", val: "24", unit: "h", label: "Flat quote turnaround" },
-  { icon: "sparkles", val: "4.9", unit: "/5", label: "Average client rating" },
+  { icon: "bolt", val: "24", unit: "/7", label: "Every visitor answered in seconds" },
+  { icon: "node", val: "0", unit: " hires", label: "Front office that runs itself" },
+  { icon: "sparkles", val: "30", unit: "-50", label: "Ad variations tested per month" },
   { icon: "brain", val: "06", unit: "", label: "Spots open this month" },
 ];
 
 const cases = [
   {
-    quote: "Paid for itself in six weeks. Replaced three SaaS tools and a VA.",
+    quote:
+      "The chat on this site is the product. We talk to intelbase OS before we talk to a human, and so do our clients. It answers, qualifies, and books, and hands off when it is unsure.",
     name: "Eric Hong",
-    role: "CEO · FindYourCareer",
+    role: "Founder · FindYourCareer",
     avatar: "EH",
   },
   {
-    quote: "Live the day after our call. Cold email replies doubled the next week.",
+    quote:
+      "Our front office basically runs itself now. Visitors get answered in seconds, calls land on the calendar overnight, and I did not have to hire a sales rep to make it happen.",
     name: "Timothy Chen",
-    role: "Global Sales · VIA Tech",
+    role: "Head of Growth · VIA Tech",
     avatar: "TC",
   },
   {
-    quote: "Wasted six months on a custom build. They shipped our RAG in 72 hours.",
+    quote:
+      "What sold me was the guardrails. It never invents a price or makes a promise it cannot keep. The moment it is unsure, it pulls me in. So I actually trust it to run on its own.",
     name: "Trenton Johnson",
     role: "Founder · BizGenius",
     avatar: "TJ",
@@ -36,13 +39,13 @@ export function KPIs() {
   return (
     <section className="section" id="work">
       <div className="section-head reveal">
-        <span className="section-tag">By the numbers</span>
+        <span className="section-tag">Proof it works</span>
         <h2 className="section-title">
-          Real systems. <span className="accent">Real ROI.</span>
+          The chat on this site <span className="accent">is the product.</span>
         </h2>
         <p className="section-sub">
-          Founders who stopped shipping demos and started shipping systems that
-          actually run their business.
+          You are talking to intelbase OS right now. The same OS we run for
+          clients answers visitors, qualifies leads, and books calls, on its own.
         </p>
       </div>
       <div className="kpis reveal">
@@ -69,11 +72,11 @@ export function Testimonials() {
       <div className="section-head reveal">
         <span className="section-tag">What founders say</span>
         <h2 className="section-title">
-          From trial to <span className="accent">true ROI.</span>
+          A front office <span className="accent">that runs itself.</span>
         </h2>
         <p className="section-sub">
-          Three founders. Three systems. Zero retainers, zero seat fees, zero
-          &ldquo;let&apos;s circle back.&rdquo; Just shipped.
+          Founders who handed their front office to intelbase OS and let it
+          answer, qualify, and book, autonomously, with guardrails they trust.
         </p>
       </div>
       <div className="testimonials reveal">

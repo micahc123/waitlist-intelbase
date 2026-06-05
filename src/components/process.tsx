@@ -1,32 +1,32 @@
 const steps = [
   {
     n: "01",
-    title: "Discover & Diagnose",
-    sub: "Understand first, automate second.",
+    title: "Map",
+    sub: "We learn your business and your rules.",
     bullets: [
-      "We learn how your business actually works: goals, constraints, handoffs, and what a 'win' looks like.",
-      "We map your tech stack and where data lives: CRMs, inboxes, spreadsheets, internal tools.",
-      "We audit processes to find real bottlenecks and decide what should and shouldn't be automated.",
+      "We learn your offers, your voice, and how you sell.",
+      "We set the rules: what the OS can say and what it must never guess at.",
+      "We define when it should hand off to you instead of going off-script.",
     ],
   },
   {
     n: "02",
-    title: "Design, Build & Validate",
-    sub: "Custom solutions, tested before launch.",
+    title: "Build",
+    sub: "We configure the OS on your stack.",
     bullets: [
-      "We prioritize high-impact opportunities and decide where AI helps, and where it doesn't.",
-      "We design and build custom workflows, test different approaches on real data, and explain our choices in plain language.",
-      "We run evaluations in a real-world environment before full rollout.",
+      "We configure the OS and wire it to your site, ads, and calendar.",
+      "We connect your CRM so every conversation and lead lands in one place.",
+      "We set the guardrails so it stays on-script from day one.",
     ],
   },
   {
     n: "03",
-    title: "Launch, Monitor & Optimize",
-    sub: "Continuous improvement, not a one-off project.",
+    title: "Go live, autonomously",
+    sub: "It runs on its own. You watch the dashboard.",
     bullets: [
-      "We launch into production with clear success metrics and safeguards.",
-      "We monitor performance, collect feedback from your team and customers, and fix issues quickly.",
-      "We continuously refine prompts, logic, and models so the system improves as your business evolves.",
+      "The OS goes live and runs the front office on its own.",
+      "You watch conversations, leads, calls, and ads on one dashboard.",
+      "We tune the guardrails as it works, so it keeps getting sharper.",
     ],
   },
 ];
@@ -37,11 +37,11 @@ export function Process() {
       <div className="section-head reveal">
         <span className="section-tag">Our Process</span>
         <h2 className="section-title">
-          A <span className="accent">methodical</span>, low-risk approach.
+          Three steps to a <span className="accent">front office that runs itself.</span>
         </h2>
         <p className="section-sub">
-          We start with understanding your business — not jumping straight into
-          tools.
+          We map your business, configure the OS on your stack, and switch it on.
+          Then it runs autonomously while you watch the dashboard.
         </p>
       </div>
       <div className="process reveal">

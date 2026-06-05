@@ -12,7 +12,7 @@ export function QuoteModal({ open, onClose }: QuoteModalProps) {
     name: "",
     email: "",
     company: "",
-    scope: "Business Automation",
+    scope: "Growth (full OS)",
     notes: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -66,12 +66,12 @@ export function QuoteModal({ open, onClose }: QuoteModalProps) {
           <>
             <div className="modal-head">
               <div>
-                <span className="modal-eyebrow">Free quote · 24h</span>
+                <span className="modal-eyebrow">Free call · scope the OS</span>
                 <div className="modal-title">
-                  Tell us <span className="accent">what to build.</span>
+                  Tell us <span className="accent">what you need.</span>
                 </div>
                 <div className="modal-sub">
-                  30-min call. Flat quote in 24 hours. No sales pressure.
+                  30-min call. We scope the OS and quote after. No sales pressure.
                 </div>
               </div>
               <button className="modal-close" onClick={onClose} aria-label="Close">
@@ -109,31 +109,28 @@ export function QuoteModal({ open, onClose }: QuoteModalProps) {
                 />
               </div>
               <div className="field">
-                <label>What to build</label>
+                <label>What you need</label>
                 <select
                   value={form.scope}
                   onChange={(e) => set("scope", e.target.value)}
                 >
-                  <option>OpenClaw Full Setup</option>
-                  <option>Business Automation</option>
-                  <option>Social Media & AI Ads</option>
-                  <option>n8n Workflow Automation</option>
-                  <option>Custom LLM & RAG</option>
-                  <option>Custom AI Solutions</option>
-                  <option>Claude Systems & MCP</option>
+                  <option>Launch (core OS, Concierge + dashboard)</option>
+                  <option>Growth (full OS)</option>
+                  <option>Custom (multi-brand + deeper integrations)</option>
+                  <option>Not sure yet</option>
                 </select>
               </div>
               <div className={"field" + (errors.notes ? " err" : "")}>
-                <label>What problem are you solving?</label>
+                <label>What are you trying to fix?</label>
                 <textarea
                   value={form.notes}
                   onChange={(e) => set("notes", e.target.value)}
-                  placeholder="Lead routing eats 6 hrs a week. We need…"
+                  placeholder="Leads slip through at night and follow-up is inconsistent. We want the front office to run itself..."
                 />
                 {errors.notes && <div className="errmsg">{errors.notes}</div>}
               </div>
               <div className="form-foot">
-                <div className="note">24h flat quote · avg reply 47 min</div>
+                <div className="note">We scope on the call · avg reply 47 min</div>
                 <button type="submit" className="btn btn-primary">
                   Send brief <span className="arr">→</span>
                 </button>
@@ -146,7 +143,7 @@ export function QuoteModal({ open, onClose }: QuoteModalProps) {
             <div className="check-big">✓</div>
             <h3>Brief received.</h3>
             <p>
-              We&apos;ll send a flat quote within 24 hours — usually faster. Check your inbox.
+              We&apos;ll reach out to book your call and scope the OS, usually within a day. Check your inbox.
             </p>
             <div style={{ marginTop: 24 }}>
               <button className="btn btn-ghost" onClick={onClose}>

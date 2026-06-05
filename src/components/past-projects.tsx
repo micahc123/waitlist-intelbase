@@ -11,13 +11,11 @@ type Filter = ServiceKey | "all";
 
 const filters: { key: Filter; label: string }[] = [
   { key: "all", label: "All" },
-  { key: "openclaw", label: "OpenClaw" },
-  { key: "automation", label: "Automation" },
-  { key: "social-ads", label: "Social & Ads" },
-  { key: "n8n", label: "n8n" },
-  { key: "llm-rag", label: "LLM & RAG" },
-  { key: "custom-ai", label: "Custom AI" },
-  { key: "claude", label: "Claude & MCP" },
+  { key: "concierge", label: "Concierge" },
+  { key: "leadgen", label: "Lead Generation" },
+  { key: "nurture", label: "Lead Nurture" },
+  { key: "ads", label: "Ad Engine" },
+  { key: "dashboard", label: "Dashboards" },
 ];
 
 export function PastProjects() {
@@ -47,9 +45,9 @@ export function PastProjects() {
             transition={{ duration: 0.6, delay: 0.06 }}
             className="text-[clamp(48px,7vw,120px)] font-bold leading-[0.9] tracking-[-0.05em]"
           >
-            30+ businesses,
+            Front offices we run
             <br />
-            already <span className="text-brand">shipped</span>.
+            on <span className="text-brand">intelbase OS</span>.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 12 }}
@@ -58,8 +56,9 @@ export function PastProjects() {
             transition={{ duration: 0.6, delay: 0.14 }}
             className="mt-6 max-w-2xl text-[16px] leading-[1.55] text-ink/80"
           >
-            All client details are kept confidential. Here&apos;s what industries
-            we&apos;ve worked across and the problems we&apos;ve solved.
+            Client details stay confidential. Here is the kind of work the OS
+            runs: the front-office problems we hand to it, and what it runs
+            autonomously once it is live.
           </motion.p>
         </div>
       </div>
@@ -119,21 +118,21 @@ export function PastProjects() {
               </div>
 
               <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.8px] text-ink/50 group-hover:text-paper/50">
-                Wanted to automate
+                The problem
               </p>
               <p className="mb-3 text-[13px] leading-snug text-ink/80 group-hover:text-paper/80">
                 {p.problem}
               </p>
 
               <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.8px] text-ink/50 group-hover:text-paper/50">
-                What we built
+                What the OS runs
               </p>
               <p className="text-[13px] font-medium leading-snug">{p.built}</p>
 
               <div className="mt-4 flex items-center gap-1.5 text-ink/50 group-hover:text-paper/50">
                 <Lock className="h-2.5 w-2.5" />
                 <span className="font-mono text-[10px] uppercase tracking-[0.8px]">
-                  NDA — client details confidential
+                  NDA, client details confidential
                 </span>
               </div>
             </motion.div>
@@ -151,7 +150,7 @@ export function PastProjects() {
           <span className="inline-block h-2 w-2 bg-brand" /> Your business next →
         </a>
         <p className="font-mono text-[11px] uppercase tracking-[1px] text-ink/60">
-          {projects.length} recent builds across 20+ industries.
+          {projects.length} recent front offices running on intelbase OS.
         </p>
       </div>
     </section>

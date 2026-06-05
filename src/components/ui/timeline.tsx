@@ -42,7 +42,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
           How It Works
         </h2>
         <p className="text-neutral-400 text-sm md:text-base max-w-md">
-          From discovery to deployment — a clear path to production-ready AI.
+          From mapping your business to going live autonomously, a clear path to a front office that runs itself.
         </p>
       </div>
 

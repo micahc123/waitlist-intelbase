@@ -13,16 +13,16 @@ export type Ebook = {
 export const EBOOKS: Ebook[] = [
   {
     slug: "social-ads-playbook",
-    title: "The AI Social Media & Ads Playbook",
-    subtitle: "OpenClaw · Higgsfield · claude-ads",
+    title: "The Autonomous AI Ads Playbook",
+    subtitle: "Run your ad engine on its own",
     description:
-      "The exact stack we use to automate an entire social channel — from content generation with Higgsfield and OpenClaw to running and auditing ad campaigns with the claude-ads skill.",
+      "The exact approach we use to let an AI generate the creative and run the campaigns on its own, optimizing spend without a human babysitting every dollar.",
     bullets: [
-      "Pipelines for daily content at zero marginal cost",
-      "Prompt libraries for Higgsfield video + OpenClaw copy",
-      "Run, audit, and optimize ads with /ads commands",
-      "Full 250+ check audit methodology adapted for small teams",
-      "Scripts, workflows, and n8n blueprints you can ship today",
+      "An ad engine that generates creative and runs campaigns autonomously",
+      "Test 30 to 50 variations a month where a human team runs a handful",
+      "Move budget to what works automatically, with guardrails",
+      "Wire the ad engine into the rest of your front office",
+      "Workflows you can put live today",
     ],
     priceUsd: 49,
     priceId: process.env.STRIPE_PRICE_SOCIAL_ADS,
@@ -34,7 +34,7 @@ export const EBOOKS: Ebook[] = [
     title: "The AI Automation Playbook",
     subtitle: "Shipping production automation with Claude Code",
     description:
-      "A practitioner's guide to automating a real business with Claude Code — agents, sub-agents, skills, hooks, MCP, and the exact workflows we use to deliver in under an hour.",
+      "A practitioner's guide to automating a real business with Claude Code: agents, sub-agents, skills, hooks, MCP, and the exact workflows we use to deliver in under an hour.",
     bullets: [
       "Claude Code fundamentals: agents, skills, hooks, MCP",
       "The 6-phase delivery loop we use for every client",
@@ -52,12 +52,12 @@ export const EBOOKS: Ebook[] = [
     title: "The Website Builder's Playbook",
     subtitle: "21st.dev · Claude Code · ui-ux-pro-max · Vercel · Supabase",
     description:
-      "Ship premium websites in hours, not weeks. The exact stack and workflow we use — plus a free, copy-paste prompt that automates cold outreach to local businesses offering them a free custom site to try.",
+      "Ship premium websites in hours, not weeks. The exact stack and workflow we use, plus a free copy-paste prompt that automates cold outreach to local businesses offering them a free custom site to try.",
     bullets: [
       "Claude Code workflows for one-shot site builds",
       "Vercel deploys and Supabase backends in minutes",
       "The free outreach prompt we use to book meetings on autopilot",
-      "A productised offer you can sell for $2–5k a build",
+      "A productised offer you can sell for $2k to $5k a build",
     ],
     priceUsd: 45,
     priceId: process.env.STRIPE_PRICE_WEBSITE_BUILDER,
