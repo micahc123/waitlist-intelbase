@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "product": "intelbase OS",
+    "purpose": "Cold outbound sequences to maximize booked calls. Deliverability-safe. No em dashes.",
+    "timing_note": "send_day_relative is business days from enrollment. All steps stop on any reply. No link in step 1.",
+    "tokens": {
+      "{{first_name}}": "Prospect first name (Apollo)",
+      "{{company}}": "Company name (Apollo)",
+      "{{title}}": "Job title (Apollo)",
+      "{{industry}}": "Company industry (Apollo)",
+      "{{signal}}": "Optional dynamic hook; must have a neutral fallback if empty",
+      "{{sender_name}}": "intelbase sender (static per inbox)",
+      "{{booking_link}}": "Cal.com booking URL (see BOOKING_AND_CRM.md)"
+    }
+  },
+  "sequences": [
+    {
+      "id": "sequence-1-agencies-and-services",
+      "name": "Agencies and B2B services (HK + APAC)",
+      "apollo_saved_search": "A",
+      "steps": [
+        {
+          "step": 1,
+          "send_day_relative": 0,
+          "type": "Opener",
+          "has_link": false,
+          "subject": "quick one, {{first_name}}",
+          "body": "Hi {{first_name}},\n\nMost {{industry}} teams your size lose leads in two places: visitors who land on the site and never get answered, and outbound that nobody has time to run.\n\nWe built intelbase OS to do both on its own. It answers every website visitor, qualifies them, books the call, and runs outbound in the background. There is a guardrail so it never invents a price or a promise; if it is unsure, it hands off to a human.\n\nWorth a quick look for {{company}}?\n\n{{sender_name}}"
+        },
+        {
+          "step": 2,
+          "send_day_relative": 3,
+          "type": "Value + proof",
+          "has_link": false,
+          "subject": "re: quick one, {{first_name}}",
+          "body": "Hi {{first_name}},\n\nOne thing that makes this concrete: the same system runs on our own site and our own outbound. The chat that answers you on intelbase is the product. This email is part of it too.\n\nSo when we say intelbase OS books calls on autopilot, we are not showing you a deck. We are running it on ourselves first.\n\nFor {{company}} it would mean: every visitor answered in seconds, leads qualified without you, and a calendar that fills while you do the work you actually sell.\n\nWant me to send a 2 minute walkthrough?\n\n{{sender_name}}"
+        },
+        {
+          "step": 3,
+          "send_day_relative": 6,
+          "type": "Nudge",
+          "has_link": false,
+          "subject": "the part people miss",
+          "body": "Hi {{first_name}},\n\nThe reason teams stall on AI is not the tech. It is wiring five tools together and trusting them not to go off script.\n\nintelbase OS is one system, wired to your site, ads, and calendar, with a guardrail on anything customer-facing. You watch the whole loop on one dashboard.\n\nOpen to a short call to see if it fits {{company}}?\n\n{{sender_name}}"
+        },
+        {
+          "step": 4,
+          "send_day_relative": 10,
+          "type": "Case for the call",
+          "has_link": true,
+          "subject": "15 minutes, {{first_name}}?",
+          "body": "Hi {{first_name}},\n\nI will keep this short. If outbound and inbound at {{company}} are mostly manual right now, a 15 minute call is worth it. I will show you the live dashboard, the guardrails, and exactly what it would run for you.\n\nNo deck, no pressure. If it is not a fit you will know in the first five minutes.\n\nHere is my calendar: {{booking_link}}\n\n{{sender_name}}"
+        },
+        {
+          "step": 5,
+          "send_day_relative": 14,
+          "type": "Breakup",
+          "has_link": true,
+          "subject": "closing the loop",
+          "body": "Hi {{first_name}},\n\nI have not heard back, so I will assume the timing is off and stop here.\n\nIf a front office that answers, qualifies, and books on its own becomes useful later, the door is open: {{booking_link}}\n\nThanks for reading, {{first_name}}.\n\n{{sender_name}}"
+        }
+      ]
+    },
+    {
+      "id": "sequence-2-saas-founders-and-growth",
+      "name": "B2B SaaS founders and growth leads (English markets)",
+      "apollo_saved_search": "B",
+      "steps": [
+        {
+          "step": 1,
+          "send_day_relative": 0,
+          "type": "Opener",
+          "has_link": false,
+          "subject": "pipeline without the headcount",
+          "body": "Hi {{first_name}},\n\nGrowth-stage SaaS teams hit the same wall: you need more pipeline but hiring a sales and marketing team is slow and expensive.\n\nintelbase OS runs that engine for you. It finds your buyers, reaches out, answers every site visitor, qualifies them, and books the call. It has a guardrail so it never invents a price or over-promises; below its confidence threshold it hands off to a person.\n\nIs filling the calendar a priority at {{company}} right now?\n\n{{sender_name}}"
+        },
+        {
+          "step": 2,
+          "send_day_relative": 3,
+          "type": "Value + proof",
+          "has_link": false,
+          "subject": "re: pipeline without the headcount",
+          "body": "Hi {{first_name}},\n\nProof point, because everyone claims AI does outbound: the same system runs our own pipeline. This email came from it. The chat on our site is it. We run intelbase OS on ourselves before we sell it.\n\nFor {{company}} that means autonomous lead gen plus an AI concierge on your site, both feeding one dashboard where you see conversations, qualified leads, and booked calls in real time.\n\nWant the 2 minute version?\n\n{{sender_name}}"
+        },
+        {
+          "step": 3,
+          "send_day_relative": 6,
+          "type": "Nudge",
+          "has_link": false,
+          "subject": "the ROI question",
+          "body": "Hi {{first_name}},\n\nMost AI for growth pitches fail the ROI question. So here it is straight: intelbase OS shows you booked calls and cost per call on one dashboard. No black box.\n\nIt is one system wired to your stack, not five tools you have to babysit.\n\nWorth 15 minutes to see if the numbers work for {{company}}?\n\n{{sender_name}}"
+        },
+        {
+          "step": 4,
+          "send_day_relative": 10,
+          "type": "Case for the call",
+          "has_link": true,
+          "subject": "15 minutes, {{first_name}}?",
+          "body": "Hi {{first_name}},\n\nShort version: if growth at {{company}} is bottlenecked on headcount, a 15 minute call is worth your time. I will show you the live dashboard, the guardrails, and exactly what the OS would run for your pipeline.\n\nNo deck. If it is not a fit you will know fast.\n\nMy calendar: {{booking_link}}\n\n{{sender_name}}"
+        },
+        {
+          "step": 5,
+          "send_day_relative": 14,
+          "type": "Breakup",
+          "has_link": true,
+          "subject": "closing the loop",
+          "body": "Hi {{first_name}},\n\nNo reply, so I will assume now is not the time and stop here.\n\nWhen pipeline-without-a-team moves up your list, the door is open: {{booking_link}}\n\nThanks for reading, {{first_name}}.\n\n{{sender_name}}"
+        }
+      ]
+    }
+  ]
+}
