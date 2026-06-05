@@ -126,6 +126,15 @@ const services: Service[] = [
   },
 ];
 
+const expansion: { name: string; desc: string }[] = [
+  { name: "AI Voice Receptionist", desc: "Answers and qualifies phone calls and books them." },
+  { name: "AI Inbox Manager", desc: "Triages inbound email and DMs and drafts the replies." },
+  { name: "Multilingual Front Desk", desc: "Handles visitors in English, Cantonese, and Mandarin." },
+  { name: "Quote & Proposal Builder", desc: "Turns a conversation into a tailored quote, with price guardrails." },
+  { name: "Reactivation Engine", desc: "Re-engages dormant leads and past customers on its own." },
+  { name: "Market & Competitor Watch", desc: "Monitors signals and sends short, useful summaries." },
+];
+
 export function Services({ onQuote }: { onQuote: () => void }) {
   const [active, setActive] = useState<Service | null>(null);
 
@@ -178,6 +187,66 @@ export function Services({ onQuote }: { onQuote: () => void }) {
               </div>
             </button>
           ))}
+        </div>
+
+        <div
+          className="services-grow reveal"
+          style={{
+            marginTop: "clamp(2rem, 5vw, 3.5rem)",
+            textAlign: "center",
+          }}
+        >
+          <span className="section-tag">And it grows with you</span>
+          <p
+            className="section-sub"
+            style={{ marginTop: "0.5rem", marginBottom: "1.25rem" }}
+          >
+            Start with the core five. Add modules as you grow, each one
+            autonomous and under the same guardrails.
+          </p>
+          <ul
+            style={{
+              listStyle: "none",
+              padding: 0,
+              margin: "0 auto",
+              maxWidth: "var(--max-w)",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "0.6rem",
+              justifyContent: "center",
+            }}
+          >
+            {expansion.map((m) => (
+              <li
+                key={m.name}
+                title={m.desc}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  border: "1px solid var(--border)",
+                  background: "var(--bg-soft)",
+                  color: "var(--ink)",
+                  borderRadius: "var(--radius-pill)",
+                  padding: "0.55rem 0.9rem",
+                  fontSize: "0.92rem",
+                  fontWeight: 500,
+                }}
+              >
+                <span
+                  aria-hidden
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: "var(--brand)",
+                    flex: "0 0 auto",
+                  }}
+                />
+                {m.name}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
