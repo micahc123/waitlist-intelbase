@@ -24,6 +24,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Demo AI-OS Agent & Dashboard** - Ship the guardrailed autonomous chatbot (qualify/answer/book) live on the site as dogfood, plus a real-data performance dashboard ✓ 2026-06-05 (code to press-go; keys/storage/deploy + fork-route verification handed back)
 - [x] **Phase 4: Ads Update & Redeploy Prep** - Re-copy/re-render ads in the separate adsmanager repo to the new positioning and produce a redeploy checklist ✓ 2026-06-05 (adsmanager has no git; changes on disk, Meta deploy handed back)
 - [x] **Phase 5: Apollo Lead-Gen & Consolidated Hand-back** - Build autonomous outbound to "press go" on ≤10k HKD/mo and produce the single consolidated spend/deploy checklist ✓ 2026-06-05 (see HANDBACK.md)
+- [x] **Phase 6: Lead Engine Expansion** - 8 additional lead systems to press-go: WhatsApp concierge, try-it demo, readiness audit, retarget pixel (code, build passes) + retargeting/reactivation/AI-voice/LinkedIn/WhatsApp-broadcast/partner playbooks (GROW-01..08) ✓ 2026-06-05
 
 ## Phase Details
 

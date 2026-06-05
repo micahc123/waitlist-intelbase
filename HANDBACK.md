@@ -38,5 +38,13 @@ Full detail: `lead-gen/RUNBOOK.md` (PRESS GO section). Launch config ~1.4k HKD/m
 
 **Do not cold-send** until warmup has run 3+ weeks, DNS verifies, and your first list passes two-pass verification.
 
+## 4. Lead engine expansion (Phase 6)
+Code: `src/app/api/{whatsapp,try-it,audit}/`, `src/components/{try-it,readiness-audit}.tsx`, `/audit` page. Playbooks: `lead-gen/systems/`. Full detail: `src/lib/agent/LEAD_SYSTEMS.md` + `lead-gen/systems/README.md`. Build + typecheck pass.
+- [ ] **WhatsApp concierge** — set `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID`; register the number + get message templates approved in Meta; add `WHATSAPP_APP_SECRET` + HMAC signature check before public production.
+- [ ] **Try-it demo + Readiness Audit** — both capture leads and currently say "we emailed you" but **no ESP is wired**. Either connect an ESP (Resend is already a dependency) or soften that copy before go-live. They reuse `ANTHROPIC_API_KEY`.
+- [ ] **Retargeting (GROW-01)** — `ConciergeAbandoned` pixel event is live; add `ConciergeEngaged` / `ConciergeBooked` events too, then build Meta audiences (include abandoned, exclude booked).
+- [ ] **Growth channels (buy warm + cheap first; keep total ≤10k HKD/mo):** Reactivation (~$0, your own list) → LinkedIn (HeyReach ~US$79/mo) → AI voice (Vapi/Bland, usage ~$0.05-0.15/min) → WhatsApp broadcast (BSP) → Meta retarget spend (~US$8-13/day) → Partner/referral (~$0). Per-system steps in each `lead-gen/systems/*.md`.
+- [ ] **Production hardening** (from builder notes): try-it SSRF (block private IP ranges), WhatsApp signature verification, and the same hosted-lead-store requirement on serverless.
+
 ## Confirmation (HAND-02)
 Across all phases I did not purchase any tool, start any warmup, upload any list, send any email, push any ad spend, or run any live deploy. Every such action is in this list for you to perform.
