@@ -39,6 +39,39 @@ One OS, five things it runs autonomously:
 5. **One Control Dashboard** — The whole autonomous loop in one view: conversations, qualified
    leads, booked calls, ad performance, ROI.
 
+## Expansion modules (the OS roadmap and upsell menu)
+
+The five above are the core OS that ships first. These are additional autonomous modules to grow
+into a client over time. Each runs autonomously under the same guardrails, and each builds on
+capability we already have, so they are realistic to deliver and easy to sell as the next step.
+
+**Front office**
+- **AI Voice Receptionist** — Answers and qualifies phone calls and books them. The Concierge, for the phone.
+- **AI Inbox Manager** — Triages inbound email and DMs, drafts or sends sales and support replies, escalates only what needs a human.
+- **Multilingual Front Desk** — Handles visitors in English, Cantonese, and Mandarin automatically. A real edge for HK and APAC businesses.
+
+**Sales and revenue**
+- **Autonomous Quote and Proposal Builder** — Turns a conversation into a tailored quote or proposal, with hard price guardrails. Plugs into the existing quote flow and Stripe.
+- **Lead Scoring and Instant Routing** — Scores every lead and routes the hot ones to a call in seconds, so nothing warm goes cold.
+- **Reactivation Engine** — Re-engages dormant leads and past customers on its own, pulling revenue out of the list a business already has.
+- **Invoice and Payment Chaser** — Follows up on unpaid invoices automatically until they are paid (Stripe). Gets the business paid without the awkward chasing.
+
+**Marketing and growth**
+- **Organic Social Engine** — Generates and schedules on-brand posts. Extends the Ad Engine from paid into organic.
+- **Review and Reputation Engine** — Asks happy clients for reviews at the right moment, watches what comes in, and drafts the responses.
+
+**Operations and back office**
+- **Client Onboarding Autopilot** — When a deal closes, runs intake, paperwork, and scheduling so nobody has to chase a new client through setup.
+- **No-show Reducer** — Reminds, reschedules, and fills cancelled slots from a waitlist. Protects the calendar the OS works so hard to fill.
+- **CRM Autopilot** — Keeps the CRM clean, logs every interaction, and surfaces the next best action.
+
+**Intelligence (the "intel" in intelbase)**
+- **Internal Copilot** — Answers staff questions from the company's own docs and SOPs. The OS works for the team, not just the customer.
+- **Market and Competitor Watch** — Monitors signals and sends short, useful summaries, so the owner sees what is moving without digging.
+
+These also map to packaging: lead with the core five, then attach modules per client. A natural
+"land and expand" path from a Launch tier into Growth and Custom.
+
 ## Trust / guardrails angle (POS-04) — the differentiator
 
 **Autonomous, not reckless.** intelbase OS knows what it doesn't know. It will never invent a price,
