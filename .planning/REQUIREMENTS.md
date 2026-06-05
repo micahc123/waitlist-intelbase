@@ -62,4 +62,38 @@ testable. Traceability (phase mapping) is filled by the roadmapper.
 - Human-in-the-loop ops product — superseded by autonomous-first + guardrails decision
 
 ## Traceability
-<!-- Filled by roadmapper: REQ-ID → phase -->
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| POS-01 | Phase 1 | Pending |
+| POS-02 | Phase 1 | Pending |
+| POS-03 | Phase 1 | Pending |
+| POS-04 | Phase 1 | Pending |
+| SITE-01 | Phase 2 | Pending |
+| SITE-02 | Phase 2 | Pending |
+| SITE-03 | Phase 2 | Pending |
+| SITE-04 | Phase 2 | Pending |
+| SITE-05 | Phase 2 | Pending |
+| SITE-06 | Phase 2 | Pending |
+| SITE-07 | Phase 2 | Pending |
+| SITE-08 | Phase 2 | Pending |
+| AGENT-01 | Phase 3 | Pending |
+| AGENT-02 | Phase 3 | Pending |
+| AGENT-03 | Phase 3 | Pending |
+| AGENT-04 | Phase 3 | Pending |
+| AGENT-05 | Phase 3 | Pending |
+| AGENT-06 | Phase 3 | Pending |
+| DASH-01 | Phase 3 | Pending |
+| DASH-02 | Phase 3 | Pending |
+| ADS-01 | Phase 4 | Pending |
+| ADS-02 | Phase 4 | Pending |
+| ADS-03 | Phase 4 | Pending |
+| ADS-04 | Phase 4 | Pending |
+| LEAD-01 | Phase 5 | Pending |
+| LEAD-02 | Phase 5 | Pending |
+| LEAD-03 | Phase 5 | Pending |
+| LEAD-04 | Phase 5 | Pending |
+| LEAD-05 | Phase 5 | Pending |
+| LEAD-06 | Phase 5 | Pending |
+| HAND-01 | Phase 5 | Pending |
+| HAND-02 | Phase 5 | Pending |
