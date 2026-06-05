@@ -19,8 +19,8 @@ consolidated hand-back checklist the user runs.
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Positioning & Messaging Foundation** - Lock the named AI-OS offer, trust/guardrails angle, and SEO that the site, ads, and outbound all reuse
-- [ ] **Phase 2: Website Rewrite** - Rewrite all site copy/structure to the AI-OS offer on the existing component system; build passes
+- [x] **Phase 1: Positioning & Messaging Foundation** - Lock the named AI-OS offer, trust/guardrails angle, and SEO that the site, ads, and outbound all reuse ✓ 2026-06-05
+- [x] **Phase 2: Website Rewrite** - Rewrite all site copy/structure to the AI-OS offer on the existing component system; build passes (build UNVERIFIED — node_modules absent; user runs `npm install && npm run build`) ✓ 2026-06-05
 - [ ] **Phase 3: Demo AI-OS Agent & Dashboard** - Ship the guardrailed autonomous chatbot (qualify/answer/book) live on the site as dogfood, plus a real-data performance dashboard
 - [ ] **Phase 4: Ads Update & Redeploy Prep** - Re-copy/re-render ads in the separate adsmanager repo to the new positioning and produce a redeploy checklist
 - [ ] **Phase 5: Apollo Lead-Gen & Consolidated Hand-back** - Build autonomous outbound to "press go" on ≤10k HKD/mo and produce the single consolidated spend/deploy checklist
@@ -98,8 +98,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Positioning & Messaging Foundation | 0/TBD | Not started | - |
-| 2. Website Rewrite | 0/TBD | Not started | - |
+| 1. Positioning & Messaging Foundation | 1/1 | ✓ Complete | 2026-06-05 |
+| 2. Website Rewrite | 1/1 | ✓ Complete (build unverified) | 2026-06-05 |
 | 3. Demo AI-OS Agent & Dashboard | 0/TBD | Not started | - |
 | 4. Ads Update & Redeploy Prep | 0/TBD | Not started | - |
 | 5. Apollo Lead-Gen & Consolidated Hand-back | 0/TBD | Not started | - |
