@@ -6,6 +6,7 @@ import { Services } from "@/components/services";
 import { Process } from "@/components/process";
 import { KPIs, Testimonials } from "@/components/proof";
 import { Pricing } from "@/components/pricing";
+import { TryIt } from "@/components/try-it";
 import { CTA } from "@/components/cta";
 import { Footer } from "@/components/footer";
 import { StickyCta } from "@/components/sticky-cta";
@@ -33,6 +34,7 @@ export default function Home() {
       <KPIs />
       <Testimonials />
       <Pricing onQuote={openCal} />
+      <TryIt />
       <CTA onQuote={openCal} />
       <Footer onQuote={openCal} />
       <StickyCta onQuote={openCal} />

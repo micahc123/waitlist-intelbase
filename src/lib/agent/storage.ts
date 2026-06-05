@@ -14,7 +14,15 @@
 
 import { promises as fs } from "fs";
 import path from "path";
-import type { ChatMessage, LeadMetrics, LeadQualification, LeadRecord } from "./types";
+import type {
+  ChatMessage,
+  LeadChannel,
+  LeadContact,
+  LeadMetrics,
+  LeadQualification,
+  LeadRecord,
+  LeadSource,
+} from "./types";
 
 // The persistence contract. Routes/lib depend on this, never on a concrete store.
 export interface LeadStore {
@@ -32,10 +40,41 @@ export type UpsertLeadInput = {
   id: string;
   qualification: LeadQualification;
   messages: ChatMessage[];
+  // Optional multi-channel metadata. All default sensibly when omitted, so the
+  // existing concierge call site does not need to change.
+  channel?: LeadChannel;
+  source?: LeadSource;
+  contact?: LeadContact;
 };
 
 function nowIso(): string {
   return new Date().toISOString();
+}
+
+// Merge two partial contacts, preferring an already-captured value over a later
+// null/empty one. Returns undefined when both sides are empty.
+function mergeContact(
+  prev: LeadContact | undefined,
+  incoming: LeadContact | undefined
+): LeadContact | undefined {
+  if (!prev && !incoming) return undefined;
+  const pick = (a?: string, b?: string): string | undefined => {
+    const av = a?.trim();
+    const bv = b?.trim();
+    return av || bv || undefined;
+  };
+  const merged: LeadContact = {
+    name: pick(prev?.name, incoming?.name),
+    email: pick(prev?.email, incoming?.email),
+    business: pick(prev?.business, incoming?.business),
+    phone: pick(prev?.phone, incoming?.phone),
+    website: pick(prev?.website, incoming?.website),
+  };
+  // Drop undefined keys so we never write `{ name: undefined }`.
+  (Object.keys(merged) as (keyof LeadContact)[]).forEach((k) => {
+    if (merged[k] === undefined) delete merged[k];
+  });
+  return Object.keys(merged).length > 0 ? merged : undefined;
 }
 
 function computeMetrics(records: LeadRecord[]): LeadMetrics {
@@ -86,10 +125,18 @@ export class FileLeadStore implements LeadStore {
       const ts = nowIso();
       let record: LeadRecord;
       if (idx >= 0) {
+        const prev = records[idx];
+        // Merge contact fields so a later turn that only learns an email does
+        // not wipe a name captured earlier. Latch channel/source to their first
+        // non-null value.
+        const mergedContact = mergeContact(prev.contact, input.contact);
         record = {
-          ...records[idx],
+          ...prev,
           qualification: input.qualification,
           messages: input.messages,
+          channel: input.channel ?? prev.channel,
+          source: input.source ?? prev.source,
+          ...(mergedContact ? { contact: mergedContact } : {}),
           updatedAt: ts,
         };
         records[idx] = record;
@@ -100,6 +147,9 @@ export class FileLeadStore implements LeadStore {
           updatedAt: ts,
           qualification: input.qualification,
           messages: input.messages,
+          ...(input.channel ? { channel: input.channel } : {}),
+          ...(input.source ? { source: input.source } : {}),
+          ...(input.contact ? { contact: input.contact } : {}),
         };
         records.push(record);
       }

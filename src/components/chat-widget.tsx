@@ -9,7 +9,7 @@
 // site's CSS variables, so it matches the brand without touching globals.css.
 
 import { useEffect, useRef, useState } from "react";
-import { trackLead } from "@/lib/meta-pixel";
+import { trackLead, trackConciergeAbandoned } from "@/lib/meta-pixel";
 
 type Role = "user" | "assistant";
 type UiMessage = { role: Role; content: string };
@@ -43,6 +43,15 @@ export function ChatWidget() {
   const [booking, setBooking] = useState<BookingAction | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  // GROW-01 retargeting hook state. Tracked in refs so the page-hide listener
+  // reads the latest values without re-subscribing on every turn.
+  // engagedTurns: how many messages the visitor sent (engagement signal).
+  // booked: true once they clicked the booking CTA (excludes them from retargeting).
+  // fired: guard so we fire ConciergeAbandoned at most once per page load.
+  const engagedTurnsRef = useRef(0);
+  const bookedRef = useRef(false);
+  const abandonFiredRef = useRef(false);
+
   // Keep the transcript scrolled to the latest turn.
   useEffect(() => {
     if (!open) return;
@@ -61,6 +70,8 @@ export function ChatWidget() {
     setMessages(nextMessages);
     setInput("");
     setSending(true);
+    // Count this as an engagement turn for the retargeting hook.
+    engagedTurnsRef.current += 1;
 
     // Only send real conversation turns to the API (drop the canned greeting).
     const apiMessages = nextMessages.filter(
@@ -114,10 +125,38 @@ export function ChatWidget() {
   function onBook() {
     if (!booking) return;
     trackLead();
+    // Booked: exclude this visitor from the abandonment retargeting audience.
+    bookedRef.current = true;
     if (typeof window !== "undefined") {
       window.open(booking.url, "_blank", "noopener,noreferrer");
     }
   }
+
+  // GROW-01: fire ConciergeAbandoned once when a visitor who engaged the
+  // concierge leaves (tab hidden / page unload) without booking. Resilient: the
+  // pixel helper no-ops if fbq is absent, so this never breaks the chat.
+  useEffect(() => {
+    function maybeFireAbandon() {
+      if (abandonFiredRef.current) return;
+      if (bookedRef.current) return;
+      if (engagedTurnsRef.current < 1) return;
+      abandonFiredRef.current = true;
+      trackConciergeAbandoned(engagedTurnsRef.current);
+    }
+
+    function onVisibility() {
+      // visibilitychange to "hidden" is the most reliable "leaving" signal across
+      // browsers (covers tab switch, navigation, and mobile background).
+      if (document.visibilityState === "hidden") maybeFireAbandon();
+    }
+
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pagehide", maybeFireAbandon);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pagehide", maybeFireAbandon);
+    };
+  }, []);
 
   return (
     <>

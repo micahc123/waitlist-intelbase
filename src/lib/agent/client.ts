@@ -104,6 +104,64 @@ export async function callClaude(
   return parseStructuredOutput(raw);
 }
 
+// One-shot plain-text generation that reuses the same auth + fetch path as
+// callClaude, for tools that need free-form copy rather than the structured
+// agent turn (e.g. the "try it on your site" demo). Returns the raw text reply.
+// Throws AgentClientError on transport/HTTP failure so callers can degrade.
+export async function generateText(
+  systemPrompt: string,
+  userPrompt: string,
+  maxTokens: number = MAX_TOKENS
+): Promise<string> {
+  const apiKey = getApiKey();
+  const model = getModel();
+
+  const body = {
+    model,
+    max_tokens: maxTokens,
+    system: systemPrompt,
+    messages: [{ role: "user", content: userPrompt }],
+  };
+
+  let res: Response;
+  try {
+    res = await fetch(ANTHROPIC_URL, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": ANTHROPIC_VERSION,
+      },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    throw new AgentClientError(
+      `Network error calling Anthropic: ${(err as Error).message}`
+    );
+  }
+
+  if (!res.ok) {
+    const text = await safeText(res);
+    throw new AgentClientError(
+      `Anthropic API error ${res.status}: ${text}`,
+      res.status
+    );
+  }
+
+  const json = (await res.json()) as AnthropicResponse;
+  const raw = (json.content ?? [])
+    .filter((b) => b.type === "text" && typeof b.text === "string")
+    .map((b) => b.text as string)
+    .join("")
+    .trim();
+
+  if (!raw) {
+    throw new AgentClientError("Empty response from Anthropic.");
+  }
+
+  return raw;
+}
+
 async function safeText(res: Response): Promise<string> {
   try {
     return await res.text();

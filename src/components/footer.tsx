@@ -69,6 +69,9 @@ export function Footer({ onQuote }: { onQuote: () => void }) {
             <li>
               <a href="#pricing">Pricing</a>
             </li>
+            <li>
+              <a href="/audit">AI Readiness Audit</a>
+            </li>
           </ul>
         </div>
         <div className="foot-col">

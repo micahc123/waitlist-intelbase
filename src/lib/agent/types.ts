@@ -62,6 +62,28 @@ export type BookingAction = {
   reason: "qualified" | "handoff";
 };
 
+// Where a lead came in from. "web" is the default dogfood chat widget.
+// Added for the multi-channel lead systems (WhatsApp concierge, try-it demo,
+// readiness audit). Optional + defaulted everywhere so existing records that
+// predate this field stay valid (backward compatible).
+export type LeadChannel = "web" | "whatsapp";
+
+// The lead-magnet/source that produced a lead, for attribution in the dashboard.
+// "concierge" is the live chat (web or whatsapp). The others are the new tools.
+export type LeadSource = "concierge" | "try-it" | "audit";
+
+// Optional contact info captured by the lead-magnet tools (try-it, audit). The
+// concierge chat does not collect these directly; they stay undefined there.
+export type LeadContact = {
+  name?: string;
+  email?: string;
+  business?: string;
+  // For WhatsApp leads: the visitor's phone number (wa_id).
+  phone?: string;
+  // For the try-it demo: the website URL the prospect submitted.
+  website?: string;
+};
+
 // A persisted lead record (one per conversation).
 export type LeadRecord = {
   id: string;
@@ -70,6 +92,13 @@ export type LeadRecord = {
   qualification: LeadQualification;
   // Full transcript so the dashboard can show the captured loop.
   messages: ChatMessage[];
+  // Channel the lead arrived on. Optional for backward compatibility; treat a
+  // missing value as "web".
+  channel?: LeadChannel;
+  // Which tool/source produced the lead. Optional; missing means "concierge".
+  source?: LeadSource;
+  // Contact details captured by the lead-magnet tools. Optional.
+  contact?: LeadContact;
 };
 
 // Aggregate metrics the dashboard reads.
