@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# intelbase OS demo agent: local file lead store (runtime output)
+/.data
+
 # debug
 npm-debug.log*
 yarn-debug.log*
