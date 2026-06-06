@@ -106,7 +106,10 @@ export const Nodes = forwardRef<NodesHandle, {
         refs.wrap.style.transform = `translate3d(${(p.x).toFixed(1)}px, ${(p.y).toFixed(1)}px, 0) translate(-50%, -50%) scale(${scale.toFixed(3)})`;
         refs.wrap.style.opacity = opacity.toFixed(3);
         refs.wrap.style.zIndex = String(zIndex);
-        refs.wrap.style.filter = fog < 0.5 ? `saturate(${(0.55 + fog).toFixed(2)})` : "none";
+        // depth fog: far nodes still desaturated/dimmer; near nodes full saturation with brightness boost
+        refs.wrap.style.filter = fog < 0.72
+          ? `saturate(${(0.65 + fog * 0.7).toFixed(2)}) brightness(${(0.82 + fog * 0.25).toFixed(2)})`
+          : `saturate(1.15) brightness(1.05)`;
 
         // state classes (toggle only when needed is overkill; className set is cheap)
         const cls = refs.wrap.classList;
@@ -166,7 +169,7 @@ export const Nodes = forwardRef<NodesHandle, {
             )}
             <span className="cst-fire-ring" />
             <div className="cst-node-tile">
-              <Icon size={isCore ? 26 : n.kind === "agent" ? 18 : 14} strokeWidth={1.9} />
+              <Icon size={isCore ? 28 : n.kind === "agent" ? 19 : 14} strokeWidth={isCore ? 1.7 : 1.9} />
             </div>
             <div className="cst-node-meta">
               <div className="cst-node-label">{n.label}</div>

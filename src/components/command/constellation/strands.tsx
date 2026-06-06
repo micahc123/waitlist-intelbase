@@ -39,6 +39,7 @@ type StrandEl = {
   to: string;
   path: SVGPathElement;
   glow: SVGPathElement;
+  glow2: SVGPathElement;
   pulse: SVGCircleElement;
   color: string;
   domain: string;
@@ -79,6 +80,7 @@ export const Strands = forwardRef<StrandsHandle, {
         if (!a || !b) {
           el.path.style.opacity = "0";
           el.glow.style.opacity = "0";
+          el.glow2.style.opacity = "0";
           el.pulse.style.opacity = "0";
           continue;
         }
@@ -95,6 +97,7 @@ export const Strands = forwardRef<StrandsHandle, {
         const d = `M ${a.x.toFixed(1)} ${a.y.toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
         el.path.setAttribute("d", d);
         el.glow.setAttribute("d", d);
+        el.glow2.setAttribute("d", d);
 
         // fog by average depth (depth: -1.4 near .. 1.4 far)
         const avgDepth = (a.depth + b.depth) / 2;
@@ -112,13 +115,16 @@ export const Strands = forwardRef<StrandsHandle, {
         let domainK = 1;
         if (sctx.activeDomain && el.domain !== sctx.activeDomain) domainK = 0.16;
 
-        const baseOpacity = (0.1 + fog * 0.22) * domainK;
-        const activeOpacity = (0.45 + fog * 0.45) * Math.max(domainK, 0.5);
+        const baseOpacity = (0.14 + fog * 0.28) * domainK;
+        const activeOpacity = (0.62 + fog * 0.38) * Math.max(domainK, 0.5);
 
         el.path.style.opacity = String(isActive ? activeOpacity : baseOpacity);
-        el.path.style.strokeWidth = isActive ? "1.7" : "1.0";
-        el.glow.style.opacity = isActive ? String(0.5 * Math.max(domainK, 0.5)) : "0";
-        el.glow.style.strokeWidth = "3.2";
+        el.path.style.strokeWidth = isActive ? "2.0" : "1.1";
+        el.glow.style.opacity = isActive ? String(0.72 * Math.max(domainK, 0.5)) : "0";
+        el.glow.style.strokeWidth = isActive ? "4.5" : "3.2";
+        // outer wide bloom glow layer
+        el.glow2.style.opacity = isActive ? String(0.38 * Math.max(domainK, 0.5)) : "0";
+        el.glow2.style.strokeWidth = isActive ? "9" : "6";
 
         // traveling pulse on active strands
         if (isActive) {
@@ -129,9 +135,11 @@ export const Strands = forwardRef<StrandsHandle, {
           const qy = inv * inv * a.y + 2 * inv * p * cy + p * p * b.y;
           el.pulse.setAttribute("cx", qx.toFixed(1));
           el.pulse.setAttribute("cy", qy.toFixed(1));
-          el.pulse.style.opacity = String(0.9 * Math.max(domainK, 0.5));
+          el.pulse.style.opacity = String(1.0 * Math.max(domainK, 0.5));
+          el.pulse.setAttribute("r", "3.6");
         } else {
           el.pulse.style.opacity = "0";
+          el.pulse.setAttribute("r", "3.6");
         }
       }
     },
@@ -147,6 +155,7 @@ export const Strands = forwardRef<StrandsHandle, {
       els.push({
         from: g.dataset.from!,
         to: g.dataset.to!,
+        glow2: g.querySelector<SVGPathElement>(".cst-strand-glow2")!,
         glow: g.querySelector<SVGPathElement>(".cst-strand-glow")!,
         path: g.querySelector<SVGPathElement>(".cst-strand-line")!,
         pulse: g.querySelector<SVGCircleElement>(".cst-strand-pulse")!,
@@ -160,7 +169,10 @@ export const Strands = forwardRef<StrandsHandle, {
   return (
     <svg ref={svgRef} className="cst-strands" aria-hidden="true">
       {linkData.map((l, i) => {
-        const blended = blendToward(hexToRgb(l.color), [120, 180, 255], 0.25);
+        // blend the main line color slightly cooler/brighter for energy-line look
+        const blended = blendToward(hexToRgb(l.color), [140, 200, 255], 0.32);
+        // pulse dot is brighter/whiter than raw domain color
+        const pulseColor = blendToward(hexToRgb(l.color), [220, 240, 255], 0.45);
         return (
           <g
             key={`${l.from}-${l.to}-${i}`}
@@ -170,9 +182,14 @@ export const Strands = forwardRef<StrandsHandle, {
             data-color={l.color}
             data-domain={l.domain}
           >
+            {/* outermost wide bloom - most blurred, lowest opacity */}
+            <path className="cst-strand-glow2" fill="none" stroke={l.color} style={{ opacity: 0 }} />
+            {/* inner glow layer */}
             <path className="cst-strand-glow" fill="none" stroke={l.color} style={{ opacity: 0 }} />
+            {/* main visible line */}
             <path className="cst-strand-line" fill="none" stroke={blended} style={{ opacity: 0 }} />
-            <circle className="cst-strand-pulse" r="2.4" fill={l.color} style={{ opacity: 0 }} />
+            {/* traveling pulse dot - brighter, bigger */}
+            <circle className="cst-strand-pulse" r="3.6" fill={pulseColor} style={{ opacity: 0 }} />
           </g>
         );
       })}
