@@ -5,10 +5,10 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { motion } from "motion/react";
 import { useSim } from "@/lib/command/use-sim";
-import { REGIONS } from "./brain/regions";
-import { buildNeurons, Neurons } from "./brain/neurons";
-import { Synapses } from "./brain/synapses";
 import { makeAmbientSprite } from "./brain/sprite";
+import { buildSessions, CATEGORIES } from "./brain/sessions";
+import { Cortex } from "./brain/cortex";
+import { MemoryPanel } from "./brain/panel";
 import "./brain.css";
 
 // Shared mutable rotation target driven by pointer drag (read in useFrame).
@@ -19,10 +19,11 @@ interface OrbitState {
   velY: number;
   dragging: boolean;
   zoom: number; // target camera z
+  autoSpin: number; // eased auto-spin rate (slows when browsing)
 }
 
 // ---------------------------------------------------------------------------
-// Ambient central glow + slow wireframe rings, behind the brain.
+// Ambient central glow + slow wireframe rings, behind the cortex.
 // ---------------------------------------------------------------------------
 function Ambience() {
   const ring1 = useRef<THREE.LineLoop>(null);
@@ -58,8 +59,7 @@ function Ambience() {
 
   return (
     <group>
-      {/* big soft glow billboard behind the brain */}
-      <sprite scale={[5.2, 5.2, 1]} position={[0, 0, -0.6]}>
+      <sprite scale={[5.4, 5.4, 1]} position={[0, 0, -0.6]}>
         <spriteMaterial
           map={ambientTex}
           transparent
@@ -69,13 +69,13 @@ function Ambience() {
         />
       </sprite>
 
-      <lineLoop ref={ring1} geometry={ringGeom} scale={1.85}>
+      <lineLoop ref={ring1} geometry={ringGeom} scale={1.95}>
         <lineBasicMaterial color="#6ea8ff" transparent opacity={0.16} blending={THREE.AdditiveBlending} depthWrite={false} />
       </lineLoop>
-      <lineLoop ref={ring2} geometry={ringGeom} scale={2.05}>
+      <lineLoop ref={ring2} geometry={ringGeom} scale={2.15}>
         <lineBasicMaterial color="#7df5c8" transparent opacity={0.1} blending={THREE.AdditiveBlending} depthWrite={false} />
       </lineLoop>
-      <lineLoop ref={ring3} geometry={ringGeom} scale={2.25}>
+      <lineLoop ref={ring3} geometry={ringGeom} scale={2.35}>
         <lineBasicMaterial color="#b79cff" transparent opacity={0.08} blending={THREE.AdditiveBlending} depthWrite={false} />
       </lineLoop>
     </group>
@@ -97,27 +97,38 @@ function CameraRig({ orbit }: { orbit: React.RefObject<OrbitState> }) {
 }
 
 // ---------------------------------------------------------------------------
-// Rotating group with neurons + synapses; applies drag + inertia + auto-spin.
+// Rotating group holding the cortex; applies drag + inertia + auto-spin.
+// Auto-spin eases down when a region is selected so browsing feels calmer.
 // ---------------------------------------------------------------------------
-function BrainGroup({ orbit, firingCount }: { orbit: React.RefObject<OrbitState>; firingCount: number }) {
+function CortexGroup({
+  orbit,
+  selected,
+  t,
+  firingCount,
+}: {
+  orbit: React.RefObject<OrbitState>;
+  selected: string | null;
+  t: number;
+  firingCount: number;
+}) {
   const group = useRef<THREE.Group>(null);
-  const build = useMemo(() => buildNeurons(), []);
 
   useFrame((_, delta) => {
     const g = group.current;
     const o = orbit.current;
     if (!g || !o) return;
 
+    // ease auto-spin toward target (slower when browsing a region)
+    const targetSpin = selected ? 0.04 : 0.12;
+    o.autoSpin += (targetSpin - o.autoSpin) * 0.05;
+
     if (!o.dragging) {
-      // inertia from a recent drag
       o.rotY += o.velY;
       o.rotX += o.velX;
       o.velY *= 0.94;
       o.velX *= 0.94;
-      // gentle constant auto-rotate
-      o.rotY += delta * 0.12;
+      o.rotY += delta * o.autoSpin;
     }
-    // clamp vertical tilt so it never flips upside down
     o.rotX = Math.max(-0.9, Math.min(0.9, o.rotX));
 
     g.rotation.y += (o.rotY - g.rotation.y) * 0.12;
@@ -126,31 +137,48 @@ function BrainGroup({ orbit, firingCount }: { orbit: React.RefObject<OrbitState>
 
   return (
     <group ref={group}>
-      <Neurons build={build} />
-      <Synapses build={build} firingCount={firingCount} />
+      <Cortex selected={selected} t={t} firingCount={firingCount} />
     </group>
   );
 }
 
+// ---------------------------------------------------------------------------
+// A small counter that climbs off sim time (sorted-today stat).
+// ---------------------------------------------------------------------------
+function useClimbing(t: number, base: number, perSec: number) {
+  return base + Math.floor(t * perSec);
+}
+
 export function Brain() {
-  const { firing } = useSim();
+  const { nodes, firing, t } = useSim();
   const firingCount = firing.size;
 
+  const data = useMemo(() => buildSessions(nodes), [nodes]);
+  const maxCount = useMemo(
+    () => Math.max(...CATEGORIES.map((c) => data.counts[c.id] ?? 0)),
+    [data],
+  );
+
+  const [selected, setSelected] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  // climbing "sorted today" off sim time
+  const sortedToday = useClimbing(t, 1840, 6);
+
   const orbit = useRef<OrbitState>({
-    rotX: 0.18,
+    rotX: 0.16,
     rotY: 0.4,
     velX: 0,
     velY: 0,
     dragging: false,
-    zoom: 3.2,
+    zoom: 3.3,
+    autoSpin: 0.12,
   });
 
   const stageRef = useRef<HTMLDivElement>(null);
 
-  // pointer drag -> rotation, wheel -> zoom
+  // pointer drag -> rotation, wheel -> zoom (only over the canvas area)
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -197,7 +225,7 @@ export function Brain() {
       e.preventDefault();
       const o = orbit.current;
       o.zoom *= e.deltaY < 0 ? 0.93 : 1.075;
-      o.zoom = Math.max(2.0, Math.min(5.0, o.zoom));
+      o.zoom = Math.max(2.1, Math.min(5.2, o.zoom));
     }
 
     stage.addEventListener("pointerdown", onDown);
@@ -214,68 +242,81 @@ export function Brain() {
     };
   }, []);
 
+  const chips = [
+    { label: "Total sessions", value: data.total.toLocaleString() },
+    { label: "Sorted today", value: sortedToday.toLocaleString() },
+    { label: "Memory", value: "4.2 GB" },
+    { label: "Avg recall", value: "38ms" },
+  ];
+
   return (
-    <div ref={stageRef} className="brain-stage">
-      {mounted ? (
-        <Canvas
-          className="brain-canvas"
-          dpr={[1, 2]}
-          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-          camera={{ position: [0, 0, 3.2], fov: 50, near: 0.1, far: 100 }}
-          onCreated={({ gl }) => {
-            gl.setClearColor(0x000000, 0);
-          }}
-        >
-          <CameraRig orbit={orbit} />
-          <Ambience />
-          <BrainGroup orbit={orbit} firingCount={firingCount} />
-        </Canvas>
-      ) : (
-        <div className="brain-backdrop" aria-hidden="true" />
-      )}
+    <div className="brain-stage">
+      {/* canvas layer captures drag/zoom; panel sits above with its own events */}
+      <div ref={stageRef} className="cortex-canvas-layer">
+        {mounted ? (
+          <Canvas
+            className="brain-canvas"
+            dpr={[1, 2]}
+            gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+            camera={{ position: [0, 0, 3.3], fov: 50, near: 0.1, far: 100 }}
+            onCreated={({ gl }) => {
+              gl.setClearColor(0x000000, 0);
+            }}
+          >
+            <CameraRig orbit={orbit} />
+            <Ambience />
+            <CortexGroup orbit={orbit} selected={selected} t={t} firingCount={firingCount} />
+          </Canvas>
+        ) : (
+          <div className="brain-backdrop" aria-hidden="true" />
+        )}
+      </div>
 
-      {/* ----------------------------- DOM HUD ----------------------------- */}
-      <div className="brain-hud" aria-hidden="true">
-        <motion.div
-          className="brain-hud-title"
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          <div className="brain-hud-h1">Neural Brain</div>
-          <div className="brain-hud-sub">
-            42,000 neurons / 10 regions / structure = growth
-          </div>
-          <div className="brain-hud-status">
-            <span className={`brain-dot ${firingCount > 0 ? "live" : ""}`} />
-            {firingCount > 0 ? `${firingCount} synapses firing` : "mesh idle"}
-          </div>
-        </motion.div>
+      {/* ----------------------------- HUD HEADER ----------------------------- */}
+      <motion.div
+        className="cortex-header"
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+      >
+        <div className="brain-hud-h1">Memory Cortex</div>
+        <div className="cortex-sub">
+          {data.total.toLocaleString()} sessions sorted / {CATEGORIES.length} regions / sorting live
+        </div>
+        <div className="cortex-status">
+          <span className="brain-dot live" />
+          {firingCount > 0 ? `${firingCount} threads merging` : "live index"}
+        </div>
 
-        <motion.div
-          className="brain-legend"
-          initial={{ opacity: 0, x: 12 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
-        >
-          <div className="brain-legend-h">Regions</div>
-          {REGIONS.map((r) => (
-            <div className="brain-legend-row" key={r.name}>
-              <span className="brain-legend-dot" style={{ background: r.color, boxShadow: `0 0 8px ${r.color}` }} />
-              <span className="brain-legend-name">{r.name}</span>
+        <div className="cortex-chips">
+          {chips.map((c) => (
+            <div className="cortex-chip-stat" key={c.label}>
+              <div className="cortex-chip-value">{c.value}</div>
+              <div className="cortex-chip-label">{c.label}</div>
             </div>
           ))}
-        </motion.div>
+        </div>
+      </motion.div>
 
-        <motion.div
-          className="brain-hint"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          drag to rotate / scroll to zoom
-        </motion.div>
-      </div>
+      {/* ----------------------------- SIDE PANEL ----------------------------- */}
+      <motion.div
+        className="cortex-panel-wrap"
+        initial={{ opacity: 0, x: 14 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut", delay: 0.12 }}
+      >
+        <MemoryPanel data={data} selected={selected} onSelect={setSelected} maxCount={maxCount} />
+      </motion.div>
+
+      {/* ------------------------------- HINT -------------------------------- */}
+      <motion.div
+        className="brain-hint"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+      >
+        drag to rotate / scroll to zoom / click a region to browse
+      </motion.div>
 
       <div className="brain-vignette" aria-hidden="true" />
     </div>

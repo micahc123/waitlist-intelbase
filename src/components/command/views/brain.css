@@ -11,10 +11,17 @@
     radial-gradient(120% 90% at 50% 46%, rgba(20, 32, 64, 0.55), rgba(5, 6, 11, 0) 60%),
     radial-gradient(80% 70% at 50% 55%, rgba(8, 14, 30, 0.6), rgba(3, 4, 8, 0) 70%),
     #04050a;
+}
+
+/* canvas layer: captures drag + wheel; sits beneath the HUD + panel */
+.cortex-canvas-layer {
+  position: absolute;
+  inset: 0;
   cursor: grab;
   touch-action: none;
+  z-index: 1;
 }
-.brain-stage.is-dragging {
+.cortex-canvas-layer.is-dragging {
   cursor: grabbing;
 }
 
@@ -35,6 +42,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 2;
   background:
     radial-gradient(120% 120% at 50% 50%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.55) 100%);
   mix-blend-mode: normal;
@@ -146,6 +154,9 @@
   bottom: 22px;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 6;
+  pointer-events: none;
+  font-family: var(--mono, ui-monospace, Menlo, monospace);
   font-size: 10.5px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -155,4 +166,360 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.025);
   backdrop-filter: blur(6px);
+}
+
+/* ============================================================================
+   MEMORY CORTEX - HUD header + region browse panel
+   ============================================================================ */
+
+.cortex-header {
+  position: absolute;
+  top: 26px;
+  left: 28px;
+  z-index: 6;
+  pointer-events: none;
+  font-family: var(--mono, ui-monospace, Menlo, monospace);
+  color: #e9eefb;
+  max-width: 360px;
+}
+.cortex-sub {
+  margin-top: 6px;
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #8a93ad;
+}
+.cortex-status {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #aeb8d4;
+  padding: 5px 11px 5px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(6px);
+}
+
+.cortex-chips {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 320px;
+}
+.cortex-chip-stat {
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012));
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+.cortex-chip-value {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #f3f6ff;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 14px rgba(110, 168, 255, 0.4);
+}
+.cortex-chip-label {
+  margin-top: 2px;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #6f7896;
+}
+
+/* ----------------------------- side panel ------------------------------ */
+.cortex-panel-wrap {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  bottom: 24px;
+  width: 320px;
+  z-index: 7;
+  pointer-events: auto;
+}
+.cortex-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(14, 18, 32, 0.72), rgba(7, 9, 17, 0.82));
+  backdrop-filter: blur(16px);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+  font-family: var(--mono, ui-monospace, Menlo, monospace);
+}
+.cortex-panel-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 16px 14px 12px;
+}
+
+.cortex-panel-head {
+  padding: 2px 4px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 10px;
+}
+.cortex-panel-eyebrow {
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6f7896;
+}
+.cortex-panel-h {
+  margin-top: 5px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f3f6ff;
+}
+.cortex-panel-note {
+  margin-top: 4px;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: #8a93ad;
+}
+
+/* category list */
+.cortex-cat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow-y: auto;
+  min-height: 0;
+}
+.cortex-cat-row {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.1s ease;
+}
+.cortex-cat-row:hover {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.cortex-cat-row:active {
+  transform: scale(0.99);
+}
+.cortex-cat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.cortex-cat-dot.lg {
+  width: 11px;
+  height: 11px;
+}
+.cortex-cat-icon {
+  flex: 0 0 auto;
+}
+.cortex-cat-label {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: #cdd5ea;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cortex-cat-count {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: #aeb8d4;
+  justify-self: end;
+}
+.cortex-cat-bar {
+  grid-column: 1 / -1;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  margin-top: 1px;
+}
+.cortex-cat-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* detail view */
+.cortex-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  margin-bottom: 12px;
+  padding: 5px 9px 5px 6px;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #aeb8d4;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+.cortex-back:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.cortex-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cortex-detail-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f3f6ff;
+}
+.cortex-detail-count {
+  margin-top: 2px;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a93ad;
+  font-variant-numeric: tabular-nums;
+}
+.cortex-detail-desc {
+  margin-top: 10px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #9aa3bd;
+}
+
+.cortex-search {
+  position: relative;
+  margin: 12px 0 10px;
+}
+.cortex-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6f7896;
+}
+.cortex-search-input {
+  width: 100%;
+  padding: 8px 10px 8px 30px;
+  font-family: var(--mono, ui-monospace, Menlo, monospace);
+  font-size: 12px;
+  color: #e9eefb;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.cortex-search-input::placeholder {
+  color: #6f7896;
+}
+.cortex-search-input:focus {
+  border-color: rgba(110, 168, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(110, 168, 255, 0.12);
+}
+
+/* session list */
+.cortex-session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 2px;
+}
+.cortex-session {
+  padding: 10px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.025);
+}
+.cortex-session-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.cortex-session-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e9eefb;
+  letter-spacing: 0.01em;
+}
+.cortex-session-ts {
+  flex: 0 0 auto;
+  font-size: 10px;
+  color: #6f7896;
+  font-variant-numeric: tabular-nums;
+}
+.cortex-session-snip {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #9aa3bd;
+}
+.cortex-session-meta {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.cortex-chip {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #aeb8d4;
+  padding: 3px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.cortex-chip.status {
+  background: transparent;
+}
+.cortex-empty {
+  padding: 18px 6px;
+  text-align: center;
+  font-size: 11px;
+  color: #6f7896;
+}
+
+/* scrollbars inside the panel */
+.cortex-cat-list::-webkit-scrollbar,
+.cortex-session-list::-webkit-scrollbar {
+  width: 6px;
+}
+.cortex-cat-list::-webkit-scrollbar-thumb,
+.cortex-session-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+@media (max-width: 880px) {
+  .cortex-panel-wrap {
+    width: 260px;
+  }
+  .cortex-chips {
+    max-width: 260px;
+  }
 }
