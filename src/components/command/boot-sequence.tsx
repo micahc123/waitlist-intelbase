@@ -8,22 +8,13 @@ import * as Lucide from "lucide-react";
 // Phase timing (ms). Tune here. Total ~ 7.5s.
 // ---------------------------------------------------------------------------
 const T = {
-  log: 2200, // 1. boot log
-  core: 1600, // 2. wireframe core powers on
-  regions: 1400, // 3. regions ignite
-  assemble: 2300, // 4. assemble + dissolve
+  core: 1600, // 1. wireframe core powers on
+  regions: 1400, // 2. regions ignite
+  assemble: 2300, // 3. assemble + dissolve
 };
 const REDUCED_TOTAL = 700; // quick fade when prefers-reduced-motion
 
-type Phase = "log" | "core" | "regions" | "assemble" | "done";
-
-const BOOT_LINES: Array<{ label: string; tail: string }> = [
-  { label: "initializing core", tail: "ok" },
-  { label: "mounting 14 agents", tail: "ok" },
-  { label: "linking 36 workspaces", tail: "ok" },
-  { label: "synapse check", tail: "42,000 / 42,000" },
-  { label: "calibrating neural mesh", tail: "ok" },
-];
+type Phase = "core" | "regions" | "assemble" | "done";
 
 const REGIONS = [
   { id: "concept", label: "CONCEPT", angle: -90, color: "#6ea8ff" },
@@ -47,8 +38,7 @@ function usePrefersReducedMotion() {
 
 export function BootSequence({ onDone }: { onDone: () => void }) {
   const reduced = usePrefersReducedMotion();
-  const [phase, setPhase] = useState<Phase>("log");
-  const [lineIdx, setLineIdx] = useState(0); // how many boot lines have appeared
+  const [phase, setPhase] = useState<Phase>("core");
   const [litRegions, setLitRegions] = useState(0);
   const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
   const doneRef = useRef(false);
@@ -70,7 +60,6 @@ export function BootSequence({ onDone }: { onDone: () => void }) {
     if (reduced) {
       // Quick fade: show core briefly, then dissolve.
       setPhase("assemble");
-      setLineIdx(BOOT_LINES.length);
       setLitRegions(REGIONS.length);
       add(() => setPhase("done"), REDUCED_TOTAL - 200);
       add(finish, REDUCED_TOTAL);
@@ -80,25 +69,17 @@ export function BootSequence({ onDone }: { onDone: () => void }) {
       };
     }
 
-    // Phase 1: boot log - reveal lines one by one across T.log
-    const perLine = T.log / (BOOT_LINES.length + 1);
-    BOOT_LINES.forEach((_, i) => {
-      add(() => setLineIdx(i + 1), perLine * (i + 1));
-    });
+    // Phase 1: core powers on immediately (phase mounts as "core")
 
-    // Phase 2: core
-    add(() => setPhase("core"), T.log);
-
-    // Phase 3: regions - ignite one by one
-    const tRegions = T.log + T.core;
-    add(() => setPhase("regions"), tRegions);
+    // Phase 2: regions - ignite one by one
+    add(() => setPhase("regions"), T.core);
     const perRegion = T.regions / (REGIONS.length + 1);
     REGIONS.forEach((_, i) => {
-      add(() => setLitRegions(i + 1), tRegions + perRegion * (i + 1));
+      add(() => setLitRegions(i + 1), T.core + perRegion * (i + 1));
     });
 
-    // Phase 4: assemble + dissolve
-    const tAssemble = tRegions + T.regions;
+    // Phase 3: assemble + dissolve
+    const tAssemble = T.core + T.regions;
     add(() => setPhase("assemble"), tAssemble);
     add(() => setPhase("done"), tAssemble + T.assemble - 200);
     add(finish, tAssemble + T.assemble);
@@ -132,51 +113,7 @@ export function BootSequence({ onDone }: { onDone: () => void }) {
             skip <Lucide.ChevronsRight size={13} strokeWidth={1.75} />
           </button>
 
-          {/* Phase 1: boot log */}
-          <AnimatePresence>
-            {phase === "log" && (
-              <motion.div
-                className="boot-log"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -14, transition: { duration: 0.4 } }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="boot-log-title">INTELBASE CORE</div>
-                <div className="boot-log-lines">
-                  {BOOT_LINES.map((ln, i) => {
-                    const shown = i < lineIdx;
-                    return (
-                      <motion.div
-                        key={ln.label}
-                        className="boot-log-line"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: shown ? 1 : 0 }}
-                        transition={{ duration: 0.18 }}
-                      >
-                        <span className="boot-log-label">{ln.label}</span>
-                        <span className="boot-log-dots" />
-                        <span className="boot-log-tail">{ln.tail}</span>
-                      </motion.div>
-                    );
-                  })}
-                  <div className="boot-caret-line">
-                    <span className="boot-caret" />
-                  </div>
-                </div>
-                <div className="boot-progress">
-                  <motion.span
-                    className="boot-progress-fill"
-                    initial={{ width: "0%" }}
-                    animate={{ width: `${(lineIdx / BOOT_LINES.length) * 100}%` }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                  />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Phase 2-4: wireframe core + regions */}
+          {/* Phases: wireframe core + regions + dissolve */}
           <AnimatePresence>
             {showCore && (
               <motion.div
