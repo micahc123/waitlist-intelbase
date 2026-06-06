@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { TimelineProvider } from "@/lib/os-demo/use-timeline";
 import type { ScreenId } from "@/lib/os-demo/types";
 import { SCREENS } from "./screens/registry";
+import { TopBar } from "./topbar";
+import { Sidebar } from "./sidebar";
+import { LogTicker } from "./logticker";
 
 export function OsApp() {
   const [active, setActive] = useState<ScreenId>("overview");
@@ -20,26 +23,14 @@ export function OsApp() {
   return (
     <div className="os-root">
       <TimelineProvider>
-        <div className="os-shell">
-          <aside className="os-sidebar">
-            <div className="os-wordmark">intelbase OS</div>
-            <nav className="os-nav-temp">
-              {SCREENS.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  className={`os-nav-temp-item${s.id === active ? " is-active" : ""}`}
-                  onClick={() => setActive(s.id)}
-                >
-                  {s.label}
-                </button>
-              ))}
-            </nav>
-          </aside>
+        <TopBar />
+        <div className="os-body">
+          <Sidebar active={active} onSelect={setActive} />
           <main className="os-screen">
             <Active />
           </main>
         </div>
+        <LogTicker />
       </TimelineProvider>
     </div>
   );
