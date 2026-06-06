@@ -12,9 +12,10 @@ type Mote = {
   r: number;
   hue: number; // 0 = blue, 1 = violet
   tw: number; // twinkle phase
+  big: boolean; // brighter, larger glow motes for spread + atmosphere
 };
 
-const COUNT = 260;
+const COUNT = 640;
 
 export function Particles() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -34,13 +35,15 @@ export function Particles() {
     if (motesRef.current.length === 0) {
       const m: Mote[] = [];
       for (let i = 0; i < COUNT; i++) {
+        const big = Math.random() < 0.15;
         m.push({
           x: Math.random(),
           y: Math.random(),
           z: Math.random(),
-          r: 0.4 + Math.random() * 1.8,
+          r: (0.5 + Math.random() * 2.1) * (big ? 2.6 : 1),
           hue: Math.random(),
           tw: Math.random() * Math.PI * 2,
+          big,
         });
       }
       motesRef.current = m;
@@ -88,21 +91,31 @@ export function Particles() {
 
         const px = p.x * w;
         const py = p.y * h;
-        const size = p.r * (0.5 + p.z) ;
+        const size = p.r * (0.6 + p.z);
         const twinkle = 0.5 + 0.5 * Math.sin(p.tw);
-        const alpha = (0.04 + p.z * 0.16) * (0.5 + 0.5 * twinkle);
+        const glowAlpha = (0.06 + p.z * 0.26) * (0.45 + 0.55 * twinkle) * (p.big ? 1.4 : 1);
+        const radius = size * (p.big ? 5.2 : 3.4);
 
-        // blue -> violet blend
+        // blue -> violet blend (big motes lean a touch mint for spread variety)
         const rC = Math.round(110 + p.hue * 73);
-        const gC = Math.round(168 - p.hue * 12);
+        const gC = Math.round(168 - p.hue * 12 + (p.big ? 28 : 0));
         const bC = 255;
 
-        const grad = ctx.createRadialGradient(px, py, 0, px, py, size * 3);
-        grad.addColorStop(0, `rgba(${rC}, ${gC}, ${bC}, ${alpha})`);
+        // soft glow halo
+        const grad = ctx.createRadialGradient(px, py, 0, px, py, radius);
+        grad.addColorStop(0, `rgba(${rC}, ${gC}, ${bC}, ${glowAlpha})`);
+        grad.addColorStop(0.5, `rgba(${rC}, ${gC}, ${bC}, ${(glowAlpha * 0.32).toFixed(3)})`);
         grad.addColorStop(1, `rgba(${rC}, ${gC}, ${bC}, 0)`);
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(px, py, size * 3, 0, Math.PI * 2);
+        ctx.arc(px, py, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // crisp glowing core
+        const coreA = Math.min(0.92, glowAlpha * 3.2);
+        ctx.fillStyle = `rgba(${Math.min(255, rC + 60)}, ${Math.min(255, gC + 50)}, 255, ${coreA.toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(px, py, Math.max(0.5, size * 0.6), 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.globalCompositeOperation = "source-over";
