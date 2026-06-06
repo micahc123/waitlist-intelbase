@@ -1,6 +1,7 @@
 import type { ScreenId } from "@/lib/os-demo/types";
 import { Overview } from "./overview";
 import { Concierge } from "./concierge";
+import { Pipeline } from "./pipeline";
 
 export type Registered = {
   id: ScreenId;
@@ -12,4 +13,5 @@ export type Registered = {
 export const SCREENS: Registered[] = [
   { id: "overview", label: "Overview", Component: Overview },
   { id: "concierge", label: "Concierge", Component: Concierge },
+  { id: "pipeline", label: "Pipeline", Component: Pipeline },
 ];
