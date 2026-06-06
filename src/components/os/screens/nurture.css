@@ -1,0 +1,322 @@
+/* ── Nurture screen density overrides ── */
+/* All classes prefixed .nu- to avoid collision with os.css */
+
+/* Root layout: tighter column gap */
+.nu-root {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── Stat strip: 6-tile grid ── */
+.nu-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.nu-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.025);
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.nu-stat-val {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  color: #f3f6ff;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.nu-stat-val--mint  { color: #7df5c8; }
+.nu-stat-val--blue  { color: #6ea8ff; }
+.nu-stat-val--amber { color: #ffd166; }
+.nu-stat-val--violet { color: #b79cff; }
+.nu-stat-val--pink  { color: #ff8fb1; }
+
+.nu-stat-label {
+  font-size: 10.5px;
+  color: #7d87ad;
+  line-height: 1.25;
+}
+
+/* ── Main 3-column body ── */
+.nu-body {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr 0.85fr;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Sequences column ── */
+.nu-seq-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.nu-seq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.nu-seq-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.022);
+  border: 1px solid rgba(255,255,255,.046);
+  flex-shrink: 0;
+}
+
+.nu-seq-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.nu-seq-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #dce3f8;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nu-seq-steps {
+  font-size: 10.5px;
+  color: #6b7496;
+  flex-shrink: 0;
+}
+
+.nu-seq-track {
+  height: 5px;
+  border-radius: 4px;
+  background: rgba(255,255,255,.055);
+  overflow: hidden;
+}
+
+.nu-seq-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .5s ease;
+}
+
+.nu-seq-figs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nu-seq-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nu-seq-active { font-weight: 600; }
+.nu-seq-sep    { color: #3e4563; }
+.nu-seq-replies { color: #8b93b3; font-weight: 500; }
+.nu-seq-open   { color: #9aa3c4; }
+
+/* ── Centre column: chart + deliverability + channels ── */
+.nu-mid-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+/* Sends chart panel */
+.nu-chart-panel {
+  flex-shrink: 0;
+}
+
+.nu-chart-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.nu-chart-svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+/* Deliverability panel */
+.nu-deliv-panel {
+  flex-shrink: 0;
+}
+
+.nu-deliv-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.nu-deliv-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nu-deliv-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nu-deliv-label { color: #8b93b3; }
+.nu-deliv-val   { color: #c4cae8; font-weight: 600; }
+
+.nu-deliv-track {
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.055);
+  overflow: hidden;
+}
+
+.nu-deliv-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* Channels panel */
+.nu-chan-panel {
+  flex: 1;
+  min-height: 0;
+}
+
+.nu-chan-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nu-chan-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nu-chan-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.nu-chan-name { color: #8b93b3; }
+.nu-chan-pct  { color: #c4cae8; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.nu-chan-track {
+  height: 6px;
+  border-radius: 4px;
+  background: rgba(255,255,255,.055);
+  overflow: hidden;
+}
+
+.nu-chan-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+/* ── Right column: activity feed ── */
+.nu-feed-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.nu-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.nu-event {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.018);
+  font-size: 11px;
+  color: #9aa3c4;
+  line-height: 1.35;
+  flex-shrink: 0;
+}
+
+.nu-event-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* Reactivation highlight card (money moment) -- keep prominent */
+.nu-react {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: linear-gradient(120deg, rgba(125,245,200,.16), rgba(110,168,255,.10));
+  border: 1px solid rgba(125,245,200,.34);
+  box-shadow: 0 0 0 1px rgba(125,245,200,.08), 0 16px 44px -20px rgba(125,245,200,.5);
+  flex-shrink: 0;
+  margin-bottom: 2px;
+}
+
+.nu-react-glyph {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #7df5c8, #6ea8ff);
+  box-shadow: 0 0 14px rgba(125,245,200,.55);
+}
+
+.nu-react-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nu-react-copy strong {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #f3f6ff;
+  letter-spacing: -.01em;
+}
+
+.nu-react-copy span {
+  font-size: 11px;
+  color: #9aa3c4;
+}
