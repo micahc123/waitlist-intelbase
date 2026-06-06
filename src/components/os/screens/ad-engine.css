@@ -1,0 +1,354 @@
+/* ──────────────────────────────────────────────────────────────
+   Ad Engine - dense ad-ops console.
+   All classes prefixed `.ae-`. Does NOT touch os.css.
+   Tuned to fill 1920x1080 minus top bar (~52px) and ticker (~32px).
+   ────────────────────────────────────────────────────────────── */
+
+.ae-root {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+  min-height: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Top stat strip: 6 live tiles ── */
+.ae-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  flex-shrink: 0;
+}
+.ae-stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 13px 15px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+.ae-stat::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 143, 177, 0.4), transparent);
+  opacity: 0.5;
+}
+.ae-stat-val {
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1;
+  color: #f3f6ff;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.ae-stat-val.is-mint { color: #7df5c8; }
+.ae-stat-val.is-big { font-size: 24px; }
+.ae-stat-label {
+  font-size: 11px;
+  color: #8b93b3;
+  letter-spacing: 0.01em;
+}
+.ae-stat-delta {
+  position: absolute;
+  top: 12px;
+  right: 13px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(125, 245, 200, 0.1);
+  color: #7df5c8;
+  letter-spacing: 0.02em;
+}
+.ae-stat-delta.is-down {
+  background: rgba(110, 168, 255, 0.1);
+  color: #7fb0ff;
+}
+
+/* ── Wide spend + ROAS chart (visual centerpiece) ── */
+.ae-chart-panel { flex-shrink: 0; }
+.ae-chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+.ae-chart-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.ae-chart-title h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #e7ecff;
+  letter-spacing: 0.01em;
+}
+.ae-chart-title span {
+  font-size: 12px;
+  color: #8b93b3;
+}
+.ae-chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.ae-leg-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: #c4cae8;
+}
+.ae-leg-swatch {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+}
+.ae-leg-val {
+  margin-left: 4px;
+  font-weight: 600;
+  color: #f3f6ff;
+  font-variant-numeric: tabular-nums;
+}
+.ae-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.ae-grid-line { stroke: rgba(255, 255, 255, 0.05); stroke-width: 1; }
+.ae-axis-label {
+  fill: #5d6488;
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Lower three-column grid ── */
+.ae-lower {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr 1.1fr;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+}
+.ae-lower .os-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ── Budget allocation (tightened, rich rows) ── */
+.ae-callout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 13px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: linear-gradient(120deg, rgba(125, 245, 200, 0.16), rgba(110, 168, 255, 0.1));
+  border: 1px solid rgba(125, 245, 200, 0.34);
+  box-shadow: 0 0 0 1px rgba(125, 245, 200, 0.08), 0 14px 40px -22px rgba(125, 245, 200, 0.6);
+}
+.ae-callout-glyph {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #7df5c8, #6ea8ff);
+  box-shadow: 0 0 16px rgba(125, 245, 200, 0.6);
+}
+.ae-callout-copy { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.ae-callout-copy strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f3f6ff;
+  letter-spacing: -0.01em;
+}
+.ae-callout-copy span { font-size: 11px; color: #9aa3c4; }
+
+.ae-alloc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ae-alloc {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 11px 12px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.ae-alloc.is-winner {
+  background: rgba(125, 245, 200, 0.05);
+  border-color: rgba(125, 245, 200, 0.18);
+}
+.ae-alloc-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.ae-alloc-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f3f6ff;
+  letter-spacing: -0.01em;
+}
+.ae-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(125, 245, 200, 0.12);
+  border: 1px solid rgba(125, 245, 200, 0.3);
+  color: #7df5c8;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.ae-alloc-roas {
+  font-size: 12px;
+  color: #8b93b3;
+  font-variant-numeric: tabular-nums;
+}
+.ae-alloc-roas b { color: #c4cae8; font-weight: 600; }
+.ae-alloc-bar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 11px;
+}
+.ae-alloc-track {
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.ae-alloc-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ae-alloc-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: #c4cae8;
+  font-variant-numeric: tabular-nums;
+  min-width: 58px;
+  text-align: right;
+}
+.ae-alloc-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.ae-alloc-stats {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: #7b83a4;
+  font-variant-numeric: tabular-nums;
+}
+.ae-alloc-stats b { color: #c4cae8; font-weight: 600; }
+.ae-alloc-spark { flex-shrink: 0; opacity: 0.9; }
+
+/* ── Audience breakdown ── */
+.ae-aud {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ae-aud-foot {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.ae-aud-mini { display: flex; flex-direction: column; gap: 3px; }
+.ae-aud-mini-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f3f6ff;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.ae-aud-mini-val.is-mint { color: #7df5c8; }
+.ae-aud-mini-label { font-size: 11px; color: #8b93b3; }
+
+/* ── Performance ROAS mini-panel (inside decisions column) ── */
+.ae-perf {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.ae-perf-num {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  color: #7df5c8;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.ae-perf-cap { font-size: 11px; color: #8b93b3; margin-top: 4px; }
+
+/* ── Autonomous decisions log ── */
+.ae-log {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 8px;
+}
+.ae-log-row {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 2px;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.035);
+}
+.ae-log-row:last-child { border-bottom: none; }
+.ae-log-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ae-log-tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #7b83a4;
+  min-width: 44px;
+}
+.ae-log-text {
+  color: #c4cae8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+.ae-log-text .mono { color: #8b93b3; }
