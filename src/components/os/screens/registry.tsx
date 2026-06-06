@@ -1,5 +1,6 @@
 import type { ScreenId } from "@/lib/os-demo/types";
 import { Overview } from "./overview";
+import { Concierge } from "./concierge";
 
 export type Registered = {
   id: ScreenId;
@@ -10,4 +11,5 @@ export type Registered = {
 // Append future screens here as later tasks land them.
 export const SCREENS: Registered[] = [
   { id: "overview", label: "Overview", Component: Overview },
+  { id: "concierge", label: "Concierge", Component: Concierge },
 ];
