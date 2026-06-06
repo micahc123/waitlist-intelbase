@@ -252,8 +252,8 @@ export function Modules() {
     <div className="os-modules">
       <header className="os-screen-head">
         <div>
-          <h2 className="os-screen-title">Modules</h2>
-          <p className="os-screen-sub">Switch on new capabilities as you grow</p>
+          <h2 className="os-screen-title">Agents</h2>
+          <p className="os-screen-sub">Switch on new AI agents as you grow</p>
         </div>
         <div className="os-status-pill os-status-pill-violet">
           <span className="os-status-dot os-status-dot-violet" />

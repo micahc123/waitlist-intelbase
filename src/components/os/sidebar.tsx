@@ -91,7 +91,7 @@ export function Sidebar({ active, onSelect }: Props) {
       </div>
 
       <div className="os-side-section">
-        <div className="os-side-head">Agents</div>
+        <div className="os-side-head">Runtime</div>
         <div className="os-side-agents">
           {AGENTS.map((a) => {
             const req = Math.max(0, Math.floor(wobble(a.seed, t, 120, 40, 0.7)));

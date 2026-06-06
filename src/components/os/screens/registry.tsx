@@ -19,5 +19,5 @@ export const SCREENS: Registered[] = [
   { id: "pipeline", label: "Pipeline", Component: Pipeline },
   { id: "nurture", label: "Nurture", Component: Nurture },
   { id: "ad-engine", label: "Ad Engine", Component: AdEngine },
-  { id: "modules", label: "Modules", Component: Modules },
+  { id: "modules", label: "Agents", Component: Modules },
 ];
