@@ -1,0 +1,4 @@
+.os-root { position: fixed; inset: 0; background: #07080d; color: #e7ecff; overflow: hidden; }
+.os-shell { display: grid; grid-template-columns: 248px 1fr; height: 100%; }
+.os-sidebar { border-right: 1px solid rgba(255,255,255,.06); padding: 20px; }
+.os-screen { padding: 28px 32px; overflow: hidden; }

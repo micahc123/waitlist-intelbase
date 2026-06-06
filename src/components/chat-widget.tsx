@@ -9,6 +9,7 @@
 // site's CSS variables, so it matches the brand without touching globals.css.
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { trackLead, trackConciergeAbandoned } from "@/lib/meta-pixel";
 
 type Role = "user" | "assistant";
@@ -35,6 +36,7 @@ const GREETING: UiMessage = {
 };
 
 export function ChatWidget() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<UiMessage[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -157,6 +159,9 @@ export function ChatWidget() {
       window.removeEventListener("pagehide", maybeFireAbandon);
     };
   }, []);
+
+  // Hide the chat bubble on the /os demo route so it does not appear in recordings.
+  if (pathname?.startsWith("/os")) return null;
 
   return (
     <>
