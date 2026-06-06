@@ -615,3 +615,170 @@
       0 0 18px -4px rgba(110,168,255,.4);
   }
 }
+
+/* ── Nurture screen ── */
+.os-nurture {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  height: 100%;
+}
+
+/* Amber status pill variant */
+.os-status-pill-amber {
+  background: rgba(255,209,102,.08);
+  border-color: rgba(255,209,102,.24);
+  color: #ffe2a3;
+}
+.os-status-dot-amber {
+  background: #ffd166;
+  box-shadow: 0 0 8px #ffd166;
+}
+
+/* Top summary stat tiles */
+.os-nu-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.os-nu-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.025);
+  border: 1px solid rgba(255,255,255,.07);
+}
+.os-nu-stat-val {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  color: #f3f6ff;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+}
+.os-nu-stat-mint { color: #7df5c8; }
+.os-nu-stat-label {
+  font-size: 12px;
+  color: #8b93b3;
+}
+
+/* Main two-column area */
+.os-nu-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+.os-nu-seq-panel,
+.os-nu-feed-panel { display: flex; flex-direction: column; }
+
+/* Active sequences list */
+.os-nu-seq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  justify-content: space-evenly;
+}
+.os-nu-seq {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 16px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.05);
+}
+.os-nu-seq-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.os-nu-seq-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f3f6ff;
+  letter-spacing: -.01em;
+}
+.os-nu-seq-meta {
+  font-size: 12px;
+  color: #8b93b3;
+}
+.os-nu-seq-track {
+  height: 9px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+}
+.os-nu-seq-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width .6s ease;
+}
+.os-nu-seq-figs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.os-nu-seq-sep { color: #5a6182; font-weight: 400; }
+.os-nu-seq-replies { color: #8b93b3; font-weight: 500; }
+
+/* Recent activity feed */
+.os-nu-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+.os-nu-event {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.02);
+  font-size: 13px;
+  color: #c4cae8;
+}
+.os-nu-event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Reactivation highlight card (money moment) */
+.os-nu-react {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 16px;
+  border-radius: 14px;
+  background: linear-gradient(120deg, rgba(125,245,200,.16), rgba(110,168,255,.10));
+  border: 1px solid rgba(125,245,200,.34);
+  box-shadow: 0 0 0 1px rgba(125,245,200,.08), 0 16px 44px -20px rgba(125,245,200,.6);
+}
+.os-nu-react-glyph {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #7df5c8, #6ea8ff);
+  box-shadow: 0 0 18px rgba(125,245,200,.6);
+}
+.os-nu-react-copy { display: flex; flex-direction: column; gap: 2px; }
+.os-nu-react-copy strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f3f6ff;
+  letter-spacing: -.01em;
+}
+.os-nu-react-copy span { font-size: 12px; color: #9aa3c4; }
