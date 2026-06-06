@@ -148,7 +148,7 @@ export function Overview() {
           const v = wobble(tile.seed, t, tile.base, tile.amp, tile.freq);
           const prev = wobble(tile.seed, t - 1.2, tile.base, tile.amp, tile.freq);
           const rising = v >= prev;
-          const good = tile.invert ? !rising : rising;
+          const good = "invert" in tile && tile.invert ? !rising : rising;
           const deltaPct = prev !== 0 ? ((v - prev) / Math.abs(prev)) * 100 : 0;
           return (
             <div className="ov-tile" key={tile.label}>

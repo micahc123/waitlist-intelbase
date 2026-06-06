@@ -106,7 +106,7 @@ function SendsChart({ series }: { series: number[] }) {
       {gridLines.map(({ y, label }) => (
         <g key={y}>
           <line x1="0" y1={y} x2={W} y2={y} stroke="rgba(255,255,255,.06)" strokeWidth="1" />
-          <text x="3" y={Number(y) - 2} fontSize="8" fill="rgba(255,255,255,.22)" fontVariantNumeric="tabular-nums">
+          <text x="3" y={Number(y) - 2} fontSize="8" fill="rgba(255,255,255,.22)" style={{ fontVariantNumeric: "tabular-nums" }}>
             {label}
           </text>
         </g>
