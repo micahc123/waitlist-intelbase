@@ -15,8 +15,31 @@ import { DetailPanel } from "./detail-panel";
 import { Constellation } from "./constellation/constellation";
 import { BootSequence } from "./boot-sequence";
 import { CommandPalette } from "./command-palette";
+import { Brain } from "./views/brain";
+import { Deck } from "./views/deck";
+import { Team } from "./views/team";
+import { Usage } from "./views/usage";
+import { Settings } from "./views/settings";
 
 const VIEW_ORDER: ViewId[] = ["agents", "brain", "deck", "team", "usage", "settings"];
+
+function Stage() {
+  const { view } = useSim();
+  if (view === "agents") {
+    return (
+      <>
+        <Constellation />
+        <LiveFeed />
+        <DetailPanel />
+      </>
+    );
+  }
+  if (view === "brain") return <Brain />;
+  if (view === "deck") return <Deck />;
+  if (view === "team") return <Team />;
+  if (view === "usage") return <Usage />;
+  return <Settings />;
+}
 
 function Shell({ onReplayBoot }: { onReplayBoot: () => void }) {
   const { setView, setSelected } = useSim();
@@ -69,11 +92,7 @@ function Shell({ onReplayBoot }: { onReplayBoot: () => void }) {
       {/* TOP BAR */}
       <header className="cmd-topbar">
         <div className="cmd-brand">
-          <span className="cmd-mark">
-            <span />
-          </span>
           <span className="cmd-wordmark">Intelbase</span>
-          <span className="cmd-build">v2.6.0 / core-α</span>
         </div>
         <TopTabs />
         <div className="cmd-topbar-spacer" />
@@ -90,14 +109,8 @@ function Shell({ onReplayBoot }: { onReplayBoot: () => void }) {
           <span className="cmd-corner cmd-corner--bl" />
           <span className="cmd-corner cmd-corner--br" />
 
-          {/* Live 2.5D constellation */}
-          <Constellation />
-
-          {/* Floating live feed over the left of the stage */}
-          <LiveFeed />
-
-          {/* Slide-in detail panel (only when a node is selected) */}
-          <DetailPanel />
+          {/* Active view (constellation for agents; other tabs render their own view) */}
+          <Stage />
         </div>
       </div>
 
