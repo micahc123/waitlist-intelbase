@@ -10,6 +10,7 @@ import { DomainRail } from "./domain-rail";
 import { LiveFeed } from "./live-feed";
 import { CommandBar } from "./command-bar";
 import { DetailPanel } from "./detail-panel";
+import { Constellation } from "./constellation/constellation";
 
 const VIEW_ORDER: ViewId[] = ["agents", "brain", "deck", "team", "usage", "settings"];
 
@@ -62,19 +63,8 @@ function Shell() {
           <span className="cmd-corner cmd-corner--bl" />
           <span className="cmd-corner cmd-corner--br" />
 
-          {/* Placeholder constellation (replaced next task) */}
-          <div className="cmd-stage-ph">
-            <div className="cmd-stage-rings">
-              <span className="cmd-ring cmd-ring--1" />
-              <span className="cmd-ring cmd-ring--2" />
-              <span className="cmd-ring cmd-ring--3" />
-            </div>
-            <div className="cmd-stage-shimmer" />
-            <div className="cmd-stage-label">
-              <span>CONSTELLATION</span>
-              <small>INITIALIZING NEURAL MESH</small>
-            </div>
-          </div>
+          {/* Live 2.5D constellation */}
+          <Constellation />
 
           {/* Floating live feed over the left of the stage */}
           <LiveFeed />

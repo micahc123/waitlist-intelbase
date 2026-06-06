@@ -1,0 +1,325 @@
+/* ============================================================================
+   Intelbase Constellation - live 2.5D node graph
+   Layers (back -> front): particles canvas, strands SVG, nodes DOM, vignette.
+   Near-black neon HUD aesthetic. Heavy but tasteful glow.
+   ============================================================================ */
+
+.cst-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  contain: layout paint;
+}
+.cst-stage.is-dragging {
+  cursor: grabbing;
+}
+
+/* faint HUD grid behind everything, masked toward center */
+.cst-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(110, 168, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(110, 168, 255, 0.045) 1px, transparent 1px);
+  background-size: 58px 58px;
+  mask-image: radial-gradient(circle at 50% 50%, black 24%, transparent 76%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, black 24%, transparent 76%);
+}
+
+/* central core glow bloom behind the graph */
+.cst-stage::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 620px;
+  height: 620px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(110, 168, 255, 0.16), rgba(183, 156, 255, 0.06) 42%, transparent 68%);
+  filter: blur(4px);
+}
+
+.cst-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cst-strands {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  overflow: visible;
+}
+.cst-strand-line {
+  stroke-linecap: round;
+  transition: opacity 0.18s linear;
+}
+.cst-strand-glow {
+  stroke-linecap: round;
+  filter: blur(2.5px);
+}
+.cst-strand-pulse {
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+/* ---------------------------------------------------------------------------
+   NODES
+   --------------------------------------------------------------------------- */
+.cst-nodes {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.cst-node {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  pointer-events: auto;
+  cursor: pointer;
+  will-change: transform, opacity;
+  transition: opacity 0.2s linear;
+  /* transform driven imperatively */
+}
+
+.cst-node-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  color: var(--nc);
+  background:
+    radial-gradient(circle at 32% 28%, color-mix(in srgb, var(--nc) 26%, transparent), transparent 70%),
+    rgba(8, 11, 20, 0.82);
+  border: 1px solid color-mix(in srgb, var(--nc) 55%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--nc) 18%, transparent),
+    0 0 12px color-mix(in srgb, var(--nc) 40%, transparent),
+    0 0 26px color-mix(in srgb, var(--nc) 22%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--nc) 22%, transparent);
+  transition: box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.cst-node-tile::after {
+  /* blurred color halo */
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 14px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--nc) 45%, transparent), transparent 70%);
+  filter: blur(7px);
+  opacity: 0.5;
+  z-index: -1;
+}
+
+.cst-node--core .cst-node-tile { width: 64px; height: 64px; border-radius: 16px; }
+.cst-node--agent .cst-node-tile { width: 40px; height: 40px; }
+.cst-node--client .cst-node-tile { width: 30px; height: 30px; border-radius: 8px; }
+
+/* meta block (label + detail + spark) */
+.cst-node-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  max-width: 130px;
+}
+.cst-node-label {
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: rgba(233, 238, 251, 0.78);
+  white-space: nowrap;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+}
+.cst-node--agent .cst-node-label { font-weight: 700; font-size: 11px; color: rgba(233, 238, 251, 0.95); }
+.cst-node--core .cst-node-label {
+  font-weight: 800;
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  color: #fff;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--nc) 70%, transparent);
+}
+.cst-node--client .cst-node-label { color: rgba(233, 238, 251, 0.62); }
+
+.cst-node-detail {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 8px;
+}
+.cst-node-lvl {
+  color: var(--nc);
+  border: 1px solid color-mix(in srgb, var(--nc) 45%, transparent);
+  border-radius: 4px;
+  padding: 0 3px;
+  background: color-mix(in srgb, var(--nc) 12%, transparent);
+}
+.cst-node-metric { color: rgba(233, 238, 251, 0.5); white-space: nowrap; }
+.cst-node-spark { display: none; width: 56px; height: 16px; opacity: 0.85; }
+
+/* show detail + spark when node is near (large) or focused */
+.cst-node.is-near .cst-node-detail,
+.cst-node.is-hover .cst-node-detail,
+.cst-node.is-selected .cst-node-detail,
+.cst-node--core .cst-node-detail { display: flex; }
+.cst-node.is-near .cst-node-spark,
+.cst-node--agent.is-near .cst-node-spark,
+.cst-node.is-selected .cst-node-spark { display: block; }
+
+/* hover / selected glow boost */
+.cst-node.is-hover .cst-node-tile,
+.cst-node.is-selected .cst-node-tile {
+  border-color: var(--nc);
+  box-shadow:
+    0 0 0 1px var(--nc),
+    0 0 18px color-mix(in srgb, var(--nc) 70%, transparent),
+    0 0 42px color-mix(in srgb, var(--nc) 45%, transparent),
+    inset 0 0 14px color-mix(in srgb, var(--nc) 35%, transparent);
+}
+.cst-node.is-hover .cst-node-tile::after,
+.cst-node.is-selected .cst-node-tile::after { opacity: 0.95; }
+
+/* CORE styling - bigger, brighter, pulsing, concentric rings */
+.cst-node--core {
+  z-index: 50;
+}
+.cst-node--core .cst-node-tile {
+  animation: cst-core-pulse 3.4s ease-in-out infinite;
+  box-shadow:
+    0 0 0 1px var(--nc),
+    0 0 26px color-mix(in srgb, var(--nc) 75%, transparent),
+    0 0 64px color-mix(in srgb, var(--nc) 45%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--nc) 40%, transparent);
+}
+@keyframes cst-core-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.28); }
+}
+.cst-core-ring {
+  position: absolute;
+  left: 50%;
+  top: 32px; /* tile center offset: 64/2 */
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--nc) 35%, transparent);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.cst-core-ring--1 { width: 96px; height: 96px; border-style: dashed; animation: cst-spin 18s linear infinite; }
+.cst-core-ring--2 { width: 140px; height: 140px; border-color: color-mix(in srgb, var(--nc) 22%, transparent); animation: cst-spin 30s linear infinite reverse; }
+.cst-core-ring--3 { width: 188px; height: 188px; border-color: color-mix(in srgb, var(--nc) 14%, transparent); }
+@keyframes cst-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+/* firing flash + emitted ring */
+.cst-fire-ring {
+  position: absolute;
+  left: 50%;
+  top: 15px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--nc);
+  transform: translate(-50%, -50%) scale(0.6);
+  opacity: 0;
+  pointer-events: none;
+}
+.cst-node--agent .cst-fire-ring { top: 20px; width: 40px; height: 40px; }
+.cst-node--core .cst-fire-ring { top: 32px; width: 64px; height: 64px; }
+.cst-node.is-firing .cst-fire-ring {
+  animation: cst-fire 0.5s ease-out;
+}
+.cst-node.is-firing .cst-node-tile {
+  border-color: #fff;
+  box-shadow:
+    0 0 0 1px #fff,
+    0 0 24px color-mix(in srgb, var(--nc) 85%, white),
+    0 0 50px color-mix(in srgb, var(--nc) 55%, transparent);
+}
+@keyframes cst-fire {
+  0% { transform: translate(-50%, -50%) scale(0.55); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(2.1); opacity: 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   TOOLTIP
+   --------------------------------------------------------------------------- */
+.cst-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%) translateY(4px);
+  min-width: 150px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(8, 11, 20, 0.94);
+  border: 1px solid color-mix(in srgb, var(--nc) 45%, transparent);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 18px color-mix(in srgb, var(--nc) 30%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 80;
+  transition: opacity 0.14s ease, transform 0.14s ease;
+  backdrop-filter: blur(6px);
+}
+.cst-node.is-hover .cst-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.cst-tip-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.cst-tip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 3px;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  color: var(--nc);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.cst-tip-kind { color: rgba(233, 238, 251, 0.45); }
+.cst-tip-metric {
+  margin-top: 5px;
+  font-size: 10px;
+  color: rgba(233, 238, 251, 0.78);
+}
+
+/* ---------------------------------------------------------------------------
+   VIGNETTE
+   --------------------------------------------------------------------------- */
+.cst-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 48%, transparent 52%, rgba(5, 6, 11, 0.5) 88%, rgba(5, 6, 11, 0.82) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cst-node--core .cst-node-tile,
+  .cst-core-ring--1,
+  .cst-core-ring--2 { animation: none; }
+}
