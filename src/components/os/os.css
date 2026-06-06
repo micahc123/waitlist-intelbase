@@ -1015,3 +1015,128 @@
   font-variant-numeric: tabular-nums;
 }
 .os-ade-leg.is-winner .os-ade-leg-roas { color: #7df5c8; }
+
+/* ── Modules screen ── */
+.os-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 100%;
+}
+
+/* Violet status pill variant */
+.os-status-pill-violet {
+  background: rgba(183,156,255,.08);
+  border-color: rgba(183,156,255,.24);
+  color: #d8ccff;
+}
+.os-status-dot-violet {
+  background: #b79cff;
+  box-shadow: 0 0 8px #b79cff;
+}
+
+/* 3x2 module grid */
+.os-modules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 18px;
+  flex: 1;
+  min-height: 0;
+  max-width: 1140px;
+  width: 100%;
+}
+
+/* Base module card */
+.os-module-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 22px 20px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.025);
+  border: 1px solid rgba(255,255,255,.07);
+  position: relative;
+  transition: border-color .3s ease, box-shadow .3s ease, opacity .3s ease;
+}
+
+/* Active card: glowing border + subtle glow */
+.os-module-card-on {
+  border-color: rgba(183,156,255,.28);
+  box-shadow:
+    0 0 0 1px rgba(183,156,255,.08),
+    0 12px 40px -16px rgba(183,156,255,.35);
+}
+
+/* Inactive card: dimmed */
+.os-module-card-off {
+  opacity: 0.48;
+}
+
+/* Icon glyph block */
+.os-module-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  flex-shrink: 0;
+  box-shadow: 0 0 18px rgba(110,168,255,.3);
+}
+
+/* Text body */
+.os-module-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+.os-module-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e7ecff;
+  letter-spacing: -.01em;
+  line-height: 1.25;
+}
+.os-module-desc {
+  font-size: 13px;
+  color: #8b93b3;
+  line-height: 1.5;
+}
+
+/* Toggle pill */
+.os-module-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 999px;
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+.os-module-toggle-on {
+  background: rgba(125,245,200,.10);
+  border: 1px solid rgba(125,245,200,.28);
+  color: #7df5c8;
+}
+.os-module-toggle-off {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  color: #5a6182;
+}
+
+/* Knob inside toggle */
+.os-module-toggle-knob {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.os-module-toggle-on .os-module-toggle-knob {
+  background: #7df5c8;
+  box-shadow: 0 0 6px rgba(125,245,200,.7);
+}
+.os-module-toggle-off .os-module-toggle-knob {
+  background: rgba(255,255,255,.15);
+}
+.os-module-toggle-label { line-height: 1; }

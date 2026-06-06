@@ -4,6 +4,7 @@ import { Concierge } from "./concierge";
 import { Pipeline } from "./pipeline";
 import { Nurture } from "./nurture";
 import { AdEngine } from "./ad-engine";
+import { Modules } from "./modules";
 
 export type Registered = {
   id: ScreenId;
@@ -18,4 +19,5 @@ export const SCREENS: Registered[] = [
   { id: "pipeline", label: "Pipeline", Component: Pipeline },
   { id: "nurture", label: "Nurture", Component: Nurture },
   { id: "ad-engine", label: "Ad Engine", Component: AdEngine },
+  { id: "modules", label: "Modules", Component: Modules },
 ];
