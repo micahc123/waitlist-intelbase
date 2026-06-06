@@ -1,0 +1,88 @@
+/* ============================================================================
+   USAGE VIEW - Analytics data room
+   ============================================================================ */
+
+.us-root {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 22px 28px 40px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.us-root::-webkit-scrollbar { width: 9px; }
+.us-root::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 6px; }
+.us-root::-webkit-scrollbar-track { background: transparent; }
+
+.us-head {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 20px;
+  padding-bottom: 18px; margin-bottom: 20px; border-bottom: 1px solid var(--hair);
+}
+.us-head-l { display: flex; align-items: center; gap: 16px; }
+.us-head-mark {
+  width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+  background: radial-gradient(circle at 30% 25%, rgba(183,156,255,0.36), rgba(183,156,255,0.05) 70%);
+  border: 1px solid rgba(183,156,255,0.3); color: var(--violet);
+  box-shadow: 0 0 24px rgba(183,156,255,0.18), inset 0 0 12px rgba(183,156,255,0.1);
+}
+.us-title { font-size: 22px; font-weight: 650; letter-spacing: -0.01em; color: var(--ink); line-height: 1.1; }
+.us-sub { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint); margin-top: 5px; }
+.us-live { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mint); }
+.us-live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 8px var(--mint); animation: us-blink 1.6s ease-in-out infinite; }
+@keyframes us-blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* stat tiles */
+.us-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px; }
+.us-tile {
+  border: 1px solid var(--hair); border-radius: 14px; padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.012));
+  position: relative; overflow: hidden;
+}
+.us-tile::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--tc); opacity: 0.6; }
+.us-tile-k { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+.us-tile-k svg { color: var(--tc); }
+.us-tile-v { font-family: var(--mono); font-size: 26px; font-variant-numeric: tabular-nums; color: var(--ink); margin-top: 8px; font-weight: 600; }
+.us-tile-v small { font-size: 13px; color: var(--ink-dim); margin-left: 3px; }
+.us-tile-d { font-family: var(--mono); font-size: 10px; margin-top: 6px; color: var(--mint); }
+.us-tile-d[data-dir="down"] { color: var(--mint); }
+
+/* main chart */
+.us-chart-card {
+  border: 1px solid var(--hair); border-radius: 16px; padding: 16px 18px 8px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.008));
+  margin-bottom: 16px;
+}
+.us-chart-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
+.us-chart-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+.us-chart-now { font-family: var(--mono); font-size: 12px; color: var(--violet); font-variant-numeric: tabular-nums; }
+.us-chart svg { display: block; width: 100%; height: auto; }
+.us-chart-axis { font-family: var(--mono); font-size: 9px; fill: var(--ink-faint); }
+.us-chart-x { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9px; color: var(--ink-faint); padding: 4px 2px 4px; letter-spacing: 0.05em; }
+
+/* two-column lower */
+.us-lower { display: grid; grid-template-columns: 1.25fr 1fr; gap: 16px; }
+.us-panel {
+  border: 1px solid var(--hair); border-radius: 16px; padding: 16px 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.008));
+}
+.us-panel-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.us-panel-title span { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); font-weight: 400; margin-left: auto; }
+
+/* domain bars */
+.us-dbar { display: flex; align-items: center; gap: 12px; margin-bottom: 11px; }
+.us-dbar:last-child { margin-bottom: 0; }
+.us-dbar-name { width: 86px; flex-shrink: 0; font-size: 11.5px; color: var(--ink-dim); display: flex; align-items: center; gap: 7px; }
+.us-dbar-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--dc); box-shadow: 0 0 6px var(--dc); flex-shrink: 0; }
+.us-dbar-track { flex: 1; height: 7px; border-radius: 4px; background: rgba(255,255,255,0.06); overflow: hidden; }
+.us-dbar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, color-mix(in srgb, var(--dc) 50%, transparent), var(--dc)); box-shadow: 0 0 8px color-mix(in srgb, var(--dc) 60%, transparent); }
+.us-dbar-val { width: 42px; text-align: right; font-family: var(--mono); font-size: 10.5px; color: var(--ink); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+
+/* top consumers */
+.us-cons { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--hair); }
+.us-cons:last-child { border-bottom: none; }
+.us-cons-ava { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; display: grid; place-items: center; background: color-mix(in srgb, var(--dc) 14%, transparent); border: 1px solid color-mix(in srgb, var(--dc) 30%, transparent); color: var(--dc); }
+.us-cons-id { flex: 1; min-width: 0; }
+.us-cons-name { font-size: 12px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.us-cons-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); overflow: hidden; margin-top: 4px; }
+.us-cons-bar-fill { height: 100%; border-radius: 2px; background: var(--dc); box-shadow: 0 0 6px var(--dc); }
+.us-cons-val { font-family: var(--mono); font-size: 11px; color: var(--ink-dim); font-variant-numeric: tabular-nums; flex-shrink: 0; }

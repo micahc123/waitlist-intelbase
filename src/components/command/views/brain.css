@@ -1,0 +1,158 @@
+/* ============================================================================
+   Neural Brain view - WebGL stage + Jarvis HUD overlay.
+   Near-black base, neon telemetry, glass panels, glows.
+   ============================================================================ */
+
+.brain-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 46%, rgba(20, 32, 64, 0.55), rgba(5, 6, 11, 0) 60%),
+    radial-gradient(80% 70% at 50% 55%, rgba(8, 14, 30, 0.6), rgba(3, 4, 8, 0) 70%),
+    #04050a;
+  cursor: grab;
+  touch-action: none;
+}
+.brain-stage.is-dragging {
+  cursor: grabbing;
+}
+
+.brain-canvas {
+  position: absolute !important;
+  inset: 0;
+  display: block;
+}
+
+.brain-backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 50% at 50% 50%, rgba(18, 30, 60, 0.5), rgba(4, 5, 10, 0) 70%), #04050a;
+}
+
+/* faint scanline / vignette to seat the brain in the frame */
+.brain-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 120% at 50% 50%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.55) 100%);
+  mix-blend-mode: normal;
+}
+
+/* ---------------------------------- HUD ---------------------------------- */
+.brain-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: var(--mono, ui-monospace, Menlo, monospace);
+  color: #e9eefb;
+  z-index: 5;
+}
+
+.brain-hud-title {
+  position: absolute;
+  top: 26px;
+  left: 28px;
+}
+.brain-hud-h1 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #f3f6ff;
+  text-shadow: 0 0 18px rgba(110, 168, 255, 0.55), 0 0 4px rgba(110, 168, 255, 0.4);
+}
+.brain-hud-sub {
+  margin-top: 6px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a93ad;
+}
+.brain-hud-status {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #aeb8d4;
+  padding: 5px 10px 5px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(6px);
+}
+.brain-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #5b6379;
+  box-shadow: 0 0 0 rgba(125, 245, 200, 0);
+}
+.brain-dot.live {
+  background: #7df5c8;
+  box-shadow: 0 0 10px rgba(125, 245, 200, 0.9);
+  animation: brain-pulse 1.2s ease-in-out infinite;
+}
+@keyframes brain-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.78); }
+}
+
+/* region legend - glass panel top-right */
+.brain-legend {
+  position: absolute;
+  top: 26px;
+  right: 28px;
+  min-width: 168px;
+  padding: 14px 16px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+.brain-legend-h {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #6f7896;
+  margin-bottom: 10px;
+}
+.brain-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 3px 0;
+}
+.brain-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.brain-legend-name {
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  color: #cdd5ea;
+}
+
+/* bottom hint */
+.brain-hint {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #5b6379;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(6px);
+}

@@ -1,7 +1,262 @@
 "use client";
 
-import { ViewPlaceholder } from "./placeholder";
+import { useState } from "react";
+import * as Lucide from "lucide-react";
+import { useSim } from "@/lib/command/use-sim";
+import "./settings.css";
+
+function Switch({ on, onClick, accent = "#6ea8ff" }: { on: boolean; onClick: () => void; accent?: string }) {
+  return (
+    <button
+      type="button"
+      className="st-switch"
+      data-on={on}
+      style={{ ["--ac" as string]: accent }}
+      onClick={onClick}
+      aria-pressed={on}
+    >
+      <span className="st-switch-knob" />
+    </button>
+  );
+}
+
+function Section({
+  icon,
+  title,
+  tag,
+  children,
+}: {
+  icon: string;
+  title: string;
+  tag?: string;
+  children: React.ReactNode;
+}) {
+  const ICONS = Lucide as unknown as Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>>;
+  const C = ICONS[icon] ?? Lucide.Circle;
+  return (
+    <section className="st-section">
+      <div className="st-sec-head">
+        <span className="st-sec-icon">
+          <C size={15} strokeWidth={1.7} />
+        </span>
+        <span className="st-sec-title">{title}</span>
+        {tag && <span className="st-sec-tag">{tag}</span>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+const ACCENTS = [
+  { id: "blue", color: "#6ea8ff" },
+  { id: "mint", color: "#7df5c8" },
+  { id: "violet", color: "#b79cff" },
+  { id: "amber", color: "#ffb86b" },
+  { id: "pink", color: "#ff8fb1" },
+];
 
 export function Settings() {
-  return <ViewPlaceholder title="Settings" sub="Coming online" icon="Settings2" />;
+  const { paused, setPaused, speed, setSpeed } = useSim();
+
+  // visual-only local toggles (cosmetic, do not affect shared sim)
+  const [bloom, setBloom] = useState(true);
+  const [particles, setParticles] = useState(true);
+  const [labels, setLabels] = useState(true);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [autoFocus, setAutoFocus] = useState(true);
+  const [feedSound, setFeedSound] = useState(false);
+  const [accent, setAccent] = useState("blue");
+
+  const accentColor = ACCENTS.find((a) => a.id === accent)?.color ?? "#6ea8ff";
+
+  return (
+    <div className="st-root">
+      <div className="st-head">
+        <span className="st-head-mark">
+          <Lucide.SlidersHorizontal size={22} strokeWidth={1.6} />
+        </span>
+        <div>
+          <div className="st-title">Director Controls</div>
+          <div className="st-sub">Tune the sim before recording</div>
+        </div>
+      </div>
+
+      <div className="st-cols">
+        {/* LEFT COLUMN */}
+        <div>
+          <Section icon="Activity" title="Simulation" tag="live">
+            <button
+              type="button"
+              className="st-pause"
+              data-running={!paused}
+              onClick={() => setPaused(!paused)}
+            >
+              <span className="st-pause-ic">
+                {paused ? <Lucide.Play size={20} strokeWidth={1.7} /> : <Lucide.Pause size={20} strokeWidth={1.7} />}
+              </span>
+              <span className="st-pause-id">
+                <span className="st-pause-state">{paused ? "Paused" : "Running"}</span>
+                <span className="st-pause-hint">{paused ? "Click to resume the simulation" : "Click to freeze every agent"}</span>
+              </span>
+              <span className="st-pause-led">
+                <span className="st-pause-led-dot" />
+                {paused ? "halted" : "active"}
+              </span>
+            </button>
+
+            <div className="st-row">
+              <div className="st-row-id">
+                <div className="st-row-label">Simulation speed</div>
+                <div className="st-row-desc">Time multiplier for the whole plane</div>
+              </div>
+              <div className="st-seg" style={{ ["--ac" as string]: accentColor }}>
+                {[1, 2, 4].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className="st-seg-btn"
+                    data-on={speed === s}
+                    onClick={() => setSpeed(s)}
+                  >
+                    {s}x
+                  </button>
+                ))}
+              </div>
+            </div>
+          </Section>
+
+          <Section icon="Sparkles" title="Visuals" tag="cosmetic">
+            <div className="st-row">
+              <div className="st-row-id">
+                <div className="st-row-label">Bloom intensity</div>
+                <div className="st-row-desc">Neon glow around live nodes</div>
+              </div>
+              <Switch on={bloom} onClick={() => setBloom((v) => !v)} accent={accentColor} />
+            </div>
+            <div className="st-row">
+              <div className="st-row-id">
+                <div className="st-row-label">Particles</div>
+                <div className="st-row-desc">Ambient data motes in the field</div>
+              </div>
+              <Switch on={particles} onClick={() => setParticles((v) => !v)} accent={accentColor} />
+            </div>
+            <div className="st-row">
+              <div className="st-row-id">
+                <div className="st-row-label">Node labels</div>
+                <div className="st-row-desc">Show names on the constellation</div>
+              </div>
+              <Switch on={labels} onClick={() => setLabels((v) => !v)} accent={accentColor} />
+            </div>
+            <div className="st-row">
+              <div className="st-row-id">
+                <div className="st-row-label">Reduced motion</div>
+                <div className="st-row-desc">Calm transitions for capture</div>
+              </div>
+              <Switch on={reducedMotion} onClick={() => setReducedMotion((v) => !v)} accent={accentColor} />
+            </div>
+          </Section>
+
+          <Section icon="Palette" title="Theme" tag="accent">
+            <div className="st-row">
+              <div className="st-row-id">
+                <div className="st-row-label">Accent color</div>
+                <div className="st-row-desc">Primary highlight across the HUD</div>
+              </div>
+              <div className="st-accents">
+                {ACCENTS.map((a) => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    className="st-accent"
+                    data-on={accent === a.id}
+                    style={{ background: a.color, color: a.color }}
+                    onClick={() => setAccent(a.id)}
+                    aria-label={a.id}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="st-row">
+              <div className="st-row-id">
+                <div className="st-row-label">Base palette</div>
+                <div className="st-row-desc">Near-black Jarvis HUD</div>
+              </div>
+              <div className="st-seg" style={{ ["--ac" as string]: accentColor }}>
+                <button type="button" className="st-seg-btn" data-on={true}>
+                  Midnight
+                </button>
+                <button type="button" className="st-seg-btn" data-on={false}>
+                  Obsidian
+                </button>
+              </div>
+            </div>
+          </Section>
+        </div>
+
+        {/* RIGHT COLUMN */}
+        <div>
+          <Section icon="UserCircle2" title="Profile and workspace">
+            <div className="st-profile">
+              <span className="st-pf-ava">MC</span>
+              <div className="st-pf-id">
+                <div className="st-pf-name">Micah Chen</div>
+                <div className="st-pf-mail">micahchen004@gmail.com</div>
+              </div>
+            </div>
+            <div className="st-pf-ws">
+              <div>
+                <div className="st-pf-ws-k">Workspace</div>
+                <div className="st-pf-ws-v">Intelbase HQ</div>
+              </div>
+              <div>
+                <div className="st-pf-ws-k">Plan</div>
+                <div className="st-pf-ws-v">Command / Pro</div>
+              </div>
+              <div>
+                <div className="st-pf-ws-k">Region</div>
+                <div className="st-pf-ws-v">HK-1</div>
+              </div>
+            </div>
+          </Section>
+
+          <Section icon="Bell" title="Capture preferences" tag="cosmetic">
+            <div className="st-row">
+              <div className="st-row-id">
+                <div className="st-row-label">Auto-focus firing nodes</div>
+                <div className="st-row-desc">Camera drifts toward live events</div>
+              </div>
+              <Switch on={autoFocus} onClick={() => setAutoFocus((v) => !v)} accent={accentColor} />
+            </div>
+            <div className="st-row">
+              <div className="st-row-id">
+                <div className="st-row-label">Feed sound cues</div>
+                <div className="st-row-desc">Subtle ping on new events</div>
+              </div>
+              <Switch on={feedSound} onClick={() => setFeedSound((v) => !v)} accent={accentColor} />
+            </div>
+          </Section>
+
+          <Section icon="RotateCcw" title="Boot and reset">
+            <div className="st-note">
+              <span className="st-note-ic">
+                <Lucide.Info size={16} strokeWidth={1.7} />
+              </span>
+              <span className="st-note-txt">
+                <b>Replay boot</b> available from the <kbd>⟲</kbd> button bottom-right. Re-runs the cinematic
+                power-on sequence for a fresh take.
+              </span>
+            </div>
+            <div className="st-note" style={{ marginTop: 10 }}>
+              <span className="st-note-ic" style={{ color: "#6ea8ff" }}>
+                <Lucide.Command size={16} strokeWidth={1.7} />
+              </span>
+              <span className="st-note-txt">
+                Press <kbd>⌘K</kbd> for the command palette, <kbd>1</kbd>-<kbd>6</kbd> to switch views.
+              </span>
+            </div>
+          </Section>
+        </div>
+      </div>
+    </div>
+  );
 }
