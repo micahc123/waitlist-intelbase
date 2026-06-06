@@ -158,8 +158,8 @@ export function Constellation() {
         if (Math.abs(focus.az - cam.az) < 0.002 && Math.abs(focus.el - cam.el) < 0.002) {
           focusTargetRef.current = null;
         }
-      } else if (idle && !dragRef.current.active) {
-        // cinematic idle drift (slow enough that clicks land reliably)
+      } else if (idle && !dragRef.current.active && !hoveredRef.current) {
+        // cinematic idle drift; pauses while hovering a node so it stays clickable
         cam.az += 0.0009;
       }
 

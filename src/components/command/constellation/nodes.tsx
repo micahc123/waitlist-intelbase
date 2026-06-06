@@ -169,6 +169,7 @@ export const Nodes = forwardRef<NodesHandle, {
             )}
             <span className="cst-fire-ring" />
             <div className="cst-node-tile">
+              <span className="cst-hit" aria-hidden="true" />
               <Icon size={isCore ? 28 : n.kind === "agent" ? 19 : 14} strokeWidth={isCore ? 1.7 : 1.9} />
             </div>
             <div className="cst-node-meta">
