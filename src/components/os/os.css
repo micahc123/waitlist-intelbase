@@ -2,3 +2,143 @@
 .os-shell { display: grid; grid-template-columns: 248px 1fr; height: 100%; }
 .os-sidebar { border-right: 1px solid rgba(255,255,255,.06); padding: 20px; }
 .os-screen { padding: 28px 32px; overflow: hidden; }
+
+/* ── Panel ── */
+.os-panel {
+  background: rgba(255,255,255,.025);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+.os-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.os-panel-head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #e7ecff;
+  letter-spacing: .01em;
+}
+.os-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.07);
+  color: #8b93b3;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+/* ── Dot ── */
+.os-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Sparkline ── */
+.os-spark {
+  display: block;
+  overflow: visible;
+}
+
+/* ── Bars ── */
+.os-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.os-bar-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+.os-bar-label {
+  color: #8b93b3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.os-bar-track {
+  min-width: 120px;
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+}
+.os-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width .6s ease;
+}
+.os-bar-val {
+  color: #8b93b3;
+  font-variant-numeric: tabular-nums;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* ── KPI card ── */
+.os-kpi {
+  background: rgba(255,255,255,.025);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.os-kpi-top {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.os-kpi-val {
+  font-size: 28px;
+  font-weight: 700;
+  color: #e7ecff;
+  line-height: 1;
+  letter-spacing: -.02em;
+}
+.os-kpi-label {
+  font-size: 12px;
+  color: #8b93b3;
+  margin: .25rem 0 .5rem;
+}
+
+/* ── Feed ── */
+.os-feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow: hidden;
+}
+.os-feed-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.02);
+  color: #c4cae8;
+}
+.os-feed-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6ea8ff;
+  box-shadow: 0 0 6px #6ea8ff;
+  flex-shrink: 0;
+}
