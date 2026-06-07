@@ -166,7 +166,10 @@ export function ChatWidget() {
   if (
     pathname?.startsWith("/os") ||
     pathname?.startsWith("/command") ||
-    pathname?.startsWith("/app")
+    pathname?.startsWith("/app") ||
+    pathname?.startsWith("/onboarding") ||
+    pathname?.startsWith("/login") ||
+    pathname?.startsWith("/signup")
   )
     return null;
 

@@ -5,6 +5,65 @@
 > spend pushed, no live deploy run, no email sent. Work through it top to bottom when you're ready.
 > Built 2026-06-05.
 
+---
+
+# Intelbase SaaS — Press Go (added 2026-06-07)
+
+> The site is now a subscription web SaaS: clean landing -> Stripe trial -> Supabase login ->
+> onboarding (connect tools) -> the per-account command-plane dashboard at `/app`. All the
+> CODE is built and the production build passes. Nothing below was provisioned or paid for by
+> me. Until you set the env vars, the app runs in a resilient demo mode: the public site and a
+> default `/app` workspace render, but auth/billing are inert.
+
+### A. Local verify (done, re-check anytime)
+- [x] `npm install` ran (added `@supabase/supabase-js`, `@supabase/ssr`, `stripe`).
+- [x] `npm run build` passes. Routes: `/` (landing), `/pricing`, `/login`, `/signup`,
+  `/onboarding`, `/app` (gated command plane), `/api/billing/checkout`, `/api/billing/portal`,
+  `/api/stripe/webhook`. `/command` now redirects to `/app`.
+
+### B. Supabase (auth + database) — free tier is fine to start
+1. [ ] Create a Supabase project. Copy: Project URL, `anon` key, `service_role` key.
+2. [ ] In the SQL editor, run `supabase/schema.sql` (creates profiles, organizations,
+   subscriptions, connections + RLS + the new-user trigger).
+3. [ ] Auth -> Providers: enable Email, and enable Google (create a Google OAuth client; set
+   the Google authorized redirect to the Supabase callback shown in that panel).
+4. [ ] Auth -> URL config: add your site URL and `…/auth/callback` as a redirect URL.
+
+### C. Stripe (billing) — test mode first
+1. [ ] Create 3 products with recurring prices (USD): Starter $99/mo, Growth $299/mo,
+   Scale $799/mo, and an annual price for each (annual = monthly x10, i.e. $990 / $2,990 /
+   $7,990). Copy the 6 Price IDs.
+2. [ ] Get your `STRIPE_SECRET_KEY` (test mode to start).
+3. [ ] Create a webhook endpoint -> URL `https://<your-domain>/api/stripe/webhook`, events:
+   `checkout.session.completed`, `customer.subscription.created/updated/deleted`. Copy the
+   signing secret -> `STRIPE_WEBHOOK_SECRET`. (For local testing use `stripe listen
+   --forward-to localhost:3000/api/stripe/webhook`.)
+4. [ ] Settings -> Billing -> Customer Portal: activate it (so "Manage billing" works).
+
+### D. Env vars (`.env.local`, and in your host) — see `.env.example`
+- [ ] `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- [ ] `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+- [ ] `STRIPE_PRICE_STARTER_MONTHLY/ANNUAL`, `…GROWTH…`, `…SCALE…` (the 6 Price IDs)
+- [ ] `NEXT_PUBLIC_APP_URL` (e.g. `https://intelbase.studio`)
+- [ ] (Existing keys still apply if you use them: `ANTHROPIC_API_KEY`, etc.)
+
+### E. Deploy + smoke test
+1. [ ] Deploy (Vercel etc.) with all env vars set; point the Stripe webhook at the prod URL;
+   set `NEXT_PUBLIC_APP_URL` to prod.
+2. [ ] Smoke test: sign up (Google or email) -> onboarding -> pick a plan -> Stripe Checkout
+   (use a test card `4242 4242 4242 4242`) -> lands on `/app` with your workspace -> Settings
+   shows your email + "Manage billing" opens the portal -> the `subscriptions` row populated
+   by the webhook.
+
+### Notes / not-yet-real
+- The dashboard automation is SIMULATED (seeded per account). The "connect your tools" grid
+  marks connections as connected but does not yet call the real WhatsApp/Meta/Calendar APIs;
+  wiring those is the next milestone.
+- No money spent and nothing provisioned by me: creating the Supabase/Stripe accounts, keys,
+  webhook, and deploy are all yours.
+
+---
+
 ## 0. Verify the website build first (blocks everything that deploys)
 - [ ] `npm install` then `npm run build` in this repo. I could **not** run it (no `node_modules`, and your Next.js is a modified fork I won't reinstall blindly).
 - [ ] If it errors, send me the output. Pay special attention to the four files marked `// VERIFY AGAINST FORK` (the agent's API routes + dashboard page) — their route-handler signatures must match your fork's `node_modules/next/dist/docs/`.
