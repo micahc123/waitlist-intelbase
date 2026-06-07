@@ -200,3 +200,112 @@ export function buildSessions(nodes: GraphNode[]): CortexData {
 
   return { categories: CATEGORIES, counts, sessions, total };
 }
+
+// ---------------------------------------------------------------------------
+// REAL memory -> CortexData
+// ---------------------------------------------------------------------------
+// When the org has actual stored memories (pgvector), the Brain view derives the
+// Cortex categories/counts and the browsable session list FROM those rows rather
+// than the simulated graph. We keep the SAME CATEGORIES (so the 3D cortex lobes
+// and the panel stay aligned) and just map each memory.kind onto a region.
+
+// Minimal shape of a memory row as returned by /api/memory/recent. Kept loose so
+// the client does not depend on the server types.
+export interface MemoryRow {
+  id: string;
+  kind?: string | null;
+  source?: string | null;
+  title?: string | null;
+  content?: string | null;
+  metadata?: Record<string, unknown> | null;
+  created_at?: string | null;
+}
+
+// Map a memory.kind (and source as a hint) onto one of the cortex regions.
+function kindToCategory(kind?: string | null, source?: string | null): string {
+  const k = (kind ?? "").toLowerCase();
+  const s = (source ?? "").toLowerCase();
+  if (k === "conversation" || k === "chat" || k === "message") return "conversations";
+  if (k === "booking" || k === "appointment" || k === "event" || s.includes("calendar")) return "bookings";
+  if (k === "lead") return "leads";
+  if (k === "followup" || k === "follow-up" || k === "nurture") return "followups";
+  if (k === "objection") return "objections";
+  if (k === "support" || k === "ticket") return "support";
+  if (k === "knowledge" || k === "faq" || k === "note") return "knowledge";
+  if (k === "routing" || k === "handoff") return "routing";
+  if (k === "recovery" || k === "winback" || k === "win-back") return "recovery";
+  if (k === "signal" || k === "intent") return "signals";
+  if (k === "email" || s.includes("gmail") || s.includes("inbox")) return "conversations";
+  // Unknown kinds land in Knowledge (the general reference lobe).
+  return "knowledge";
+}
+
+// Relative "Xm/Xh/Xd" label from an ISO timestamp (now-relative). Falls back to
+// a stable label when the timestamp is missing/unparseable.
+function relFromIso(iso?: string | null): string {
+  if (!iso) return "1d";
+  const then = Date.parse(iso);
+  if (Number.isNaN(then)) return "1d";
+  const mins = Math.max(0, Math.floor((Date.now() - then) / 60000));
+  if (mins < 60) return `${Math.max(1, mins)}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  return `${Math.floor(hrs / 24)}d`;
+}
+
+// Map a memory row to a panel Session.
+function rowToSession(row: MemoryRow, catId: string): Session {
+  const title = (row.title ?? "").trim();
+  const content = (row.content ?? "").replace(/\s+/g, " ").trim();
+  const snippet = content.slice(0, 160) || "Stored memory.";
+  const who = (row.source ?? "").trim() || "Agent";
+  return {
+    id: row.id,
+    category: catId,
+    title: title || snippet.slice(0, 60) || "Memory",
+    snippet,
+    who,
+    domain: who,
+    status: "resolved",
+    ts: relFromIso(row.created_at),
+  };
+}
+
+/**
+ * Build CortexData from REAL memory rows + per-kind stats.
+ *
+ * - counts: derived from byKind (mapped onto categories). Every region gets at
+ *   least its mapped tally; regions with no memories show 0.
+ * - sessions: the recent rows bucketed into their mapped region.
+ * - total: the real total from stats (sum of byKind).
+ *
+ * The caller should only use this when stats.total > 0; otherwise it should fall
+ * back to buildSessions() (the simulated demo data).
+ */
+export function buildFromMemories(
+  rows: MemoryRow[],
+  byKind: Record<string, number>,
+  total: number,
+): CortexData {
+  const counts: Record<string, number> = {};
+  for (const cat of CATEGORIES) counts[cat.id] = 0;
+
+  // Roll per-kind totals into the mapped categories so the headline counts and
+  // the cortex lobe weights reflect the real distribution.
+  for (const [kind, n] of Object.entries(byKind ?? {})) {
+    const catId = kindToCategory(kind, null);
+    counts[catId] = (counts[catId] ?? 0) + (n ?? 0);
+  }
+
+  const sessions: Record<string, Session[]> = {};
+  for (const cat of CATEGORIES) sessions[cat.id] = [];
+  for (const row of rows ?? []) {
+    const catId = kindToCategory(row.kind, row.source);
+    (sessions[catId] ??= []).push(rowToSession(row, catId));
+  }
+
+  const realTotal =
+    total > 0 ? total : Object.values(counts).reduce((a, b) => a + b, 0);
+
+  return { categories: CATEGORIES, counts, sessions, total: realTotal };
+}

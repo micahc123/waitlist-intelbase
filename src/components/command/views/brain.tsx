@@ -6,7 +6,13 @@ import * as THREE from "three";
 import { motion } from "motion/react";
 import { useSim } from "@/lib/command/use-sim";
 import { makeAmbientSprite } from "./brain/sprite";
-import { buildSessions, CATEGORIES } from "./brain/sessions";
+import {
+  buildSessions,
+  buildFromMemories,
+  CATEGORIES,
+  type CortexData,
+  type MemoryRow,
+} from "./brain/sessions";
 import { Cortex } from "./brain/cortex";
 import { MemoryPanel } from "./brain/panel";
 import "./brain.css";
@@ -153,15 +159,56 @@ export function Brain() {
   const { nodes, firing, t } = useSim();
   const firingCount = firing.size;
 
-  const data = useMemo(() => buildSessions(nodes), [nodes]);
+  // Simulated demo dataset, always built from the sim graph as a fallback.
+  const demoData = useMemo(() => buildSessions(nodes), [nodes]);
+
+  // Real memory dataset, fetched on mount. null until we know whether the org
+  // has stored memories. When present (total > 0) we drive the Cortex from it;
+  // otherwise we keep using the demo data exactly as before.
+  const [liveData, setLiveData] = useState<CortexData | null>(null);
+  const isLive = liveData !== null;
+  const data = liveData ?? demoData;
+
   const maxCount = useMemo(
-    () => Math.max(...CATEGORIES.map((c) => data.counts[c.id] ?? 0)),
+    () => Math.max(1, ...CATEGORIES.map((c) => data.counts[c.id] ?? 0)),
     [data],
   );
 
   const [selected, setSelected] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  // On mount, fetch real memory stats + recent rows. If real memories exist
+  // (total > 0), derive the Cortex from them; on empty / unconfigured / error,
+  // leave liveData null so the existing simulated sessions keep showing.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [statsRes, recentRes] = await Promise.all([
+          fetch("/api/memory/stats", { cache: "no-store" }),
+          fetch("/api/memory/recent?limit=120", { cache: "no-store" }),
+        ]);
+        if (!statsRes.ok || !recentRes.ok) return;
+        const stats = (await statsRes.json()) as {
+          total?: number;
+          byKind?: Record<string, number>;
+        };
+        const total = stats?.total ?? 0;
+        if (cancelled || total <= 0) return; // unconfigured / empty -> stay demo.
+        const recent = (await recentRes.json()) as { memories?: MemoryRow[] };
+        if (cancelled) return;
+        setLiveData(
+          buildFromMemories(recent?.memories ?? [], stats?.byKind ?? {}, total),
+        );
+      } catch {
+        // network / parse error -> keep the demo data.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // climbing "sorted today" off sim time
   const sortedToday = useClimbing(t, 1840, 6);
@@ -286,6 +333,10 @@ export function Brain() {
         <div className="cortex-status">
           <span className="brain-dot live" />
           {firingCount > 0 ? `${firingCount} threads merging` : "live index"}
+        </div>
+        <div className="cortex-status" style={{ marginLeft: 8 }}>
+          <span className={isLive ? "brain-dot live" : "brain-dot"} />
+          {isLive ? "live memory" : "demo data"}
         </div>
 
         <div className="cortex-chips">
