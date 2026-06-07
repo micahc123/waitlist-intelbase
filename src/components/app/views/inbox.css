@@ -1,0 +1,308 @@
+/* Inbox (unified conversations) - two-pane shared-inbox surface. Scoped to the
+ * .inbox-* namespace, built entirely on the design tokens (src/styles/tokens.css)
+ * and the .ibx-* primitives. Dark, calm, data-dense. Visible focus, 150-200ms
+ * hover, reduced-motion respected. */
+
+.inbox-shell {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: var(--ib-4);
+  height: calc(100vh - 220px);
+  min-height: 480px;
+}
+
+/* ---------- LEFT: conversation list ---------- */
+.inbox-list {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.inbox-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ib-2);
+  padding: var(--ib-3) var(--ib-4);
+  border-bottom: 1px solid var(--ib-hairline);
+}
+.inbox-list-title {
+  font: 600 var(--ib-fs-sm)/1 var(--ib-font);
+  color: var(--ib-text-2);
+}
+.inbox-count-group {
+  display: inline-flex;
+  gap: var(--ib-2);
+}
+.inbox-list-scroll {
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+.inbox-row {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--ib-3) var(--ib-4);
+  border: none;
+  border-bottom: 1px solid var(--ib-hairline);
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: var(--ib-text);
+  cursor: pointer;
+  font-family: var(--ib-font);
+  transition:
+    background var(--ib-dur) var(--ib-ease),
+    border-color var(--ib-dur) var(--ib-ease);
+}
+.inbox-row:hover {
+  background: rgba(255, 255, 255, 0.022);
+}
+.inbox-row:focus-visible {
+  outline: none;
+  box-shadow: var(--ib-ring);
+  border-radius: var(--ib-r-xs);
+}
+.inbox-row[aria-current="true"] {
+  background: var(--ib-blue-soft);
+  border-left-color: var(--ib-blue);
+}
+.inbox-row-top {
+  display: flex;
+  align-items: center;
+  gap: var(--ib-2);
+  margin-bottom: 6px;
+}
+.inbox-row-name {
+  font: 600 var(--ib-fs-sm)/1.2 var(--ib-font);
+  color: var(--ib-text);
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.inbox-row.is-unread .inbox-row-name {
+  font-weight: 700;
+}
+.inbox-row-time {
+  font: 500 var(--ib-fs-xs)/1 var(--ib-mono);
+  color: var(--ib-text-4);
+  flex: 0 0 auto;
+}
+.inbox-row-snippet {
+  display: flex;
+  align-items: center;
+  gap: var(--ib-2);
+}
+.inbox-row-subject {
+  font-size: var(--ib-fs-xs);
+  color: var(--ib-text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+}
+.inbox-row.is-unread .inbox-row-subject {
+  color: var(--ib-text-2);
+}
+.inbox-unread-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ib-blue);
+  flex: 0 0 auto;
+}
+
+/* channel chips - one distinct color per channel */
+.inbox-ch {
+  flex: 0 0 auto;
+  height: 19px;
+  padding: 0 7px;
+  border-radius: var(--ib-r-pill);
+  font: 600 10px/19px var(--ib-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+}
+.inbox-ch-web {
+  color: var(--ib-blue);
+  background: var(--ib-blue-soft);
+}
+.inbox-ch-email {
+  color: var(--ib-violet);
+  background: var(--ib-violet-soft);
+}
+.inbox-ch-whatsapp {
+  color: var(--ib-mint);
+  background: var(--ib-mint-soft);
+}
+.inbox-ch-ig {
+  color: var(--ib-pink);
+  background: rgba(255, 143, 177, 0.12);
+}
+
+/* ---------- RIGHT: thread ---------- */
+.inbox-thread {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.inbox-thread-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ib-3);
+  padding: var(--ib-3) var(--ib-4);
+  border-bottom: 1px solid var(--ib-hairline);
+  flex: 0 0 auto;
+}
+.inbox-thread-id {
+  display: flex;
+  align-items: center;
+  gap: var(--ib-3);
+  min-width: 0;
+}
+.inbox-thread-name {
+  font: 700 var(--ib-fs-md)/1.2 var(--ib-font);
+  color: var(--ib-text);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.inbox-thread-sub {
+  font-size: var(--ib-fs-xs);
+  color: var(--ib-text-3);
+  margin-top: 2px;
+}
+
+/* message stream */
+.inbox-stream {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: var(--ib-5) var(--ib-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ib-4);
+}
+.inbox-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 74%;
+}
+.inbox-msg.from-visitor {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+.inbox-msg.from-agent,
+.inbox-msg.from-human {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.inbox-msg-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+  font: 600 10px/1 var(--ib-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ib-text-4);
+}
+.inbox-bubble {
+  padding: var(--ib-3) var(--ib-4);
+  border-radius: var(--ib-r-md);
+  font-size: var(--ib-fs-sm);
+  line-height: var(--ib-lh);
+  border: 1px solid var(--ib-border);
+}
+.inbox-msg.from-visitor .inbox-bubble {
+  background: var(--ib-surface-2);
+  border-bottom-left-radius: var(--ib-r-xs);
+  color: var(--ib-text);
+}
+.inbox-msg.from-agent .inbox-bubble {
+  background: var(--ib-blue-soft);
+  border-color: rgba(110, 168, 255, 0.28);
+  border-bottom-right-radius: var(--ib-r-xs);
+  color: var(--ib-text);
+}
+/* human teammate: subtly distinct from the AI agent (amber, not blue) */
+.inbox-msg.from-human .inbox-bubble {
+  background: var(--ib-amber-soft);
+  border-color: rgba(255, 184, 107, 0.28);
+  border-bottom-right-radius: var(--ib-r-xs);
+  color: var(--ib-text);
+}
+.inbox-msg-time {
+  margin-top: 5px;
+  font: 500 10px/1 var(--ib-mono);
+  color: var(--ib-text-4);
+}
+
+/* composer */
+.inbox-composer {
+  flex: 0 0 auto;
+  border-top: 1px solid var(--ib-hairline);
+  padding: var(--ib-3) var(--ib-4);
+}
+.inbox-draft-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: var(--ib-2);
+  font: 600 var(--ib-fs-xs)/1 var(--ib-font);
+  color: var(--ib-violet);
+}
+.inbox-composer-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ib-2);
+}
+.inbox-composer textarea.ibx-input {
+  height: auto;
+  min-height: 38px;
+  max-height: 120px;
+  padding: 9px var(--ib-3);
+  line-height: 1.4;
+  resize: none;
+  font-family: var(--ib-font);
+}
+
+/* skeletons + center states */
+.inbox-skel {
+  height: 12px;
+  border-radius: var(--ib-r-pill);
+  background: linear-gradient(
+    90deg,
+    var(--ib-surface-2) 0%,
+    var(--ib-elevated) 50%,
+    var(--ib-surface-2) 100%
+  );
+  background-size: 200% 100%;
+  animation: inbox-shimmer 1.4s var(--ib-ease) infinite;
+}
+@keyframes inbox-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+.inbox-center {
+  flex: 1 1 auto;
+  display: grid;
+  place-items: center;
+  padding: var(--ib-7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inbox-row,
+  .inbox-skel {
+    transition: none;
+    animation: none;
+  }
+}
+@media (max-width: 980px) {
+  .inbox-shell {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}

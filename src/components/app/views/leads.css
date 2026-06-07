@@ -1,0 +1,261 @@
+/* Leads (CRM) - stage pills + pipeline value header over a dense, sortable data
+ * table. Scoped to .leads-*, built on the design tokens and .ibx-* primitives.
+ * Dark, data-dense, legible. Visible focus, 150-200ms hover, reduced-motion. */
+
+/* ---------- header: stage pills + pipeline value ---------- */
+.leads-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ib-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--ib-4);
+}
+.leads-pills {
+  display: flex;
+  gap: var(--ib-2);
+  flex-wrap: wrap;
+}
+.leads-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: var(--ib-3) var(--ib-4);
+  min-width: 92px;
+  border-radius: var(--ib-r-sm);
+  border: 1px solid var(--ib-border);
+  background: var(--ib-surface);
+}
+.leads-pill-label {
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ib-text-3);
+}
+.leads-pill-value {
+  font: 700 var(--ib-fs-lg)/1 var(--ib-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ib-text);
+}
+.leads-pill.is-new .leads-pill-value {
+  color: var(--ib-blue);
+}
+.leads-pill.is-qualified .leads-pill-value {
+  color: var(--ib-violet);
+}
+.leads-pill.is-booked .leads-pill-value {
+  color: var(--ib-amber);
+}
+.leads-pill.is-won .leads-pill-value {
+  color: var(--ib-mint);
+}
+.leads-pipeline {
+  text-align: right;
+}
+.leads-pipeline-label {
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ib-text-3);
+}
+.leads-pipeline-value {
+  margin-top: 4px;
+  font: 700 var(--ib-fs-xl)/1 var(--ib-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--ib-text);
+}
+
+/* ---------- toolbar ---------- */
+.leads-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--ib-3);
+  padding: var(--ib-3) var(--ib-4);
+  border-bottom: 1px solid var(--ib-hairline);
+}
+.leads-search {
+  position: relative;
+  flex: 1 1 auto;
+  max-width: 320px;
+}
+.leads-search svg {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ib-text-4);
+  pointer-events: none;
+}
+.leads-search .ibx-input {
+  padding-left: 34px;
+}
+.leads-result-count {
+  font: 500 var(--ib-fs-xs)/1 var(--ib-mono);
+  color: var(--ib-text-4);
+  margin-left: auto;
+}
+
+/* ---------- table ---------- */
+.leads-table-wrap {
+  overflow-x: auto;
+}
+.leads-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+.leads-th-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.leads-sort-btn:hover {
+  color: var(--ib-text-2);
+}
+.leads-sort-btn svg {
+  opacity: 0.35;
+  transition: opacity var(--ib-dur) var(--ib-ease);
+}
+.leads-table th[aria-sort="ascending"] .leads-sort-btn svg,
+.leads-table th[aria-sort="descending"] .leads-sort-btn svg {
+  opacity: 1;
+  color: var(--ib-blue);
+}
+.leads-sort-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ib-ring);
+  border-radius: var(--ib-r-xs);
+}
+.leads-name {
+  font-weight: 600;
+  color: var(--ib-text);
+}
+.leads-company {
+  color: var(--ib-text-3);
+  font-size: var(--ib-fs-xs);
+}
+
+/* score bar */
+.leads-score {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ib-2);
+  font-variant-numeric: tabular-nums;
+}
+.leads-score-track {
+  width: 46px;
+  height: 5px;
+  border-radius: var(--ib-r-pill);
+  background: var(--ib-surface-2);
+  overflow: hidden;
+}
+.leads-score-fill {
+  height: 100%;
+  border-radius: var(--ib-r-pill);
+  background: var(--ib-mint);
+}
+.leads-score-fill.is-mid {
+  background: var(--ib-amber);
+}
+.leads-score-fill.is-low {
+  background: var(--ib-danger);
+}
+
+/* source chips - distinct per source */
+.leads-src {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--ib-r-pill);
+  font: 600 var(--ib-fs-xs)/20px var(--ib-mono);
+  border: 1px solid currentColor;
+}
+.leads-src-Web {
+  color: var(--ib-blue);
+  background: var(--ib-blue-soft);
+}
+.leads-src-Ads {
+  color: var(--ib-violet);
+  background: var(--ib-violet-soft);
+}
+.leads-src-WhatsApp {
+  color: var(--ib-mint);
+  background: var(--ib-mint-soft);
+}
+.leads-src-Referral {
+  color: var(--ib-amber);
+  background: var(--ib-amber-soft);
+}
+.leads-src-fallback {
+  color: var(--ib-text-3);
+  background: var(--ib-surface-2);
+}
+
+/* inline stage select */
+.leads-stage-select {
+  height: 28px;
+  padding: 0 26px 0 10px;
+  border-radius: var(--ib-r-pill);
+  border: 1px solid var(--ib-border-strong);
+  background-color: var(--ib-surface-2);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237e879d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  color: var(--ib-text);
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color var(--ib-dur) var(--ib-ease);
+}
+.leads-stage-select:hover {
+  border-color: #38415a;
+}
+.leads-stage-select:focus-visible {
+  outline: none;
+  box-shadow: var(--ib-ring);
+}
+.leads-stage-select.stage-new {
+  color: var(--ib-blue);
+}
+.leads-stage-select.stage-qualified {
+  color: var(--ib-violet);
+}
+.leads-stage-select.stage-booked {
+  color: var(--ib-amber);
+}
+.leads-stage-select.stage-won {
+  color: var(--ib-mint);
+}
+.leads-stage-select.stage-lost {
+  color: var(--ib-text-3);
+}
+.leads-stage-select option {
+  background: var(--ib-elevated);
+  color: var(--ib-text);
+}
+
+.leads-age {
+  color: var(--ib-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leads-sort-btn svg,
+  .leads-stage-select {
+    transition: none;
+  }
+}
