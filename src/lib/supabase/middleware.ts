@@ -21,9 +21,17 @@ const PROTECTED_PREFIXES = ["/app", "/onboarding"];
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
+  // If Supabase is not configured yet (no env), skip all auth handling so the
+  // public site stays up. Auth activates automatically once the keys are set.
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {

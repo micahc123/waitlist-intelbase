@@ -24,7 +24,14 @@ export type Organization = {
   created_at: string;
 };
 
+function supabaseConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  );
+}
+
 export async function getUser(): Promise<User | null> {
+  if (!supabaseConfigured()) return null;
   const supabase = await createClient();
   const {
     data: { user },
@@ -36,6 +43,7 @@ export async function getUserAndOrg(): Promise<{
   user: User | null;
   org: Organization | null;
 }> {
+  if (!supabaseConfigured()) return { user: null, org: null };
   const supabase = await createClient();
   const {
     data: { user },
