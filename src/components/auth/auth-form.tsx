@@ -131,6 +131,14 @@ export function AuthForm({ mode }: { mode: Mode }) {
           </button>
         </form>
 
+        <div className="ib-auth-divider">
+          <span>or</span>
+        </div>
+
+        <a href="/api/demo" className="ib-auth-demo">
+          Explore the live demo, no signup
+        </a>
+
         <p className="ib-auth-alt">
           {copy.altPrompt}{" "}
           <Link href={copy.altHref} className="ib-auth-link">

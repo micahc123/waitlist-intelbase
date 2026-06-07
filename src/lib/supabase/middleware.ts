@@ -53,6 +53,12 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
+  // Demo pass: an `ib_demo` cookie (set via /api/demo) unlocks the gated app
+  // without auth or a subscription, even when Supabase/Stripe are configured.
+  if (request.cookies.get("ib_demo")?.value === "1") {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
     supabaseUrl,
     supabaseAnonKey,

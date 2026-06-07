@@ -20,6 +20,7 @@ export function LandingNav() {
         </div>
 
         <div className="lp-nav-cta">
+          <a href="/api/demo" className="lp-nav-login">Live demo</a>
           <a href="/login" className="lp-nav-login">Log in</a>
           <a href="/signup" className="lp-btn lp-btn-primary lp-btn-sm">
             Start free trial <ArrowRight />
