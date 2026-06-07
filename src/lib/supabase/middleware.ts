@@ -14,9 +14,33 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Routes that require an authenticated user. Subscription/plan gating is added
-// LATER by the Stripe agent; for now we only auth-gate.
+// Routes that require an authenticated user.
 const PROTECTED_PREFIXES = ["/app", "/onboarding"];
+
+// Subset of protected routes that ALSO require an active subscription/trial.
+// /onboarding is intentionally excluded so a signed-in user without a sub can
+// still reach it to pick a plan and start their trial.
+const SUBSCRIPTION_PREFIXES = ["/app"];
+
+const ACTIVE_STATUSES = new Set(["trialing", "active"]);
+
+// Pure predicate mirrored from src/lib/billing.ts (kept inline here to avoid
+// importing server-only helpers into the proxy/edge runtime). True only when a
+// subscription is trialing/active and its trial/period has not expired.
+function subRowGrantsAccess(sub: {
+  status?: string | null;
+  trial_end?: string | null;
+  current_period_end?: string | null;
+} | null): boolean {
+  if (!sub || !sub.status || !ACTIVE_STATUSES.has(sub.status)) return false;
+  const now = Date.now();
+  if (sub.status === "trialing") {
+    return sub.trial_end ? new Date(sub.trial_end).getTime() > now : true;
+  }
+  return sub.current_period_end
+    ? new Date(sub.current_period_end).getTime() > now
+    : true;
+}
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -72,6 +96,57 @@ export async function updateSession(request: NextRequest) {
       redirectResponse.cookies.set(cookie);
     });
     return redirectResponse;
+  }
+
+  // Subscription gating: a signed-in user hitting /app must have an active
+  // subscription or live trial, otherwise send them to /onboarding to pick a
+  // plan. We reuse the request-scoped supabase client (RLS-scoped to the user)
+  // rather than importing server-only helpers, keeping this proxy-safe.
+  //
+  // RESILIENCE: only Stripe-configured deployments gate. If STRIPE_SECRET_KEY
+  // is unset, billing is not live yet, so we let users through to keep /app
+  // reachable in dev. (Supabase is already known-configured at this point.)
+  const requiresSub = SUBSCRIPTION_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+
+  if (user && requiresSub && process.env.STRIPE_SECRET_KEY) {
+    let hasAccess = false;
+    try {
+      // Find the org(s) this user owns, then their latest subscription row.
+      const { data: orgs } = await supabase
+        .from("organizations")
+        .select("id")
+        .eq("owner_id", user.id);
+      const orgIds = (orgs ?? []).map((o: { id: string }) => o.id);
+
+      if (orgIds.length > 0) {
+        const { data: sub } = await supabase
+          .from("subscriptions")
+          .select("status, trial_end, current_period_end")
+          .in("org_id", orgIds)
+          .order("updated_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        hasAccess = subRowGrantsAccess(sub);
+      }
+    } catch {
+      // On any lookup error, fail OPEN (let through) so a transient DB issue
+      // does not lock paying users out of the app.
+      hasAccess = true;
+    }
+
+    if (!hasAccess) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/onboarding";
+      url.search = "";
+
+      const redirectResponse = NextResponse.redirect(url);
+      supabaseResponse.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie);
+      });
+      return redirectResponse;
+    }
   }
 
   return supabaseResponse;
