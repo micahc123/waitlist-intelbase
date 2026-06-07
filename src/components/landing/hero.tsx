@@ -5,13 +5,13 @@ import { ArrowRight, Play, ShieldCheck } from "lucide-react";
 
 const NODES = [
   { x: 250, y: 130, r: 26, c: "#6ea8ff", label: "Core" },
-  { x: 110, y: 70, r: 13, c: "#7df5c8" },
-  { x: 400, y: 78, r: 13, c: "#b79cff" },
-  { x: 92, y: 210, r: 13, c: "#b79cff" },
-  { x: 415, y: 205, r: 13, c: "#7df5c8" },
+  { x: 110, y: 70, r: 13, c: "#6ea8ff" },
+  { x: 400, y: 78, r: 13, c: "#6ea8ff" },
+  { x: 92, y: 210, r: 13, c: "#7df5c8" },
+  { x: 415, y: 205, r: 13, c: "#6ea8ff" },
   { x: 250, y: 250, r: 13, c: "#6ea8ff" },
-  { x: 180, y: 40, r: 8, c: "#6ea8ff" },
-  { x: 330, y: 250, r: 8, c: "#7df5c8" },
+  { x: 180, y: 40, r: 8, c: "#b79cff" },
+  { x: 330, y: 250, r: 8, c: "#6ea8ff" },
 ];
 
 const EDGES = [1, 2, 3, 4, 5, 6, 7];
@@ -84,7 +84,8 @@ export function LandingHero() {
 
           <p className="lp-hero-sub">
             Connect your tools once. Intelbase answers every lead, books your calls, runs your
-            follow-ups and ads, and shows you everything on one living dashboard.
+            follow-ups and ads, then reports back on one live dashboard. Every action waits for
+            your approval until you trust it to run on its own.
           </p>
 
           <div className="lp-hero-cta">
@@ -132,6 +133,11 @@ export function LandingHero() {
               </div>
             </div>
 
+            <div className="lp-mock-foot">
+              <span className="lp-mock-foot-dot" />
+              All actions ran with your approval rules applied
+            </div>
+
             <div className="lp-mock-feed">
               {FEED.map((f, i) => (
                 <div className="lp-feed-row" key={i}>
@@ -144,7 +150,7 @@ export function LandingHero() {
         </motion.div>
       </div>
 
-      <div className="lp-wrap lp-logos" style={{ marginTop: "clamp(48px, 6vw, 84px)" }}>
+      <div className="lp-wrap lp-logos">
         <div className="lp-logos-label">Plugs into the tools you already run</div>
         <div className="lp-logos-row">
           <span>Gmail</span>
