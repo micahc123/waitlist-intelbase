@@ -64,6 +64,58 @@
 
 ---
 
+# Intelbase Real Engine — Press Go (added 2026-06-07)
+
+> The agents, integrations, and memory are now REAL in code: Claude (Vercel AI SDK) agents that
+> call your connected apps via Composio and use Supabase pgvector memory, with a triggers
+> webhook so agents act on inbound events. It all builds and runs today in SIMULATED mode (no
+> keys = graceful offline replies + demo data). Add the keys below to switch it live. Spec:
+> `docs/superpowers/specs/2026-06-07-intelbase-real-engine-design.md`.
+
+### A. Done / verified
+- [x] Installed `ai`, `@ai-sdk/anthropic`, `@ai-sdk/openai`, `@ai-sdk/react`, `@composio/core`,
+  `@composio/vercel`. Build passes. The live chat route returns the offline reply until keys
+  are set (confirmed).
+
+### B. Anthropic (agent brain)
+1. [ ] Set `ANTHROPIC_API_KEY`. Agents use `claude-opus-4-6` (reasoning) / `claude-sonnet-4-6`
+   (lighter). Cost: pay-as-you-go Anthropic usage.
+
+### C. Composio (real integrations + OAuth + triggers)
+1. [ ] Create a Composio account; set `COMPOSIO_API_KEY`.
+2. [ ] In Composio, enable the toolkits you want (Gmail, Google Calendar, Slack, HubSpot,
+   Notion, Google Sheets work immediately; WhatsApp + Meta Ads need Meta verification first)
+   and configure each toolkit's OAuth (auth config). Point the post-OAuth redirect at
+   `${APP_URL}/api/integrations/callback?toolkit=<slug>` (the SDK has no per-call redirect; the
+   helper `callbackUrl(slug)` in `src/lib/integrations/composio.ts` generates these).
+3. [ ] Set up a Composio Trigger (e.g. Gmail new-message) to POST to
+   `${APP_URL}/api/composio/webhook`; set `COMPOSIO_WEBHOOK_SECRET` and add it to env for
+   signature verification. New email -> Inbox agent; calendar event -> Scheduler; else -> Ops.
+
+### D. Embeddings + memory (Supabase pgvector)
+1. [ ] Set `OPENAI_API_KEY` (embeddings via `text-embedding-3-small`; swappable to Voyage/Cohere
+   if you prefer, by editing `src/lib/memory/embeddings.ts`).
+2. [ ] In Supabase: run `supabase/memory.sql` (enables the `vector` extension, creates the
+   `memories` table + RLS + the `match_memories` function). Requires `supabase/schema.sql` to
+   have been run first (it defines `organizations` + `is_org_owner`).
+
+### E. What goes live when configured
+- "Connect your tools" (onboarding + Settings) does REAL OAuth via Composio (falls back to the
+  simulated toggle when `COMPOSIO_API_KEY` is unset).
+- Clicking an agent node in `/app` opens a real streamed chat; the agent answers with Claude,
+  can call the org's connected tools (e.g. read calendar, draft email), and the conversation is
+  stored in pgvector memory and recalled later.
+- The Memory Cortex shows real stored memories once they exist (badge flips to "live memory");
+  otherwise it shows demo data.
+- Composio triggers fire agents autonomously on inbound events.
+
+### F. Honest gaps
+- WhatsApp + Meta Ads connect but go live only after Meta business verification + app review.
+- The constellation counters / live feed remain partly seeded; they reflect real memory where
+  available but are not yet a full real-time event store.
+
+---
+
 ## 0. Verify the website build first (blocks everything that deploys)
 - [ ] `npm install` then `npm run build` in this repo. I could **not** run it (no `node_modules`, and your Next.js is a modified fork I won't reinstall blindly).
 - [ ] If it errors, send me the output. Pay special attention to the four files marked `// VERIFY AGAINST FORK` (the agent's API routes + dashboard page) — their route-handler signatures must match your fork's `node_modules/next/dist/docs/`.
