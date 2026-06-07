@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import "@/styles/tokens.css";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
 import { ChatWidget } from "@/components/chat-widget";
 

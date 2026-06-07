@@ -1,0 +1,182 @@
+/*
+ * Intelbase design tokens - the single source of truth for the product surfaces.
+ * Dark, B2B, data-dense. Restrained neon accent over a real neutral ramp,
+ * crisp hairline borders, tabular numerals, visible focus. Import once (layout).
+ * Landing (.lp-) and the command plane (.cmd-) keep their own scoped looks, but
+ * all NEW product views (approvals, inbox, leads, agents, knowledge) use these.
+ */
+:root {
+  /* surfaces (near-black -> elevated) */
+  --ib-bg: #05060b;
+  --ib-surface: #0b0e17;
+  --ib-surface-2: #111626;
+  --ib-elevated: #171d2e;
+  --ib-overlay: rgba(5, 6, 11, 0.72);
+
+  /* neutral text ramp (AA+ on --ib-bg) */
+  --ib-text: #e8ecf6; /* primary */
+  --ib-text-2: #aeb6cc; /* secondary, >=4.5:1 */
+  --ib-text-3: #7e879d; /* muted labels, >=3:1 */
+  --ib-text-4: #565d72; /* faint / disabled */
+
+  /* borders */
+  --ib-hairline: rgba(255, 255, 255, 0.06);
+  --ib-border: #1b2130;
+  --ib-border-2: #28304320;
+  --ib-border-strong: #2d3548;
+
+  /* brand accents (use sparingly, semantically) */
+  --ib-blue: #6ea8ff;
+  --ib-mint: #7df5c8;
+  --ib-violet: #b79cff;
+  --ib-amber: #ffb86b;
+  --ib-pink: #ff8fb1;
+  --ib-cyan: #67e8f9;
+
+  /* semantic */
+  --ib-primary: var(--ib-blue);
+  --ib-success: var(--ib-mint);
+  --ib-warning: var(--ib-amber);
+  --ib-danger: #ff6b6b;
+  --ib-on-accent: #05060b;
+
+  /* tints (subtle fills for chips/rows/states) */
+  --ib-blue-soft: rgba(110, 168, 255, 0.12);
+  --ib-mint-soft: rgba(125, 245, 200, 0.12);
+  --ib-violet-soft: rgba(183, 156, 255, 0.12);
+  --ib-amber-soft: rgba(255, 184, 107, 0.12);
+  --ib-danger-soft: rgba(255, 107, 107, 0.12);
+
+  /* focus ring (never remove) */
+  --ib-ring: 0 0 0 2px var(--ib-bg), 0 0 0 4px rgba(110, 168, 255, 0.6);
+
+  /* radii */
+  --ib-r-xs: 6px;
+  --ib-r-sm: 9px;
+  --ib-r-md: 13px;
+  --ib-r-lg: 18px;
+  --ib-r-pill: 999px;
+
+  /* spacing (4px rhythm) */
+  --ib-1: 4px;
+  --ib-2: 8px;
+  --ib-3: 12px;
+  --ib-4: 16px;
+  --ib-5: 24px;
+  --ib-6: 32px;
+  --ib-7: 48px;
+  --ib-8: 64px;
+
+  /* type scale (1.25) */
+  --ib-fs-xs: 12px;
+  --ib-fs-sm: 13px;
+  --ib-fs-base: 15px;
+  --ib-fs-md: 17px;
+  --ib-fs-lg: 21px;
+  --ib-fs-xl: 27px;
+  --ib-fs-2xl: 34px;
+  --ib-fs-3xl: 44px;
+  --ib-lh: 1.55;
+
+  /* fonts */
+  --ib-font: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --ib-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* elevation (one consistent scale) */
+  --ib-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --ib-shadow-2: 0 6px 24px rgba(0, 0, 0, 0.4);
+  --ib-shadow-3: 0 18px 60px rgba(0, 0, 0, 0.55);
+
+  /* motion */
+  --ib-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ib-dur: 180ms;
+}
+
+/* shared product-surface primitives (used by new views; prefix .ibx-) */
+.ibx {
+  font-family: var(--ib-font);
+  color: var(--ib-text);
+  -webkit-font-smoothing: antialiased;
+}
+.ibx-mono { font-family: var(--ib-mono); font-variant-numeric: tabular-nums; }
+.ibx-num { font-variant-numeric: tabular-nums; }
+
+/* card / panel */
+.ibx-panel {
+  background: var(--ib-surface);
+  border: 1px solid var(--ib-border);
+  border-radius: var(--ib-r-md);
+}
+.ibx-panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--ib-3) var(--ib-4);
+  border-bottom: 1px solid var(--ib-hairline);
+}
+
+/* buttons */
+.ibx-btn {
+  display: inline-flex; align-items: center; gap: var(--ib-2);
+  height: 36px; padding: 0 var(--ib-4);
+  border-radius: var(--ib-r-sm); border: 1px solid var(--ib-border-strong);
+  background: var(--ib-surface-2); color: var(--ib-text);
+  font: 600 var(--ib-fs-sm)/1 var(--ib-font); cursor: pointer;
+  transition: background var(--ib-dur) var(--ib-ease), border-color var(--ib-dur) var(--ib-ease);
+}
+.ibx-btn:hover { background: var(--ib-elevated); border-color: #38415a; }
+.ibx-btn:focus-visible { outline: none; box-shadow: var(--ib-ring); }
+.ibx-btn-primary {
+  background: var(--ib-blue); border-color: transparent; color: var(--ib-on-accent);
+}
+.ibx-btn-primary:hover { background: #84b6ff; }
+.ibx-btn-danger { color: var(--ib-danger); border-color: rgba(255, 107, 107, 0.4); background: var(--ib-danger-soft); }
+.ibx-btn-ghost { background: transparent; border-color: transparent; color: var(--ib-text-2); }
+.ibx-btn-ghost:hover { background: var(--ib-surface-2); color: var(--ib-text); }
+.ibx-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* status chips */
+.ibx-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 22px; padding: 0 9px; border-radius: var(--ib-r-pill);
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono); letter-spacing: 0.03em;
+  border: 1px solid var(--ib-border-strong); color: var(--ib-text-2);
+  background: var(--ib-surface-2);
+}
+.ibx-chip-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.ibx-chip-success { color: var(--ib-mint); border-color: rgba(125,245,200,.3); background: var(--ib-mint-soft); }
+.ibx-chip-warning { color: var(--ib-amber); border-color: rgba(255,184,107,.3); background: var(--ib-amber-soft); }
+.ibx-chip-danger { color: var(--ib-danger); border-color: rgba(255,107,107,.3); background: var(--ib-danger-soft); }
+.ibx-chip-info { color: var(--ib-blue); border-color: rgba(110,168,255,.3); background: var(--ib-blue-soft); }
+
+/* data tables */
+.ibx-table { width: 100%; border-collapse: collapse; font-size: var(--ib-fs-sm); }
+.ibx-table th {
+  text-align: left; padding: 10px var(--ib-3);
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono); letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ib-text-3); border-bottom: 1px solid var(--ib-border);
+}
+.ibx-table td { padding: 12px var(--ib-3); border-bottom: 1px solid var(--ib-hairline); color: var(--ib-text); }
+.ibx-table tbody tr:hover { background: rgba(255, 255, 255, 0.018); }
+.ibx-td-num { font-variant-numeric: tabular-nums; text-align: right; }
+
+/* empty state */
+.ibx-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--ib-3); padding: var(--ib-8) var(--ib-5); text-align: center; color: var(--ib-text-3);
+}
+.ibx-empty-icon {
+  display: grid; place-items: center; width: 52px; height: 52px; border-radius: var(--ib-r-md);
+  color: var(--ib-text-2); background: var(--ib-surface-2); border: 1px solid var(--ib-border);
+}
+
+/* inputs */
+.ibx-input {
+  height: 38px; padding: 0 var(--ib-3); width: 100%;
+  background: var(--ib-surface-2); border: 1px solid var(--ib-border-strong);
+  border-radius: var(--ib-r-sm); color: var(--ib-text); font: var(--ib-fs-sm)/1 var(--ib-font);
+}
+.ibx-input::placeholder { color: var(--ib-text-4); }
+.ibx-input:focus-visible { outline: none; box-shadow: var(--ib-ring); border-color: var(--ib-blue); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ibx-btn { transition: none; }
+}
