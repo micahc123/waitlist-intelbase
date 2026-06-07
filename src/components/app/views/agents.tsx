@@ -9,7 +9,7 @@
 
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bot,
   Power,
@@ -17,9 +17,26 @@ import {
   Check,
   Loader2,
   Info,
+  List,
+  Network,
 } from "lucide-react";
 import { ViewHead } from "./view-shell";
+import { ForceGraph, type GraphNode, type GraphLink } from "../graph/force-graph";
 import "./controls.css";
+
+type ViewMode = "list" | "graph";
+
+// Accent colour per agent domain so the graph reads like the command plane
+// constellation, drawn from the product accent tokens.
+const DOMAIN_COLOR: Record<string, string> = {
+  "Front desk": "#6ea8ff", // blue
+  Email: "#7df5c8", // mint
+  Calendar: "#67e8f9", // cyan
+  Growth: "#ffb86b", // amber
+  Lifecycle: "#ff8fb1", // pink
+  Operations: "#b79cff", // violet
+};
+const AGENT_FALLBACK_COLOR = "#b79cff";
 
 type Autonomy = "manual" | "approve" | "auto";
 
@@ -77,6 +94,10 @@ export function Agents() {
   const [agents, setAgents] = useState<AgentRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [killBusy, setKillBusy] = useState(false);
+  const [view, setView] = useState<ViewMode>("list");
+  // Set when a graph node is clicked, so List mode scrolls to/highlights it.
+  const [focusAgent, setFocusAgent] = useState<string | null>(null);
+  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   useEffect(() => {
     let cancelled = false;
@@ -128,12 +149,59 @@ export function Agents() {
     );
   }, []);
 
+  const graph = useMemo(() => buildAgentGraph(agents ?? []), [agents]);
+
+  // After switching to List mode via a graph click, scroll the chosen card into
+  // view and pulse it briefly.
+  useEffect(() => {
+    if (view !== "list" || !focusAgent) return;
+    const el = cardRefs.current.get(focusAgent);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("is-focused");
+      const t = window.setTimeout(() => el.classList.remove("is-focused"), 1600);
+      return () => window.clearTimeout(t);
+    }
+  }, [view, focusAgent]);
+
+  const handleNodeSelect = useCallback((id: string) => {
+    // Only agent nodes route to the list; core/toolkit nodes are decorative.
+    if (id.startsWith("agent:")) {
+      const agentId = id.slice(6);
+      setFocusAgent(agentId);
+      setView("list");
+    }
+  }, []);
+
   return (
     <div className="ibx">
       <ViewHead
         title="Agents"
         subtitle="Configure each agent like an employee: turn it on, set how much it can do on its own, give it instructions, and set its guardrails."
       />
+
+      <div className="ag-toolbar">
+        <div className="ibx-seg" role="group" aria-label="View mode">
+          <button
+            type="button"
+            className={`ibx-seg-opt${view === "list" ? " is-active" : ""}`}
+            aria-pressed={view === "list"}
+            onClick={() => setView("list")}
+          >
+            <List size={13} style={{ marginRight: 5, verticalAlign: "-2px" }} />
+            List
+          </button>
+          <button
+            type="button"
+            className={`ibx-seg-opt${view === "graph" ? " is-active" : ""}`}
+            aria-pressed={view === "graph"}
+            onClick={() => setView("graph")}
+          >
+            <Network size={13} style={{ marginRight: 5, verticalAlign: "-2px" }} />
+            Graph
+          </button>
+        </div>
+      </div>
 
       <div
         className={`ag-kill${allPaused ? " is-paused" : ""}`}
@@ -184,10 +252,54 @@ export function Agents() {
             <div>Loading agents...</div>
           </div>
         </div>
+      ) : view === "graph" ? (
+        <div className="ibx-panel ag-graph-panel">
+          <div className="ibx-panel-head">
+            <span style={{ fontSize: "var(--ib-fs-sm)", fontWeight: 600 }}>
+              Agent constellation
+            </span>
+            <span className="ibx-hint">
+              Click an agent to open its config. Drag to rearrange, scroll to zoom.
+            </span>
+          </div>
+          <div className="ag-graph">
+            <ForceGraph
+              nodes={graph.nodes}
+              links={graph.links}
+              onSelect={handleNodeSelect}
+              height={500}
+            />
+            <div className="ag-graph-legend" aria-hidden="true">
+              <span className="ag-legend-item">
+                <span className="ag-legend-dot" style={{ background: "#6ea8ff" }} />
+                Core
+              </span>
+              <span className="ag-legend-item">
+                <span className="ag-legend-dot" style={{ background: "#b79cff" }} />
+                Agent
+              </span>
+              <span className="ag-legend-item">
+                <span
+                  className="ag-legend-dot"
+                  style={{ background: "#7e879d" }}
+                />
+                Toolkit
+              </span>
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="ag-grid">
           {agents.map((a) => (
-            <AgentCard key={a.agentId} agent={a} onLocalChange={updateAgent} />
+            <AgentCard
+              key={a.agentId}
+              agent={a}
+              onLocalChange={updateAgent}
+              cardRef={(el) => {
+                if (el) cardRefs.current.set(a.agentId, el);
+                else cardRefs.current.delete(a.agentId);
+              }}
+            />
           ))}
         </div>
       )}
@@ -195,12 +307,69 @@ export function Agents() {
   );
 }
 
+// Build the agent constellation: a central Intelbase Core, one node per agent
+// (coloured by domain), and one smaller muted node per distinct toolkit. Each
+// agent links to the core and to every toolkit it can use, so shared toolkits
+// draw agents together.
+function buildAgentGraph(agents: AgentRow[]): {
+  nodes: GraphNode[];
+  links: GraphLink[];
+} {
+  const nodes: GraphNode[] = [];
+  const links: GraphLink[] = [];
+
+  if (agents.length === 0) return { nodes, links };
+
+  nodes.push({
+    id: "core",
+    label: "Intelbase Core",
+    kind: "core",
+    color: "#6ea8ff",
+    size: 16,
+  });
+
+  const toolkitSeen = new Map<string, number>();
+
+  for (const a of agents) {
+    nodes.push({
+      id: `agent:${a.agentId}`,
+      label: a.name,
+      kind: "agent",
+      color: a.enabled
+        ? (DOMAIN_COLOR[a.domain] ?? AGENT_FALLBACK_COLOR)
+        : "#565d72", // faint when paused
+      size: 11,
+    });
+    links.push({ source: `agent:${a.agentId}`, target: "core" });
+    for (const t of a.toolkits) {
+      const key = `toolkit:${t}`;
+      toolkitSeen.set(key, (toolkitSeen.get(key) ?? 0) + 1);
+      links.push({ source: `agent:${a.agentId}`, target: key });
+    }
+  }
+
+  for (const [id, count] of toolkitSeen) {
+    const slug = id.slice(8);
+    nodes.push({
+      id,
+      label: TOOLKIT_LABELS[slug] ?? slug,
+      kind: "toolkit",
+      color: "#7e879d",
+      size: 5 + Math.min(count, 4),
+    });
+  }
+
+  return { nodes, links };
+}
+
 function AgentCard({
   agent,
   onLocalChange,
+  cardRef,
 }: {
   agent: AgentRow;
   onLocalChange: (agentId: string, patch: Partial<AgentRow>) => void;
+  cardRef?: (el: HTMLDivElement | null) => void;
 }) {
   const [save, setSave] = useState<SaveState>("idle");
 
@@ -238,7 +407,10 @@ function AgentCard({
   const guard = agent.guardrails ?? {};
 
   return (
-    <div className={`ag-card${agent.enabled ? "" : " is-disabled"}`}>
+    <div
+      ref={cardRef}
+      className={`ag-card${agent.enabled ? "" : " is-disabled"}`}
+    >
       <div className="ag-card-head">
         <div className="ag-card-mark">
           <Bot size={18} />

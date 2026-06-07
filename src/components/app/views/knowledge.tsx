@@ -9,7 +9,7 @@
 
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BookOpen,
   Plus,
@@ -17,8 +17,13 @@ import {
   Upload,
   Loader2,
   FileText,
+  List,
+  Network,
+  Tag,
+  X,
 } from "lucide-react";
 import { ViewHead } from "./view-shell";
+import { ForceGraph, type GraphNode, type GraphLink } from "../graph/force-graph";
 import "./controls.css";
 
 type KnowledgeStatus = "processing" | "ready" | "failed";
@@ -30,7 +35,10 @@ type Doc = {
   status: KnowledgeStatus;
   chunks: number;
   created_at: string;
+  tags?: string[];
 };
+
+type ViewMode = "list" | "graph";
 
 type SourceMode = "url" | "file";
 
@@ -41,6 +49,8 @@ export function Knowledge() {
   const [fileName, setFileName] = useState("");
   const [mode, setMode] = useState<SourceMode>("url");
   const [adding, setAdding] = useState(false);
+  const [view, setView] = useState<ViewMode>("list");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -83,6 +93,12 @@ export function Knowledge() {
       setAdding(false);
     }
   }, [canAdd, mode, url, fileName, title]);
+
+  const graph = useMemo(() => buildKnowledgeGraph(docs ?? []), [docs]);
+  const selectedDoc = useMemo(
+    () => (docs ?? []).find((d) => d.id === selectedId) ?? null,
+    [docs, selectedId],
+  );
 
   return (
     <div className="ibx">
@@ -183,16 +199,140 @@ export function Knowledge() {
       <div className="ibx-panel">
         <div className="ibx-panel-head">
           <span style={{ fontSize: "var(--ib-fs-sm)", fontWeight: 600 }}>
-            Documents
+            {view === "graph" ? "Knowledge graph" : "Documents"}
           </span>
-          {docs && docs.length > 0 && (
-            <span className="ibx-hint">
-              {docs.length} source{docs.length === 1 ? "" : "s"}
-            </span>
-          )}
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--ib-3)" }}>
+            {docs && docs.length > 0 && (
+              <span className="ibx-hint">
+                {docs.length} source{docs.length === 1 ? "" : "s"}
+              </span>
+            )}
+            <div className="ibx-seg" role="group" aria-label="View mode">
+              <button
+                type="button"
+                className={`ibx-seg-opt${view === "list" ? " is-active" : ""}`}
+                aria-pressed={view === "list"}
+                onClick={() => setView("list")}
+              >
+                <List size={13} style={{ marginRight: 5, verticalAlign: "-2px" }} />
+                List
+              </button>
+              <button
+                type="button"
+                className={`ibx-seg-opt${view === "graph" ? " is-active" : ""}`}
+                aria-pressed={view === "graph"}
+                onClick={() => setView("graph")}
+              >
+                <Network size={13} style={{ marginRight: 5, verticalAlign: "-2px" }} />
+                Graph
+              </button>
+            </div>
+          </div>
         </div>
 
-        {!docs ? (
+        {view === "graph" ? (
+          !docs ? (
+            <div className="ibx-empty">
+              <Loader2 size={20} className="ibx-spin" />
+              <div>Loading knowledge base...</div>
+            </div>
+          ) : docs.length === 0 ? (
+            <div className="ibx-empty">
+              <div className="ibx-empty-icon">
+                <Network size={22} />
+              </div>
+              <div style={{ fontWeight: 600, color: "var(--ib-text-2)" }}>
+                Nothing to map yet
+              </div>
+              <div style={{ maxWidth: "42ch" }}>
+                Add sources above and they will appear here as an interconnected web,
+                linked by the topics they share.
+              </div>
+            </div>
+          ) : (
+            <div className="kn-graph">
+              <ForceGraph
+                nodes={graph.nodes}
+                links={graph.links}
+                selectedId={selectedId}
+                onSelect={(id) => {
+                  // Only doc nodes select; topic nodes just re-centre interest.
+                  if (id.startsWith("doc:")) {
+                    setSelectedId(id.slice(4));
+                  }
+                }}
+                height={480}
+              />
+              <div className="kn-graph-side">
+                {selectedDoc ? (
+                  <div className="kn-doc-card">
+                    <div className="kn-doc-card-head">
+                      <span
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 8,
+                          minWidth: 0,
+                        }}
+                      >
+                        <FileText size={15} style={{ color: "var(--ib-mint)" }} />
+                        <span style={{ fontWeight: 600 }}>{selectedDoc.title}</span>
+                      </span>
+                      <button
+                        type="button"
+                        className="ibx-btn ibx-btn-ghost kn-doc-close"
+                        aria-label="Clear selection"
+                        onClick={() => setSelectedId(null)}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                    <div className="kn-doc-meta">
+                      <StatusChip status={selectedDoc.status} />
+                      <span className="ibx-hint">
+                        {prettySource(selectedDoc.source)}
+                      </span>
+                    </div>
+                    <div className="kn-doc-stats">
+                      <div>
+                        <div className="kn-doc-stat-num ibx-mono">
+                          {selectedDoc.status === "ready" ? selectedDoc.chunks : "·"}
+                        </div>
+                        <div className="kn-doc-stat-lbl">chunks</div>
+                      </div>
+                      <div>
+                        <div className="kn-doc-stat-num ibx-mono">
+                          {relTime(selectedDoc.created_at)}
+                        </div>
+                        <div className="kn-doc-stat-lbl">added</div>
+                      </div>
+                    </div>
+                    <div className="kn-doc-tags">
+                      {topicsFor(selectedDoc).map((t) => (
+                        <span key={t} className="ibx-chip">
+                          <Tag size={10} style={{ marginRight: 2 }} />
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="kn-doc-card kn-doc-empty">
+                    <Network size={18} style={{ color: "var(--ib-text-3)" }} />
+                    <div style={{ fontWeight: 600, color: "var(--ib-text-2)" }}>
+                      Your knowledge web
+                    </div>
+                    <div className="ibx-hint" style={{ lineHeight: 1.5 }}>
+                      Each document links to the topics it covers, so related sources
+                      cluster together. Click a document node to inspect it. Drag to
+                      rearrange, scroll to zoom.
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        ) : !docs ? (
           <div className="ibx-empty">
             <Loader2 size={20} className="ibx-spin" />
             <div>Loading knowledge base...</div>
@@ -248,6 +388,71 @@ export function Knowledge() {
       </div>
     </div>
   );
+}
+
+// Keyword map for deriving topics when a doc has no explicit tags. Each entry is
+// a topic label keyed to substrings that, if present in the title or source,
+// imply that topic. Order matters only for stable output.
+const TOPIC_KEYWORDS: Array<{ topic: string; match: string[] }> = [
+  { topic: "Pricing", match: ["pric", "cost", "fee", "rate", "quote"] },
+  { topic: "Services", match: ["service", "treatment", "package", "menu"] },
+  { topic: "Booking", match: ["book", "appointment", "schedul", "reserv"] },
+  { topic: "Policy", match: ["policy", "cancel", "refund", "terms"] },
+  { topic: "Support", match: ["faq", "question", "help", "support"] },
+  { topic: "Brand", match: ["brand", "voice", "tone", "style", "website", "page"] },
+  { topic: "Sales", match: ["sale", "offer", "promo", "deal"] },
+];
+
+// Derive 1-3 topics for a doc: prefer explicit tags, else keyword-map the title
+// + source, else fall back to a single "General" topic so it still connects.
+function topicsFor(doc: Doc): string[] {
+  if (doc.tags && doc.tags.length > 0) return doc.tags.slice(0, 3);
+  const hay = `${doc.title} ${doc.source ?? ""}`.toLowerCase();
+  const found: string[] = [];
+  for (const { topic, match } of TOPIC_KEYWORDS) {
+    if (match.some((m) => hay.includes(m))) found.push(topic);
+    if (found.length >= 3) break;
+  }
+  return found.length > 0 ? found : ["General"];
+}
+
+// Build the Obsidian-style knowledge graph: each doc is an accent-coloured node,
+// each distinct topic is a smaller muted node, and a doc links to every topic it
+// covers. Docs that share a topic therefore cluster around it.
+function buildKnowledgeGraph(docs: Doc[]): {
+  nodes: GraphNode[];
+  links: GraphLink[];
+} {
+  const nodes: GraphNode[] = [];
+  const links: GraphLink[] = [];
+  const topicSeen = new Map<string, number>(); // topic -> doc count (for sizing)
+
+  for (const d of docs) {
+    nodes.push({
+      id: `doc:${d.id}`,
+      label: d.title,
+      kind: "doc",
+      color: "#7df5c8", // --ib-mint
+      size: 9,
+    });
+    for (const t of topicsFor(d)) {
+      const key = `topic:${t}`;
+      topicSeen.set(key, (topicSeen.get(key) ?? 0) + 1);
+      links.push({ source: `doc:${d.id}`, target: key });
+    }
+  }
+
+  for (const [id, count] of topicSeen) {
+    nodes.push({
+      id,
+      label: id.slice(6),
+      kind: "topic",
+      color: "#7e879d", // muted --ib-text-3
+      size: 5 + Math.min(count, 4) * 1.4,
+    });
+  }
+
+  return { nodes, links };
 }
 
 function StatusChip({ status }: { status: KnowledgeStatus }) {

@@ -595,6 +595,7 @@ export function demoKnowledge(): KnowledgeDoc[] {
       status: "ready",
       chunks: 42,
       created_at: ago(12 * DAY),
+      tags: ["Pricing", "Services", "Sales"],
     },
     {
       id: "kdoc-002",
@@ -603,6 +604,7 @@ export function demoKnowledge(): KnowledgeDoc[] {
       status: "ready",
       chunks: 28,
       created_at: ago(12 * DAY),
+      tags: ["Support", "Services", "Booking"],
     },
     {
       id: "kdoc-003",
@@ -611,6 +613,7 @@ export function demoKnowledge(): KnowledgeDoc[] {
       status: "ready",
       chunks: 11,
       created_at: ago(10 * DAY),
+      tags: ["Booking", "Policy", "Support"],
     },
     {
       id: "kdoc-004",
@@ -619,6 +622,7 @@ export function demoKnowledge(): KnowledgeDoc[] {
       status: "ready",
       chunks: 9,
       created_at: ago(9 * DAY),
+      tags: ["Brand", "Voice"],
     },
     {
       id: "kdoc-005",
@@ -627,6 +631,7 @@ export function demoKnowledge(): KnowledgeDoc[] {
       status: "ready",
       chunks: 64,
       created_at: ago(8 * DAY),
+      tags: ["Services", "Pricing", "Brand"],
     },
   ];
 

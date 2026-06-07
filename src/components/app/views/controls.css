@@ -443,9 +443,135 @@
   .set-section { grid-template-columns: 1fr; gap: var(--ib-3); }
 }
 
+/* ===================================================================== */
+/* Graph views (Agents constellation + Knowledge knowledge-graph)        */
+/* ===================================================================== */
+.ag-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: var(--ib-3);
+}
+
+.ag-graph-panel { overflow: hidden; }
+.ag-graph { position: relative; padding: var(--ib-3); }
+
+.ag-graph-legend {
+  position: absolute;
+  left: var(--ib-5);
+  bottom: var(--ib-5);
+  display: flex;
+  gap: var(--ib-4);
+  padding: 7px var(--ib-3);
+  border-radius: var(--ib-r-pill);
+  background: var(--ib-overlay);
+  border: 1px solid var(--ib-hairline);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+.ag-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  letter-spacing: 0.03em;
+  color: var(--ib-text-3);
+}
+.ag-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* Focus pulse when a graph node click jumps to a list card. */
+.ag-card.is-focused {
+  border-color: var(--ib-blue);
+  box-shadow: 0 0 0 1px var(--ib-blue), 0 0 28px rgba(110, 168, 255, 0.28);
+  animation: ag-card-pulse 1.6s var(--ib-ease);
+}
+@keyframes ag-card-pulse {
+  0% { box-shadow: 0 0 0 1px var(--ib-blue), 0 0 0 rgba(110, 168, 255, 0); }
+  30% { box-shadow: 0 0 0 1px var(--ib-blue), 0 0 32px rgba(110, 168, 255, 0.4); }
+  100% { box-shadow: 0 0 0 1px var(--ib-blue), 0 0 22px rgba(110, 168, 255, 0.2); }
+}
+
+/* Knowledge graph: canvas + side detail card. */
+.kn-graph {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: var(--ib-3);
+  padding: var(--ib-3);
+  align-items: start;
+}
+.kn-graph .fg-wrap { min-width: 0; }
+
+.kn-doc-card {
+  background: var(--ib-surface-2);
+  border: 1px solid var(--ib-border);
+  border-radius: var(--ib-r-md);
+  padding: var(--ib-4);
+}
+.kn-doc-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ib-2);
+}
+.kn-doc-close {
+  height: 28px;
+  width: 28px;
+  padding: 0;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.kn-doc-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--ib-3);
+  margin-top: var(--ib-3);
+}
+.kn-doc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ib-2);
+  margin-top: var(--ib-4);
+  padding-top: var(--ib-3);
+  border-top: 1px solid var(--ib-hairline);
+}
+.kn-doc-stat-num {
+  font-size: var(--ib-fs-md);
+  font-weight: 700;
+  color: var(--ib-text);
+}
+.kn-doc-stat-lbl {
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ib-text-3);
+  margin-top: 4px;
+}
+.kn-doc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--ib-4);
+}
+.kn-doc-empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ib-2);
+  text-align: left;
+}
+
+@media (max-width: 880px) {
+  .kn-graph { grid-template-columns: 1fr; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ibx-switch,
   .ibx-switch::after,
   .ibx-seg-opt,
   .ag-card { transition: none; }
+  .ag-card.is-focused { animation: none; }
 }

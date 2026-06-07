@@ -115,6 +115,9 @@ export interface KnowledgeDoc {
   status: KnowledgeStatus;
   chunks: number;
   created_at: string;
+  // Optional topic tags used to build the knowledge graph (docs cluster by the
+  // topics they share). When absent, the UI derives topics from the title.
+  tags?: string[];
 }
 
 // ---- derived / aggregate shapes -------------------------------------------

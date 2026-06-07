@@ -1,0 +1,28 @@
+/* Force-graph canvas surface. Dark vault canvas with a subtle inner vignette so
+ * the glowing nodes read against it. Uses product tokens; no em dashes. */
+
+.fg-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: var(--ib-r-md);
+  overflow: hidden;
+  background:
+    radial-gradient(
+      120% 90% at 50% 40%,
+      rgba(17, 22, 38, 0.65) 0%,
+      var(--ib-bg) 70%
+    );
+  border: 1px solid var(--ib-border);
+  touch-action: none;
+}
+
+.fg-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.fg-canvas:active {
+  cursor: grabbing;
+}
