@@ -1,0 +1,331 @@
+/*
+ * Work-shell layout styles for /app. This is the REAL B2B product chrome:
+ * a fixed left sidebar, a top bar, and a scrollable content area. Restrained,
+ * data-dense, near-black. All visual tokens come from src/styles/tokens.css
+ * (the .ibx-* primitives + --ib-* variables). No glow here; glow is marketing.
+ */
+
+.app-shell {
+  --app-sidebar-w: 240px;
+  --app-topbar-h: 60px;
+  min-height: 100vh;
+  background: var(--ib-bg);
+  color: var(--ib-text);
+  font-family: var(--ib-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Sidebar ---------- */
+.app-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--app-sidebar-w);
+  display: flex;
+  flex-direction: column;
+  background: var(--ib-surface);
+  border-right: 1px solid var(--ib-border);
+  z-index: 40;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--ib-2);
+  height: var(--app-topbar-h);
+  padding: 0 var(--ib-4);
+  border-bottom: 1px solid var(--ib-hairline);
+  flex: 0 0 auto;
+}
+.app-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--ib-r-sm);
+  background: var(--ib-blue-soft);
+  color: var(--ib-blue);
+  border: 1px solid rgba(110, 168, 255, 0.3);
+}
+.app-brand-name {
+  font-weight: 700;
+  font-size: var(--ib-fs-base);
+  letter-spacing: -0.01em;
+  color: var(--ib-text);
+}
+
+.app-nav {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: var(--ib-3) var(--ib-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.app-nav-label {
+  padding: var(--ib-3) var(--ib-3) var(--ib-1);
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ib-text-4);
+}
+
+.app-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ib-3);
+  width: 100%;
+  padding: 8px var(--ib-3);
+  border-radius: var(--ib-r-sm);
+  border: none;
+  background: transparent;
+  color: var(--ib-text-2);
+  font: 500 var(--ib-fs-sm)/1 var(--ib-font);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--ib-dur) var(--ib-ease),
+    color var(--ib-dur) var(--ib-ease);
+}
+.app-nav-item:hover {
+  background: var(--ib-surface-2);
+  color: var(--ib-text);
+}
+.app-nav-item:focus-visible {
+  outline: none;
+  box-shadow: var(--ib-ring);
+}
+.app-nav-item-icon {
+  flex: 0 0 auto;
+  color: var(--ib-text-3);
+  transition: color var(--ib-dur) var(--ib-ease);
+}
+.app-nav-item:hover .app-nav-item-icon { color: var(--ib-text-2); }
+
+.app-nav-item.is-active {
+  background: var(--ib-surface-2);
+  color: var(--ib-text);
+  font-weight: 600;
+}
+.app-nav-item.is-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 3px;
+  border-radius: var(--ib-r-pill);
+  background: var(--ib-blue);
+}
+.app-nav-item.is-active .app-nav-item-icon { color: var(--ib-blue); }
+
+.app-nav-label-text { flex: 1 1 auto; }
+
+.app-nav-badge {
+  flex: 0 0 auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--ib-r-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  font-variant-numeric: tabular-nums;
+  background: var(--ib-amber-soft);
+  color: var(--ib-amber);
+  border: 1px solid rgba(255, 184, 107, 0.3);
+}
+
+/* showpiece entry */
+.app-nav-sep {
+  height: 1px;
+  margin: var(--ib-3) var(--ib-2);
+  background: var(--ib-hairline);
+}
+.app-nav-showpiece {
+  border: 1px solid var(--ib-border);
+  background: linear-gradient(
+    180deg,
+    var(--ib-violet-soft),
+    rgba(183, 156, 255, 0.02)
+  );
+}
+.app-nav-showpiece .app-nav-item-icon { color: var(--ib-violet); }
+.app-nav-showpiece:hover {
+  border-color: rgba(183, 156, 255, 0.4);
+  background: linear-gradient(
+    180deg,
+    rgba(183, 156, 255, 0.18),
+    rgba(183, 156, 255, 0.04)
+  );
+}
+.app-nav-showpiece-tag {
+  flex: 0 0 auto;
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  letter-spacing: 0.04em;
+  color: var(--ib-violet);
+  opacity: 0.85;
+}
+
+/* footer: settings + org/user block */
+.app-sidebar-foot {
+  flex: 0 0 auto;
+  padding: var(--ib-2);
+  border-top: 1px solid var(--ib-hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.app-user {
+  display: flex;
+  align-items: center;
+  gap: var(--ib-3);
+  padding: var(--ib-2) var(--ib-3);
+  margin-top: var(--ib-1);
+  border-radius: var(--ib-r-sm);
+  background: var(--ib-surface-2);
+  border: 1px solid var(--ib-hairline);
+}
+.app-user-avatar {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--ib-r-pill);
+  background: var(--ib-elevated);
+  border: 1px solid var(--ib-border-strong);
+  color: var(--ib-text);
+  font: 700 var(--ib-fs-xs)/1 var(--ib-font);
+  letter-spacing: 0.02em;
+}
+.app-user-meta { flex: 1 1 auto; min-width: 0; }
+.app-user-org {
+  font: 600 var(--ib-fs-sm)/1.2 var(--ib-font);
+  color: var(--ib-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-user-email {
+  margin-top: 2px;
+  font: var(--ib-fs-xs)/1.2 var(--ib-font);
+  color: var(--ib-text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-signout {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--ib-r-sm);
+  border: none;
+  background: transparent;
+  color: var(--ib-text-3);
+  cursor: pointer;
+  transition: background var(--ib-dur) var(--ib-ease),
+    color var(--ib-dur) var(--ib-ease);
+}
+.app-signout:hover { background: var(--ib-elevated); color: var(--ib-text); }
+.app-signout:focus-visible { outline: none; box-shadow: var(--ib-ring); }
+
+/* ---------- Topbar ---------- */
+.app-main {
+  margin-left: var(--app-sidebar-w);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: var(--ib-4);
+  height: var(--app-topbar-h);
+  padding: 0 var(--ib-5);
+  background: var(--ib-overlay);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--ib-border);
+}
+.app-topbar-title { flex: 0 0 auto; min-width: 0; }
+.app-topbar-title h1 {
+  font: 700 var(--ib-fs-md)/1.2 var(--ib-font);
+  letter-spacing: -0.01em;
+  color: var(--ib-text);
+}
+.app-topbar-sub {
+  margin-top: 1px;
+  font: var(--ib-fs-xs)/1.2 var(--ib-font);
+  color: var(--ib-text-3);
+}
+.app-topbar-search {
+  flex: 1 1 auto;
+  max-width: 380px;
+  position: relative;
+}
+.app-topbar-search .app-search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ib-text-4);
+  pointer-events: none;
+}
+.app-topbar-search .ibx-input { padding-left: 34px; height: 36px; }
+.app-topbar-spacer { flex: 1 1 auto; }
+.app-topbar-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--ib-3);
+}
+.app-topbar-avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--ib-r-pill);
+  background: var(--ib-surface-2);
+  border: 1px solid var(--ib-border-strong);
+  color: var(--ib-text);
+  font: 700 var(--ib-fs-xs)/1 var(--ib-font);
+}
+
+/* ---------- Content ---------- */
+.app-content {
+  flex: 1 1 auto;
+  padding: var(--ib-6) var(--ib-5);
+  max-width: 1280px;
+  width: 100%;
+}
+.app-view-head { margin-bottom: var(--ib-5); }
+.app-view-head h2 {
+  font: 700 var(--ib-fs-xl)/1.15 var(--ib-font);
+  letter-spacing: -0.02em;
+  color: var(--ib-text);
+}
+.app-view-head p {
+  margin-top: var(--ib-2);
+  font-size: var(--ib-fs-sm);
+  color: var(--ib-text-3);
+  max-width: 60ch;
+}
+
+@media (max-width: 880px) {
+  .app-sidebar { transform: translateX(-100%); }
+  .app-main { margin-left: 0; }
+  .app-topbar-search { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-nav-item,
+  .app-nav-item-icon,
+  .app-signout { transition: none; }
+}
