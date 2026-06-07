@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
-import { CommandApp } from "@/components/command/command-app";
+// The cinematic command plane is now the gated SaaS product at /app. This old
+// public route permanently redirects there so the plane is only reachable
+// through the auth+subscription gate.
+//
+// VERIFY AGAINST FORK: import { redirect } from "next/navigation" confirmed
+// against node_modules/next/dist/docs/01-app.
 
-export const metadata: Metadata = {
-  title: "Intelbase",
-  robots: { index: false, follow: false }, // simulated command plane, keep out of search
-};
+import { redirect } from "next/navigation";
 
 export default function CommandPage() {
-  return <CommandApp />;
+  redirect("/app");
 }

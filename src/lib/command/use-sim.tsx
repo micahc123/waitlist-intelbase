@@ -99,6 +99,8 @@ const FEED_TEMPLATES: Record<DomainId, Array<{ tag: string; text: (label: string
 
 export interface Sim {
   t: number;
+  orgName: string;
+  userEmail: string | null;
   nodes: GraphNode[];
   links: Link[];
   domains: Domain[];
@@ -123,9 +125,27 @@ const SimContext = createContext<Sim | null>(null);
 // SimProvider
 // ---------------------------------------------------------------------------
 
-export function SimProvider({ children }: { children: React.ReactNode }) {
-  // Graph is stable - built once
-  const { nodes, links } = useMemo(() => buildGraph(), []);
+export function SimProvider({
+  children,
+  orgName,
+  userEmail = null,
+}: {
+  children: React.ReactNode;
+  orgName?: string;
+  userEmail?: string | null;
+}) {
+  // Per-account workspace label. Falls back to a sensible default so the plane
+  // still looks alive even with no Supabase env (getUserAndOrg returns null).
+  const workspace = orgName && orgName.trim() ? orgName.trim() : "Your business";
+
+  // Graph is stable - built once, lightly parameterized by the workspace so the
+  // core node reads as this account's command core.
+  const { nodes, links } = useMemo(() => {
+    const graph = buildGraph();
+    const core = graph.nodes.find((n) => n.kind === "core");
+    if (core) core.label = `${workspace} Core`;
+    return graph;
+  }, [workspace]);
 
   // Lightweight tick for consumers that need smooth re-renders
   const [tick, setTick] = useState(0);
@@ -266,6 +286,8 @@ export function SimProvider({ children }: { children: React.ReactNode }) {
 
   const value: Sim = {
     t: tState,
+    orgName: workspace,
+    userEmail,
     nodes,
     links,
     domains: DOMAINS,

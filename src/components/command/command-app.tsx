@@ -134,7 +134,13 @@ function Shell({ onReplayBoot }: { onReplayBoot: () => void }) {
   );
 }
 
-export function CommandApp() {
+export function CommandApp({
+  orgName,
+  userEmail,
+}: {
+  orgName?: string;
+  userEmail?: string | null;
+} = {}) {
   const [booting, setBooting] = useState(true);
   const [bootKey, setBootKey] = useState(0);
 
@@ -144,7 +150,7 @@ export function CommandApp() {
   }
 
   return (
-    <SimProvider>
+    <SimProvider orgName={orgName} userEmail={userEmail}>
       {/* Dashboard mounts underneath; boot overlay dissolves to reveal it. */}
       <Shell onReplayBoot={replayBoot} />
       <AnimatePresence>

@@ -55,8 +55,61 @@ const ACCENTS = [
   { id: "pink", color: "#ff8fb1" },
 ];
 
+// Initials for the account avatar, derived from the workspace name.
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "IB";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 export function Settings() {
-  const { paused, setPaused, speed, setSpeed } = useSim();
+  const { paused, setPaused, speed, setSpeed, orgName, userEmail } = useSim();
+
+  // Account / billing action state.
+  const [billingBusy, setBillingBusy] = useState(false);
+  const [billingNote, setBillingNote] = useState<string | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
+
+  // Open the Stripe Customer Portal. 503/unconfigured -> friendly inline note.
+  async function manageBilling() {
+    if (billingBusy) return;
+    setBillingBusy(true);
+    setBillingNote(null);
+    try {
+      const res = await fetch("/api/billing/portal", { method: "POST" });
+      if (res.ok) {
+        const data = (await res.json().catch(() => null)) as { url?: string } | null;
+        if (data?.url) {
+          window.location.href = data.url;
+          return;
+        }
+        setBillingNote("Billing opens once your subscription is active");
+      } else {
+        setBillingNote("Billing opens once your subscription is active");
+      }
+    } catch {
+      setBillingNote("Billing opens once your subscription is active");
+    } finally {
+      setBillingBusy(false);
+    }
+  }
+
+  // Sign out via the existing POST endpoint, then land back home.
+  async function signOut() {
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      const res = await fetch("/auth/signout", { method: "POST" });
+      if (res.redirected) {
+        window.location.href = res.url;
+        return;
+      }
+      window.location.href = "/";
+    } catch {
+      window.location.href = "/";
+    }
+  }
 
   // visual-only local toggles (cosmetic, do not affect shared sim)
   const [bloom, setBloom] = useState(true);
@@ -195,28 +248,54 @@ export function Settings() {
 
         {/* RIGHT COLUMN */}
         <div>
-          <Section icon="UserCircle2" title="Profile and workspace">
+          <Section icon="UserCircle2" title="Account" tag="signed in">
             <div className="st-profile">
-              <span className="st-pf-ava">MC</span>
+              <span className="st-pf-ava">{initials(orgName)}</span>
               <div className="st-pf-id">
-                <div className="st-pf-name">Micah Chen</div>
-                <div className="st-pf-mail">micahchen004@gmail.com</div>
+                <div className="st-pf-name">{orgName}</div>
+                <div className="st-pf-mail">{userEmail ?? "Not signed in"}</div>
               </div>
             </div>
             <div className="st-pf-ws">
               <div>
                 <div className="st-pf-ws-k">Workspace</div>
-                <div className="st-pf-ws-v">Intelbase HQ</div>
+                <div className="st-pf-ws-v">{orgName}</div>
               </div>
               <div>
                 <div className="st-pf-ws-k">Plan</div>
                 <div className="st-pf-ws-v">Command / Pro</div>
               </div>
-              <div>
-                <div className="st-pf-ws-k">Region</div>
-                <div className="st-pf-ws-v">HK-1</div>
-              </div>
             </div>
+
+            <div className="st-acct-actions">
+              <button
+                type="button"
+                className="st-acct-btn st-acct-btn--primary"
+                onClick={() => void manageBilling()}
+                disabled={billingBusy}
+              >
+                <Lucide.CreditCard size={15} strokeWidth={1.8} />
+                {billingBusy ? "Opening billing..." : "Manage billing"}
+              </button>
+              <button
+                type="button"
+                className="st-acct-btn"
+                onClick={() => void signOut()}
+                disabled={signingOut}
+              >
+                <Lucide.LogOut size={15} strokeWidth={1.8} />
+                {signingOut ? "Signing out..." : "Sign out"}
+              </button>
+            </div>
+
+            {billingNote && (
+              <div className="st-note" style={{ marginTop: 12 }}>
+                <span className="st-note-ic" style={{ color: "#6ea8ff" }}>
+                  <Lucide.Info size={16} strokeWidth={1.7} />
+                </span>
+                <span className="st-note-txt">{billingNote}</span>
+              </div>
+            )}
           </Section>
 
           <Section icon="Bell" title="Capture preferences" tag="cosmetic">

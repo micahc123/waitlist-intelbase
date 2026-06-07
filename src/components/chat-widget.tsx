@@ -160,8 +160,15 @@ export function ChatWidget() {
     };
   }, []);
 
-  // Hide the chat bubble on the /os and /command demo routes so it does not appear in recordings.
-  if (pathname?.startsWith("/os") || pathname?.startsWith("/command")) return null;
+  // Hide the chat bubble on the /os and /command demo routes (so it does not appear
+  // in recordings) and on the gated /app product surface (so the marketing bubble
+  // does not overlay the dashboard).
+  if (
+    pathname?.startsWith("/os") ||
+    pathname?.startsWith("/command") ||
+    pathname?.startsWith("/app")
+  )
+    return null;
 
   return (
     <>
