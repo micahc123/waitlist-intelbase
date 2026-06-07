@@ -1,0 +1,225 @@
+/* Premium dark Intelbase OS auth styling. Scoped to .ib-auth so it never leaks
+   into the (light) marketing site. Palette: near-black #05060b, blue #6ea8ff,
+   mint #7df5c8, violet #b79cff. No em dashes in any copy. */
+
+.ib-auth {
+  --ib-bg: #05060b;
+  --ib-panel: rgba(255, 255, 255, 0.035);
+  --ib-border: rgba(255, 255, 255, 0.1);
+  --ib-text: #eef1f8;
+  --ib-muted: #9aa3b8;
+  --ib-blue: #6ea8ff;
+  --ib-mint: #7df5c8;
+  --ib-violet: #b79cff;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 48px 20px;
+  background:
+    radial-gradient(900px 520px at 15% -10%, rgba(110, 168, 255, 0.16), transparent 60%),
+    radial-gradient(820px 520px at 90% 110%, rgba(183, 156, 255, 0.14), transparent 60%),
+    radial-gradient(620px 420px at 50% 50%, rgba(125, 245, 200, 0.06), transparent 70%),
+    var(--ib-bg);
+  color: var(--ib-text);
+  font-family:
+    var(--font-jakarta), "Plus Jakarta Sans", "Inter", system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.ib-auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px 32px 30px;
+  border: 1px solid var(--ib-border);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
+    rgba(8, 10, 18, 0.72);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 30px 80px -28px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(14px);
+}
+
+.ib-auth-brand {
+  display: inline-block;
+  margin-bottom: 22px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ib-text);
+  text-decoration: none;
+}
+.ib-auth-brand:hover {
+  color: var(--ib-blue);
+}
+
+.ib-auth-title {
+  margin: 0 0 6px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.ib-auth-subtitle {
+  margin: 0 0 22px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--ib-muted);
+}
+
+.ib-auth-error {
+  margin-bottom: 18px;
+  padding: 11px 13px;
+  border: 1px solid rgba(255, 120, 120, 0.4);
+  border-radius: 11px;
+  background: rgba(255, 80, 80, 0.1);
+  color: #ffc9c9;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+.ib-auth-oauth {
+  margin-bottom: 16px;
+}
+
+.ib-auth-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 46px;
+  border: 1px solid var(--ib-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ib-text);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.ib-auth-google:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+.ib-auth-google:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ib-auth-divider {
+  position: relative;
+  margin: 18px 0;
+  text-align: center;
+}
+.ib-auth-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ib-border);
+}
+.ib-auth-divider span {
+  position: relative;
+  padding: 0 12px;
+  background: transparent;
+  color: var(--ib-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.ib-auth-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ib-auth-label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ib-muted);
+}
+
+.ib-auth-input {
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--ib-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ib-text);
+  font-size: 15px;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.ib-auth-input::placeholder {
+  color: rgba(154, 163, 184, 0.6);
+}
+.ib-auth-input:focus {
+  outline: none;
+  border-color: var(--ib-blue);
+  box-shadow: 0 0 0 3px rgba(110, 168, 255, 0.22);
+}
+
+.ib-auth-submit {
+  height: 48px;
+  margin-top: 4px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--ib-blue), var(--ib-violet));
+  color: #05060b;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.05s ease;
+}
+.ib-auth-submit:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.ib-auth-submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.ib-auth-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.ib-auth-alt {
+  margin: 22px 0 0;
+  font-size: 14px;
+  color: var(--ib-muted);
+  text-align: center;
+}
+
+.ib-auth-home {
+  margin: 10px 0 0;
+  text-align: center;
+}
+
+.ib-auth-link {
+  color: var(--ib-blue);
+  font-weight: 600;
+  text-decoration: none;
+}
+.ib-auth-link:hover {
+  color: var(--ib-mint);
+}
+
+.ib-auth-link-muted {
+  color: var(--ib-muted);
+  font-size: 13px;
+  text-decoration: none;
+}
+.ib-auth-link-muted:hover {
+  color: var(--ib-text);
+}
