@@ -1,0 +1,528 @@
+/* Intelbase onboarding wizard styles. All classes are prefixed .ob- to avoid
+   collisions with the rest of the app. Premium dark look, Plus Jakarta Sans
+   inherited from the root layout. */
+
+.ob-root {
+  --ob-bg: #05060b;
+  --ob-blue: #6ea8ff;
+  --ob-mint: #7df5c8;
+  --ob-violet: #b79cff;
+  --ob-amber: #ffb86b;
+  --ob-pink: #ff8fb1;
+  --ob-ink: #eef1f8;
+  --ob-muted: #9aa3b8;
+  --ob-faint: #6b7488;
+  --ob-line: rgba(255, 255, 255, 0.08);
+  --ob-card: rgba(255, 255, 255, 0.03);
+  --ob-card-hover: rgba(255, 255, 255, 0.06);
+
+  position: relative;
+  min-height: 100dvh;
+  width: 100%;
+  background: var(--ob-bg);
+  color: var(--ob-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  overflow: hidden;
+  font-family: var(--font-jakarta), "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+}
+
+.ob-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(620px 420px at 18% 8%, rgba(110, 168, 255, 0.16), transparent 60%),
+    radial-gradient(560px 420px at 86% 14%, rgba(183, 156, 255, 0.14), transparent 60%),
+    radial-gradient(680px 520px at 50% 110%, rgba(125, 245, 200, 0.1), transparent 60%);
+}
+
+.ob-shell {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  background: rgba(10, 12, 20, 0.7);
+  border: 1px solid var(--ob-line);
+  border-radius: 24px;
+  padding: 32px;
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* ---- Header ---- */
+.ob-head {
+  margin-bottom: 28px;
+}
+
+.ob-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.ob-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  color: var(--ob-bg);
+  background: linear-gradient(135deg, var(--ob-blue), var(--ob-violet));
+  box-shadow: 0 6px 18px rgba(110, 168, 255, 0.3);
+}
+
+.ob-brand-name {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.ob-welcome {
+  margin: 0 0 18px;
+  font-size: 13px;
+  color: var(--ob-muted);
+}
+
+.ob-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ob-progress-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ob-faint);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ob-progress-track {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  max-width: 220px;
+}
+
+.ob-progress-dot {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.35s ease, box-shadow 0.35s ease;
+}
+
+.ob-progress-dot.is-on {
+  background: linear-gradient(90deg, var(--ob-blue), var(--ob-violet));
+  box-shadow: 0 0 12px rgba(110, 168, 255, 0.5);
+}
+
+/* ---- Stage / steps ---- */
+.ob-stage {
+  min-height: 360px;
+}
+
+.ob-pane {
+  display: flex;
+  flex-direction: column;
+}
+
+.ob-title {
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.ob-sub {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: var(--ob-muted);
+}
+
+/* ---- Fields ---- */
+.ob-field {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ob-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ob-ink);
+}
+
+.ob-optional {
+  font-weight: 500;
+  color: var(--ob-faint);
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.ob-input {
+  width: 100%;
+  background: var(--ob-card);
+  border: 1px solid var(--ob-line);
+  border-radius: 12px;
+  padding: 13px 15px;
+  color: var(--ob-ink);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.ob-input::placeholder {
+  color: var(--ob-faint);
+}
+
+.ob-input:focus {
+  border-color: var(--ob-blue);
+  background: var(--ob-card-hover);
+  box-shadow: 0 0 0 3px rgba(110, 168, 255, 0.18);
+}
+
+/* ---- Connect grid ---- */
+.ob-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.ob-card {
+  --card-accent: var(--ob-blue);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  background: var(--ob-card);
+  border: 1px solid var(--ob-line);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  color: var(--ob-ink);
+  font-family: inherit;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.ob-card:hover {
+  background: var(--ob-card-hover);
+  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+
+.ob-card.is-on {
+  border-color: color-mix(in srgb, var(--card-accent) 60%, transparent);
+  background: color-mix(in srgb, var(--card-accent) 10%, var(--ob-card));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--card-accent) 40%, transparent),
+    0 8px 28px color-mix(in srgb, var(--card-accent) 22%, transparent);
+}
+
+.ob-card-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 10px;
+  color: var(--card-accent);
+  background: color-mix(in srgb, var(--card-accent) 14%, transparent);
+  transition: background 0.2s ease;
+}
+
+.ob-card.is-on .ob-card-icon {
+  background: color-mix(in srgb, var(--card-accent) 22%, transparent);
+}
+
+.ob-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ob-card-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ob-card-desc {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ob-muted);
+}
+
+.ob-card-state {
+  margin-left: auto;
+  flex: none;
+  align-self: center;
+}
+
+.ob-card-connect {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ob-faint);
+}
+
+.ob-card-connected {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--card-accent);
+}
+
+/* ---- Goals chips ---- */
+.ob-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ob-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ob-card);
+  border: 1px solid var(--ob-line);
+  border-radius: 999px;
+  padding: 11px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ob-ink);
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.ob-chip:hover {
+  background: var(--ob-card-hover);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.ob-chip.is-on {
+  border-color: color-mix(in srgb, var(--ob-mint) 55%, transparent);
+  background: color-mix(in srgb, var(--ob-mint) 12%, var(--ob-card));
+  color: var(--ob-mint);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--ob-mint) 18%, transparent);
+}
+
+/* ---- Plans ---- */
+.ob-toggle {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 4px;
+  background: var(--ob-card);
+  border: 1px solid var(--ob-line);
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 22px;
+}
+
+.ob-toggle-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  color: var(--ob-muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ob-toggle-opt.is-on {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--ob-ink);
+}
+
+.ob-toggle-save {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ob-mint);
+}
+
+.ob-plans {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.ob-plan {
+  --plan-accent: var(--ob-blue);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--ob-card);
+  border: 1px solid var(--ob-line);
+  border-radius: 16px;
+  padding: 20px 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.ob-plan:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--plan-accent) 40%, transparent);
+}
+
+.ob-plan.is-featured {
+  border-color: color-mix(in srgb, var(--plan-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--plan-accent) 8%, var(--ob-card));
+  box-shadow: 0 14px 40px color-mix(in srgb, var(--plan-accent) 16%, transparent);
+}
+
+.ob-plan-tag {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ob-bg);
+  background: var(--plan-accent);
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.ob-plan-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.ob-plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.ob-plan-amount {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ob-plan-unit {
+  font-size: 13px;
+  color: var(--ob-muted);
+}
+
+.ob-btn-plan {
+  width: 100%;
+  justify-content: center;
+  background: color-mix(in srgb, var(--plan-accent) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--plan-accent) 45%, transparent);
+  color: var(--plan-accent);
+  font-size: 13px;
+  padding: 11px 12px;
+}
+
+.ob-btn-plan:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--plan-accent) 24%, transparent);
+}
+
+.ob-status {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: var(--ob-mint);
+  text-align: center;
+}
+
+/* ---- Footer / buttons ---- */
+.ob-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--ob-line);
+}
+
+.ob-foot-note {
+  font-size: 12px;
+  color: var(--ob-faint);
+}
+
+.ob-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 11px;
+  padding: 11px 18px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease,
+    box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.ob-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ob-btn-ghost {
+  background: transparent;
+  border-color: var(--ob-line);
+  color: var(--ob-muted);
+}
+
+.ob-btn-ghost:hover:not(:disabled) {
+  background: var(--ob-card-hover);
+  color: var(--ob-ink);
+}
+
+.ob-btn-primary {
+  background: linear-gradient(135deg, var(--ob-blue), var(--ob-violet));
+  color: var(--ob-bg);
+  box-shadow: 0 10px 30px rgba(110, 168, 255, 0.28);
+}
+
+.ob-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 38px rgba(110, 168, 255, 0.36);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  .ob-shell {
+    padding: 22px;
+    border-radius: 20px;
+  }
+  .ob-title {
+    font-size: 22px;
+  }
+  .ob-grid {
+    grid-template-columns: 1fr;
+  }
+  .ob-plans {
+    grid-template-columns: 1fr;
+  }
+  .ob-progress-track {
+    max-width: 140px;
+  }
+}
