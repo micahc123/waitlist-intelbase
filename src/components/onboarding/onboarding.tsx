@@ -10,7 +10,7 @@
 // safe no-ops and the plan step falls back to completeOnboarding() + navigate
 // to /app. The wizard never crashes in a logged-out/dev state.
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
   MessageSquare,
@@ -28,6 +28,8 @@ import {
 import { CONNECTORS, GOALS, type ConnectorAccent } from "@/lib/onboarding";
 import { PLAN_LIST, type BillingInterval, type PlanId } from "@/lib/stripe-plans";
 import { saveBusiness, saveConnections, completeOnboarding } from "@/app/onboarding/actions";
+import { toolkitForConnector, TOOLKITS_BY_SLUG } from "@/lib/integrations/toolkits";
+import { useConnections } from "@/lib/integrations/use-connections";
 import "./onboarding.css";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -87,13 +89,59 @@ export function Onboarding({
 
   const [busy, setBusy] = useState(false);
 
-  function toggleConnector(id: string) {
+  const { loading: connLoading, isConnected: realIsConnected, connect: realConnect, setConnected: realSetConnected } = useConnections();
+
+  // Once the status fetch resolves, seed local `connected` with whatever the
+  // server already knows (e.g. the user returning after an OAuth round-trip).
+  useEffect(() => {
+    if (connLoading) return;
     setConnected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      for (const c of CONNECTORS) {
+        const slug = toolkitForConnector(c.id);
+        if (slug && realIsConnected(slug)) next.add(c.id);
+      }
       return next;
     });
+    // Only run once when loading transitions to false.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connLoading]);
+
+  async function toggleConnector(id: string) {
+    const slug = toolkitForConnector(id);
+
+    // Null slug (e.g. website-chat): always simulated.
+    if (!slug) {
+      setConnected((prev) => {
+        const next = new Set(prev);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        return next;
+      });
+      return;
+    }
+
+    // If already connected, just toggle off locally.
+    if (connected.has(id)) {
+      setConnected((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      realSetConnected(slug, false);
+      return;
+    }
+
+    // Attempt real OAuth.
+    const redirecting = await realConnect(slug);
+    if (redirecting) {
+      // Browser will navigate away; mark pending in local state to give feedback.
+      setConnected((prev) => new Set([...prev, id]));
+      return;
+    }
+
+    // Simulated fallback: just toggle locally.
+    setConnected((prev) => new Set([...prev, id]));
   }
 
   function toggleGoal(id: string) {
@@ -212,6 +260,7 @@ export function Onboarding({
                 <StepConnect
                   connected={connected}
                   toggle={toggleConnector}
+                  connLoading={connLoading}
                 />
               )}
               {step === 2 && (
@@ -322,9 +371,11 @@ function StepBusiness({
 function StepConnect({
   connected,
   toggle,
+  connLoading,
 }: {
   connected: Set<string>;
   toggle: (id: string) => void;
+  connLoading: boolean;
 }) {
   return (
     <div className="ob-pane">
@@ -337,21 +388,37 @@ function StepConnect({
           const Icon = ICONS[c.icon] ?? MessageSquare;
           const on = connected.has(c.id);
           const accent = ACCENT_VAR[c.accent];
+          const slug = toolkitForConnector(c.id);
+          const toolkit = slug ? TOOLKITS_BY_SLUG[slug] : null;
+          const gated = toolkit?.gated ?? false;
+          const gatedNote = toolkit?.note ?? null;
+          // Null slug = always simulated (website-chat); show demo tag only for
+          // toolkits that have a slug (could have gone real but fell back).
+          const isAlwaysSimulated = slug === null;
           return (
             <button
               key={c.id}
               type="button"
               className={`ob-card ${on ? "is-on" : ""}`}
               style={{ ["--card-accent" as string]: accent }}
-              onClick={() => toggle(c.id)}
+              onClick={() => { void toggle(c.id); }}
+              disabled={connLoading}
               aria-pressed={on}
             >
               <span className="ob-card-icon">
                 <Icon size={20} strokeWidth={2} />
               </span>
               <span className="ob-card-body">
-                <span className="ob-card-label">{c.label}</span>
+                <span className="ob-card-label">
+                  {c.label}
+                  {isAlwaysSimulated && (
+                    <span className="ob-card-demo-tag">demo</span>
+                  )}
+                </span>
                 <span className="ob-card-desc">{c.description}</span>
+                {gated && gatedNote && (
+                  <span className="ob-card-gated-note">{gatedNote}</span>
+                )}
               </span>
               <span className="ob-card-state">
                 {on ? (

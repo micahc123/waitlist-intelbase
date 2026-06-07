@@ -138,6 +138,37 @@
   box-shadow: inset 0 0 16px color-mix(in srgb, var(--blue) 24%, transparent), 0 0 14px color-mix(in srgb, var(--blue) 24%, transparent);
 }
 
+/* integrations section */
+.st-int-loading {
+  font-family: var(--mono); font-size: 11px; color: var(--ink-faint); padding: 6px 0;
+}
+.st-int-list { display: flex; flex-direction: column; }
+.st-int-icon { display: grid; place-items: center; flex-shrink: 0; color: var(--ink-dim); }
+.st-int-gated-tag {
+  display: inline-block; margin-left: 7px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #ffb86b; background: rgba(255,184,107,0.1); border: 1px solid rgba(255,184,107,0.28);
+  border-radius: 4px; padding: 1px 6px; vertical-align: middle;
+}
+.st-int-btn {
+  flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+  padding: 6px 14px; border-radius: 9px; cursor: pointer; white-space: nowrap;
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--hair-strong); color: var(--ink-dim);
+  background: rgba(255,255,255,0.04);
+  transition: background 0.16s, border-color 0.16s, color 0.16s, box-shadow 0.16s, opacity 0.16s;
+}
+.st-int-btn:hover:not(:disabled) { background: rgba(255,255,255,0.08); color: var(--ink); }
+.st-int-btn:disabled { opacity: 0.5; cursor: default; }
+.st-int-btn--on {
+  color: #7df5c8; border-color: color-mix(in srgb, #7df5c8 50%, transparent);
+  background: color-mix(in srgb, #7df5c8 14%, transparent);
+  box-shadow: inset 0 0 10px color-mix(in srgb, #7df5c8 14%, transparent);
+}
+.st-int-btn--on:hover:not(:disabled) {
+  background: color-mix(in srgb, #7df5c8 20%, transparent);
+}
+
 .st-note {
   display: flex; align-items: center; gap: 11px; margin-top: 8px; padding: 11px 13px; border-radius: 11px;
   border: 1px dashed var(--hair-strong); background: rgba(255,255,255,0.015);

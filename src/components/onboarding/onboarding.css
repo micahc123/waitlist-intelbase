@@ -269,6 +269,30 @@
   align-self: center;
 }
 
+.ob-card-demo-tag {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ob-faint);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 1px 5px;
+  vertical-align: middle;
+}
+
+.ob-card-gated-note {
+  display: block;
+  font-size: 10px;
+  color: var(--ob-amber);
+  margin-top: 4px;
+  line-height: 1.35;
+  font-style: italic;
+}
+
 .ob-card-connect {
   font-size: 12px;
   font-weight: 600;

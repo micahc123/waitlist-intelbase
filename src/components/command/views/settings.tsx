@@ -3,6 +3,8 @@
 import { useState } from "react";
 import * as Lucide from "lucide-react";
 import { useSim } from "@/lib/command/use-sim";
+import { TOOLKITS } from "@/lib/integrations/toolkits";
+import { useConnections } from "@/lib/integrations/use-connections";
 import "./settings.css";
 
 function Switch({ on, onClick, accent = "#6ea8ff" }: { on: boolean; onClick: () => void; accent?: string }) {
@@ -54,6 +56,87 @@ const ACCENTS = [
   { id: "amber", color: "#ffb86b" },
   { id: "pink", color: "#ff8fb1" },
 ];
+
+// Integrations section: lists all known TOOLKITS with real connect/status.
+// Fetches from /api/integrations/status on mount; falls back to simulated
+// toggle on 503 or any network failure.
+function IntegrationsSection() {
+  const ICONS = Lucide as unknown as Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>>;
+
+  const { loading, isConnected, connect, setConnected } = useConnections();
+
+  // Track which slugs are currently in-flight (showing "Connecting...").
+  const [busy, setBusy] = useState<Set<string>>(new Set());
+
+  async function handleConnect(slug: string) {
+    if (busy.has(slug)) return;
+    setBusy((prev) => new Set([...prev, slug]));
+    try {
+      if (isConnected(slug)) {
+        // Toggle disconnect locally.
+        setConnected(slug, false);
+        return;
+      }
+      const redirecting = await connect(slug);
+      if (!redirecting) {
+        // Simulated fallback: mark connected locally.
+        setConnected(slug, true);
+      }
+      // If redirecting, browser navigates away; no state update needed.
+    } finally {
+      setBusy((prev) => {
+        const next = new Set(prev);
+        next.delete(slug);
+        return next;
+      });
+    }
+  }
+
+  return (
+    <Section icon="Plug" title="Integrations" tag="connect">
+      {loading ? (
+        <div className="st-int-loading">Loading status...</div>
+      ) : (
+        <div className="st-int-list">
+          {TOOLKITS.map((tk) => {
+            const C = ICONS[tk.icon] ?? Lucide.Circle;
+            const connected = isConnected(tk.slug);
+            const inFlight = busy.has(tk.slug);
+            return (
+              <div key={tk.slug} className="st-row">
+                <span className="st-int-icon">
+                  <C size={15} strokeWidth={1.7} />
+                </span>
+                <div className="st-row-id">
+                  <div className="st-row-label">
+                    {tk.label}
+                    {tk.gated && (
+                      <span className="st-int-gated-tag">needs Meta verification</span>
+                    )}
+                  </div>
+                  <div className="st-row-desc">{tk.description}</div>
+                </div>
+                <button
+                  type="button"
+                  className={`st-int-btn ${connected ? "st-int-btn--on" : ""}`}
+                  onClick={() => { void handleConnect(tk.slug); }}
+                  disabled={inFlight}
+                  aria-pressed={connected}
+                >
+                  {inFlight
+                    ? "Connecting..."
+                    : connected
+                    ? "Connected"
+                    : "Connect"}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </Section>
+  );
+}
 
 // Initials for the account avatar, derived from the workspace name.
 function initials(name: string): string {
@@ -248,6 +331,8 @@ export function Settings() {
 
         {/* RIGHT COLUMN */}
         <div>
+          <IntegrationsSection />
+
           <Section icon="UserCircle2" title="Account" tag="signed in">
             <div className="st-profile">
               <span className="st-pf-ava">{initials(orgName)}</span>
