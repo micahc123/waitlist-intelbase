@@ -1,10 +1,11 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import * as Lucide from "lucide-react";
 import { useSim } from "@/lib/command/use-sim";
 import type { Domain, GraphNode } from "@/lib/command/types";
+import { AgentChat, mapNodeToAgentId } from "./agent-chat";
 
 function hexToRgba(hex: string, a: number): string {
   const h = hex.replace("#", "");
@@ -61,8 +62,23 @@ function Content({ node, domain }: { node: GraphNode; domain: Domain }) {
   const connections = links.filter((l) => l.from === node.id || l.to === node.id).length;
   const color = domain.color;
 
+  // Agent (and the core) nodes can be talked to via the streamed chat API.
+  const chattable = node.kind === "agent" || node.kind === "core";
+  const agentId = mapNodeToAgentId(node.label, node.kind);
+  const [chatOpen, setChatOpen] = useState(false);
+
   return (
     <div className="cmd-detail" style={domainVars(color)}>
+      <AnimatePresence>
+        {chatOpen && chattable && (
+          <AgentChat
+            agentId={agentId}
+            agentLabel={node.label}
+            onClose={() => setChatOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       <header className="cmd-detail-head">
         <span className="cmd-detail-tile">
           <Icon size={22} strokeWidth={1.9} />
@@ -129,10 +145,21 @@ function Content({ node, domain }: { node: GraphNode; domain: Domain }) {
       </div>
 
       <div className="cmd-actions">
-        <button type="button" className="cmd-action cmd-action--primary">
-          <Lucide.Crosshair size={13} strokeWidth={2} />
-          Focus
-        </button>
+        {chattable ? (
+          <button
+            type="button"
+            className="cmd-action cmd-action--primary"
+            onClick={() => setChatOpen(true)}
+          >
+            <Lucide.MessageSquare size={13} strokeWidth={2} />
+            Chat
+          </button>
+        ) : (
+          <button type="button" className="cmd-action cmd-action--primary">
+            <Lucide.Crosshair size={13} strokeWidth={2} />
+            Focus
+          </button>
+        )}
         <button type="button" className="cmd-action">
           <Lucide.Pause size={13} strokeWidth={2} />
           Pause

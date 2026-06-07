@@ -1,0 +1,266 @@
+/* ============================================================================
+   Agent Chat - streamed conversation surface inside the command plane.
+   Matches the Jarvis HUD chrome: near-black glass, hairline borders, neon.
+   Rendered as an overlay drawer that fills the DetailPanel footprint.
+   ============================================================================ */
+
+.agc {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(9, 12, 22, 0.94), rgba(7, 9, 17, 0.9));
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+  /* fall back gracefully if the panel does not provide domain vars */
+  --agc-accent: var(--dc, var(--blue, #6ea8ff));
+}
+
+/* header ------------------------------------------------------------------- */
+.agc-head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--hair, rgba(255, 255, 255, 0.07));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0)
+  );
+}
+.agc-back {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--glass, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--hair, rgba(255, 255, 255, 0.07));
+  color: var(--ink-dim, #8a93ad);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.agc-back:hover {
+  color: #fff;
+  background: var(--glass-2, rgba(255, 255, 255, 0.05));
+  border-color: var(--hair-strong, rgba(255, 255, 255, 0.14));
+}
+.agc-avatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--agc-accent);
+  background: color-mix(in srgb, var(--agc-accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--agc-accent) 40%, transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--agc-accent) 35%, transparent);
+}
+.agc-id {
+  flex: 1;
+  min-width: 0;
+}
+.agc-name {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #fff;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.agc-meta {
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono, ui-monospace, Menlo, monospace);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint, #5b6379);
+}
+.agc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mint, #7df5c8);
+  box-shadow: 0 0 8px var(--mint, #7df5c8);
+  animation: agc-pulse 2.2s ease-in-out infinite;
+}
+@keyframes agc-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* stream ------------------------------------------------------------------- */
+.agc-stream {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scrollbar-width: thin;
+}
+.agc-stream::-webkit-scrollbar {
+  width: 6px;
+}
+.agc-stream::-webkit-scrollbar-thumb {
+  background: var(--hair-strong, rgba(255, 255, 255, 0.14));
+  border-radius: 3px;
+}
+
+.agc-empty {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  text-align: center;
+  color: var(--ink-faint, #5b6379);
+  padding: 24px 18px;
+}
+.agc-empty p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-dim, #8a93ad);
+  max-width: 220px;
+}
+.agc-empty-hint {
+  font-family: var(--mono, ui-monospace, Menlo, monospace);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint, #5b6379);
+}
+
+/* messages ----------------------------------------------------------------- */
+.agc-msg {
+  display: flex;
+  max-width: 100%;
+}
+.agc-msg--user {
+  justify-content: flex-end;
+}
+.agc-msg--agent {
+  justify-content: flex-start;
+}
+.agc-bubble {
+  max-width: 84%;
+  padding: 9px 12px;
+  border-radius: 13px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid var(--hair, rgba(255, 255, 255, 0.07));
+}
+.agc-msg--user .agc-bubble {
+  color: #fff;
+  background: color-mix(in srgb, var(--agc-accent) 20%, rgba(255, 255, 255, 0.02));
+  border-color: color-mix(in srgb, var(--agc-accent) 40%, transparent);
+  border-bottom-right-radius: 5px;
+}
+.agc-msg--agent .agc-bubble {
+  color: var(--ink, #e9eefb);
+  background: var(--glass, rgba(255, 255, 255, 0.03));
+  border-bottom-left-radius: 5px;
+}
+
+/* typing indicator --------------------------------------------------------- */
+.agc-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 11px 13px;
+}
+.agc-typing span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--agc-accent);
+  opacity: 0.6;
+  animation: agc-bounce 1.2s ease-in-out infinite;
+}
+.agc-typing span:nth-child(2) {
+  animation-delay: 0.16s;
+}
+.agc-typing span:nth-child(3) {
+  animation-delay: 0.32s;
+}
+@keyframes agc-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* composer ----------------------------------------------------------------- */
+.agc-compose {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--hair, rgba(255, 255, 255, 0.07));
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.03), transparent);
+}
+.agc-input {
+  flex: 1;
+  resize: none;
+  max-height: 120px;
+  min-height: 38px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: var(--glass, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--hair, rgba(255, 255, 255, 0.07));
+  color: var(--ink, #e9eefb);
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.45;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.agc-input::placeholder {
+  color: var(--ink-faint, #5b6379);
+}
+.agc-input:focus {
+  border-color: color-mix(in srgb, var(--agc-accent) 50%, transparent);
+  background: var(--glass-2, rgba(255, 255, 255, 0.05));
+}
+.agc-send {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #05060b;
+  background: var(--agc-accent);
+  border: 1px solid transparent;
+  box-shadow: 0 0 16px color-mix(in srgb, var(--agc-accent) 40%, transparent);
+  transition: filter 0.15s ease, opacity 0.15s ease;
+}
+.agc-send:hover:not(:disabled) {
+  filter: brightness(1.12);
+}
+.agc-send:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  color: var(--ink-faint, #5b6379);
+  background: var(--glass, rgba(255, 255, 255, 0.03));
+  border-color: var(--hair, rgba(255, 255, 255, 0.07));
+  box-shadow: none;
+}
+.agc-spin {
+  animation: agc-spin 0.9s linear infinite;
+}
+@keyframes agc-spin {
+  to { transform: rotate(360deg); }
+}
