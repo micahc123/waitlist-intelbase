@@ -23,6 +23,27 @@ export type AgentAutonomy = "manual" | "approve" | "auto";
 
 export type KnowledgeStatus = "processing" | "ready" | "failed";
 
+export type ContactType = "customer" | "vendor" | "partner" | "team" | "lead";
+
+export type TaskStatus = "todo" | "doing" | "done";
+
+export type TaskPriority = "low" | "med" | "high";
+
+export type TaskSource = "human" | "agent";
+
+export type CalendarEventStatus = "confirmed" | "tentative" | "cancelled";
+
+export type NotificationKind =
+  | "approval"
+  | "lead"
+  | "inbox"
+  | "agent"
+  | "system";
+
+export type TeamRole = "owner" | "admin" | "member" | "viewer";
+
+export type TeamStatus = "active" | "invited";
+
 // The six product agents. Used as agent_id values.
 export type AgentId =
   | "concierge"
@@ -42,6 +63,10 @@ export interface Contact {
   email: string | null;
   phone: string | null;
   channel: string | null;
+  type: ContactType;
+  tags: string[];
+  last_contact_at: string | null;
+  value_cents: number;
   created_at: string;
 }
 
@@ -120,9 +145,75 @@ export interface KnowledgeDoc {
   tags?: string[];
 }
 
+export interface Task {
+  id: string;
+  org_id: string;
+  title: string;
+  detail: string | null;
+  status: TaskStatus;
+  priority: TaskPriority;
+  due_at: string | null;
+  assignee: string | null;
+  source: TaskSource;
+  agent_id: string | null;
+  created_at: string;
+}
+
+export interface CalendarEvent {
+  id: string;
+  org_id: string;
+  title: string;
+  start_at: string;
+  end_at: string;
+  attendee: string | null;
+  channel: string | null;
+  status: CalendarEventStatus;
+  location: string | null;
+  booked_by: string | null;
+  created_at: string;
+}
+
+export interface Automation {
+  id: string;
+  org_id: string;
+  name: string;
+  enabled: boolean;
+  trigger: Record<string, unknown>;
+  steps: Array<Record<string, unknown>>;
+  last_run_at: string | null;
+  runs: number;
+  created_at: string;
+}
+
+export interface AppNotification {
+  id: string;
+  org_id: string;
+  kind: NotificationKind;
+  title: string;
+  body: string | null;
+  read: boolean;
+  link: string | null;
+  created_at: string;
+}
+
+export interface TeamMember {
+  id: string;
+  org_id: string;
+  email: string;
+  name: string | null;
+  role: TeamRole;
+  status: TeamStatus;
+  invited_at: string | null;
+  created_at: string;
+}
+
 // ---- derived / aggregate shapes -------------------------------------------
 
 export type LeadStageCounts = Record<LeadStage, number>;
+
+export type TaskStatusCounts = Record<TaskStatus, number>;
+
+export type ContactTypeCounts = Record<ContactType, number>;
 
 export type ConversationStatusCounts = Record<ConversationStatus, number>;
 
