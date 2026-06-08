@@ -61,6 +61,7 @@ export function AppShell({
           active={active}
           orgName={orgName}
           onConnectTools={() => setActive("settings")}
+          onNavigate={setActive}
         />
 
         <main className="app-content">

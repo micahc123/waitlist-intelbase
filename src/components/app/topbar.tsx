@@ -1,12 +1,14 @@
-// The work-shell top bar: current view title + subtitle on the left, a global
-// search (non-functional placeholder for now), a "Connect tools" action that
-// jumps to Settings/integrations, and the user avatar on the right. Calm by
-// design - the data density lives in the views, not the chrome.
+// The work-shell top bar: current view title + subtitle on the left, a working
+// global search launcher (Cmd/Ctrl-K), a notifications bell, a "Connect tools"
+// action that jumps to Settings/integrations, and the user avatar on the right.
+// Calm by design - the data density lives in the views, not the chrome.
 
 "use client";
 
-import { Search, Plug } from "lucide-react";
+import { Plug } from "lucide-react";
 import type { ViewKey } from "./app-shell";
+import { GlobalSearch } from "./global-search";
+import { Notifications } from "./notifications";
 
 const TITLES: Record<ViewKey, { title: string; subtitle: string }> = {
   overview: { title: "Overview", subtitle: "What your AI operating system is doing right now" },
@@ -34,10 +36,12 @@ export function Topbar({
   active,
   orgName,
   onConnectTools,
+  onNavigate,
 }: {
   active: ViewKey;
   orgName: string;
   onConnectTools: () => void;
+  onNavigate: (view: ViewKey) => void;
 }) {
   const meta = TITLES[active];
   return (
@@ -48,18 +52,13 @@ export function Topbar({
       </div>
 
       <div className="app-topbar-search">
-        <Search className="app-search-icon" size={15} />
-        <input
-          className="ibx-input"
-          type="search"
-          placeholder="Search leads, conversations, agents..."
-          aria-label="Search"
-        />
+        <GlobalSearch onNavigate={onNavigate} />
       </div>
 
       <div className="app-topbar-spacer" />
 
       <div className="app-topbar-actions">
+        <Notifications onNavigate={onNavigate} />
         <button type="button" className="ibx-btn" onClick={onConnectTools}>
           <Plug size={15} strokeWidth={2} />
           Connect tools
