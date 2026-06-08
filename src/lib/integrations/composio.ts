@@ -36,15 +36,23 @@ import {
 // Loosely typed Composio client. We avoid importing the SDK types at module
 // scope so this file stays cheap to import; the dynamic import in getComposio()
 // is the only place the SDK is loaded.
+type AuthConfigItem = {
+  id: string;
+  toolkit?: { slug?: string } | string;
+  toolkitSlug?: string;
+};
 type ComposioClient = {
-  toolkits: {
-    authorize: (
-      userId: string,
-      toolkitSlug: string,
-      authConfigId?: string,
-    ) => Promise<{ id: string; status?: string; redirectUrl?: string | null }>;
+  authConfigs: {
+    list: (
+      query?: Record<string, unknown>,
+    ) => Promise<{ items?: AuthConfigItem[] } | AuthConfigItem[]>;
   };
   connectedAccounts: {
+    // Composio v3: managed-OAuth connections are created via link(userId, authConfigId).
+    link: (
+      userId: string,
+      authConfigId: string,
+    ) => Promise<{ id?: string; redirectUrl?: string | null }>;
     list: (query?: {
       userIds?: string[];
       toolkitSlugs?: string[];
@@ -60,6 +68,38 @@ type ComposioClient = {
     ) => Promise<Record<string, unknown>>;
   };
 };
+
+// Cache of toolkit slug -> auth config id (so we do not list on every connect).
+const authConfigCache = new Map<string, string>();
+
+async function authConfigIdFor(
+  composio: ComposioClient,
+  toolkitSlug: string,
+): Promise<string | null> {
+  const slug = toolkitSlug.toLowerCase();
+  const cached = authConfigCache.get(slug);
+  if (cached) return cached;
+  try {
+    const res = await composio.authConfigs.list({});
+    const items: AuthConfigItem[] = Array.isArray(res) ? res : (res.items ?? []);
+    for (const a of items) {
+      const s = (
+        (typeof a.toolkit === "object" ? a.toolkit?.slug : a.toolkit) ??
+        a.toolkitSlug ??
+        ""
+      )
+        .toString()
+        .toLowerCase();
+      if (s === slug && a.id) {
+        authConfigCache.set(slug, a.id);
+        return a.id;
+      }
+    }
+  } catch {
+    /* fall through */
+  }
+  return null;
+}
 
 export function isComposioConfigured(): boolean {
   return Boolean(process.env.COMPOSIO_API_KEY);
@@ -164,20 +204,25 @@ export async function startConnect(
   }
 
   try {
-    const req = await composio.toolkits.authorize(orgId, toolkitSlug);
+    // Composio v3: resolve the toolkit's auth config, then create a managed-OAuth
+    // connection link which returns the redirect URL for the end user.
+    const authConfigId = await authConfigIdFor(composio, toolkitSlug);
+    if (!authConfigId) return { redirectUrl: null, simulated: true };
+
+    const req = await composio.connectedAccounts.link(orgId, authConfigId);
+    const redirectUrl = req?.redirectUrl ?? null;
 
     // Record a pending connection so status reads reflect the in-flight OAuth.
     await upsertConnection(orgId, toolkitSlug, false, {
-      connectionId: req.id,
-      status: req.status ?? "INITIATED",
-      // We point Composio's post-auth redirect at this callback via the auth
-      // config; stored here for reference / debugging.
+      connectionId: req?.id ?? null,
+      authConfigId,
+      status: "INITIATED",
       callbackUrl: callbackUrl(toolkitSlug),
     });
 
     return {
-      redirectUrl: req.redirectUrl ?? null,
-      connectionId: req.id,
+      redirectUrl,
+      connectionId: req?.id,
     };
   } catch {
     // On any SDK failure, fall back to the simulated path so the UI can degrade
