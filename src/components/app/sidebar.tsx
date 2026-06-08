@@ -12,7 +12,6 @@
 
 "use client";
 
-import Link from "next/link";
 import {
   LayoutDashboard,
   ShieldCheck,
@@ -118,17 +117,6 @@ export function Sidebar({
           );
         })}
 
-        <div className="app-nav-sep" />
-
-        <Link
-          href="/app/command"
-          className="app-nav-item app-nav-showpiece"
-          title={isCollapsed ? "Command Center" : undefined}
-        >
-          <Orbit className="app-nav-item-icon" size={17} strokeWidth={2} />
-          <span className="app-nav-label-text">Command Center</span>
-          <span className="app-nav-showpiece-tag">LIVE</span>
-        </Link>
       </nav>
 
       <div className="app-sidebar-foot">

@@ -37,6 +37,10 @@ type Props = {
   onSelect?: (id: string) => void;
   selectedId?: string | null;
   height?: number;
+  /** Opt in to a gentle continuous orbit of the whole layout around the canvas
+   *  centre. Disabled automatically under prefers-reduced-motion, and paused
+   *  while the user is dragging or hovering a node. */
+  idleSpin?: boolean;
 };
 
 // Default colours per kind, drawn from the product accent tokens.
@@ -93,6 +97,7 @@ export function ForceGraph({
   onSelect,
   selectedId,
   height = 460,
+  idleSpin = false,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -112,6 +117,12 @@ export function ForceGraph({
   const alphaRef = useRef(1); // sim "energy"; high = active, settles toward idle
   const rafRef = useRef<number | null>(null);
   const reducedRef = useRef(false);
+  // Idle spin: accumulated rotation angle (radians) applied as a canvas transform.
+  const spinAngleRef = useRef(0);
+  // Track whether user is actively interacting so spin pauses.
+  const interactingRef = useRef(false);
+  // Timestamp of last rAF tick for 30fps throttle.
+  const lastFrameRef = useRef(0);
 
   // Pointer interaction state.
   const dragRef = useRef<{
@@ -307,6 +318,13 @@ export function ForceGraph({
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, w, h);
 
+    // Apply idle spin as a rotation around the canvas centre.
+    if (spinAngleRef.current !== 0) {
+      ctx.translate(w / 2, h / 2);
+      ctx.rotate(spinAngleRef.current);
+      ctx.translate(-w / 2, -h / 2);
+    }
+
     // Links first, beneath nodes.
     ctx.lineWidth = 1;
     for (const l of linksRef.current) {
@@ -345,11 +363,11 @@ export function ForceGraph({
       const col = colorFor(node);
       const alpha = dim ? 0.22 : 1;
 
-      // Additive glow halo (restrained).
+      // Additive glow halo (toned down: smaller radius, lower alpha).
       ctx.globalCompositeOperation = "lighter";
-      const glowR = radius * (isFocus ? 4.4 : 2.8);
+      const glowR = radius * (isFocus ? 3.0 : 1.9);
       const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowR);
-      grad.addColorStop(0, withAlpha(col, (isFocus ? 0.5 : 0.28) * alpha));
+      grad.addColorStop(0, withAlpha(col, (isFocus ? 0.28 : 0.14) * alpha));
       grad.addColorStop(1, withAlpha(col, 0));
       ctx.fillStyle = grad;
       ctx.beginPath();
@@ -402,16 +420,37 @@ export function ForceGraph({
   }, [worldToScreen]);
 
   // Main animation loop.
+  // Throttled to ~30fps (16ms native rAF is still used for scheduling accuracy,
+  // but a frame is only drawn/ticked when at least ~33ms have elapsed).
   useEffect(() => {
     let running = true;
-    const loop = () => {
+    // Slow orbit: one full rotation every ~60 seconds at 30fps = ~0.00017 rad/frame.
+    const SPIN_RATE = (2 * Math.PI) / (60 * 30);
+
+    const loop = (now: number) => {
       if (!running) return;
-      if (!reducedRef.current) {
-        tick(1);
-        draw();
-      }
       rafRef.current = requestAnimationFrame(loop);
+
+      if (reducedRef.current) return; // static layout under reduced motion
+
+      // 30fps cap: skip this frame if not enough time has passed.
+      if (now - lastFrameRef.current < 33) return;
+      lastFrameRef.current = now;
+
+      tick(1);
+
+      // Advance spin angle only during idle (no drag/hover) and when opted in.
+      if (idleSpin && !interactingRef.current && alphaRef.current <= 0.08) {
+        spinAngleRef.current += SPIN_RATE;
+        // Keep angle in [0, 2*PI) to avoid unbounded growth.
+        if (spinAngleRef.current >= Math.PI * 2) {
+          spinAngleRef.current -= Math.PI * 2;
+        }
+      }
+
+      draw();
     };
+
     if (reducedRef.current) {
       draw();
     } else {
@@ -421,7 +460,7 @@ export function ForceGraph({
       running = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [tick, draw]);
+  }, [tick, draw, idleSpin]);
 
   // Size to container, dpr-aware, with a ResizeObserver.
   useEffect(() => {
@@ -481,6 +520,7 @@ export function ForceGraph({
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLCanvasElement>) => {
       e.currentTarget.setPointerCapture(e.pointerId);
+      interactingRef.current = true;
       const { x, y } = localPoint(e);
       const node = pickNode(x, y);
       if (node) {
@@ -541,6 +581,8 @@ export function ForceGraph({
       // Hover detection (no active drag).
       const node = pickNode(x, y);
       const id = node ? node.id : null;
+      // Pause spin while hovering a node.
+      interactingRef.current = Boolean(id);
       if (id !== hoverRef.current) {
         hoverRef.current = id;
         const canvas = canvasRef.current;
@@ -578,6 +620,8 @@ export function ForceGraph({
         moved: false,
         downId: null,
       };
+      // Resume spin after drag ends (hover check in onPointerMove handles hover).
+      interactingRef.current = Boolean(hoverRef.current);
       const canvas = canvasRef.current;
       if (canvas) canvas.style.cursor = hoverRef.current ? "pointer" : "grab";
     },
@@ -614,6 +658,7 @@ export function ForceGraph({
           if (dragRef.current.kind) endDrag(e);
           if (hoverRef.current) {
             hoverRef.current = null;
+            interactingRef.current = false;
             draw();
           }
         }}

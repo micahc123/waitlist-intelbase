@@ -49,7 +49,7 @@ export function Knowledge() {
   const [fileName, setFileName] = useState("");
   const [mode, setMode] = useState<SourceMode>("url");
   const [adding, setAdding] = useState(false);
-  const [view, setView] = useState<ViewMode>("list");
+  const [view, setView] = useState<ViewMode>("graph");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -262,6 +262,7 @@ export function Knowledge() {
                   }
                 }}
                 height={480}
+                idleSpin
               />
               <div className="kn-graph-side">
                 {selectedDoc ? (

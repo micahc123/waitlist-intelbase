@@ -94,7 +94,7 @@ export function Agents() {
   const [agents, setAgents] = useState<AgentRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [killBusy, setKillBusy] = useState(false);
-  const [view, setView] = useState<ViewMode>("list");
+  const [view, setView] = useState<ViewMode>("graph");
   // Set when a graph node is clicked, so List mode scrolls to/highlights it.
   const [focusAgent, setFocusAgent] = useState<string | null>(null);
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -268,6 +268,7 @@ export function Agents() {
               links={graph.links}
               onSelect={handleNodeSelect}
               height={500}
+              idleSpin
             />
             <div className="ag-graph-legend" aria-hidden="true">
               <span className="ag-legend-item">
