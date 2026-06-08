@@ -68,7 +68,9 @@ export async function remember(
 }
 
 // ---------------------------------------------------------------------------
-// recall: top-k memories for an org by cosine similarity to `query`.
+// recall: top-k memories for an org. Uses vector similarity when embeddings are
+// configured (OPENAI_API_KEY), otherwise falls back to a keyword text search so
+// memory still works with NO embedding provider.
 // ---------------------------------------------------------------------------
 export async function recall(
   orgId: string,
@@ -78,19 +80,45 @@ export async function recall(
   try {
     if (!orgId || !query?.trim()) return [];
 
-    // Searching needs an embedding for the query. No key -> nothing to match on.
-    const queryEmbedding = await embedText(query);
-    if (!queryEmbedding) return [];
-
     const admin = createAdminClient();
     if (!admin) return [];
 
-    const { data, error } = await admin.rpc("match_memories", {
-      p_org_id: orgId,
-      p_query: queryEmbedding,
-      p_k: k,
-    });
+    // Vector path: only when an embedding provider is configured.
+    const queryEmbedding = await embedText(query);
+    if (queryEmbedding) {
+      const { data, error } = await admin.rpc("match_memories", {
+        p_org_id: orgId,
+        p_query: queryEmbedding,
+        p_k: k,
+      });
+      if (!error && data) return data as MemoryRecord[];
+      // fall through to keyword search if the rpc is unavailable
+    }
 
+    // Keyword fallback (no OpenAI): match recent rows whose content/title
+    // contain the query terms. Honest text search, no embedding required.
+    const terms = query
+      .toLowerCase()
+      .split(/\s+/)
+      .map((t) => t.replace(/[^a-z0-9]/g, ""))
+      .filter((t) => t.length > 2)
+      .slice(0, 6);
+
+    let q = admin
+      .from("memories")
+      .select("id, org_id, kind, source, title, content, metadata, created_at")
+      .eq("org_id", orgId)
+      .order("created_at", { ascending: false })
+      .limit(k);
+
+    if (terms.length) {
+      const ors = terms
+        .flatMap((t) => [`content.ilike.%${t}%`, `title.ilike.%${t}%`])
+        .join(",");
+      q = q.or(ors);
+    }
+
+    const { data, error } = await q;
     if (error || !data) return [];
     return data as MemoryRecord[];
   } catch {
