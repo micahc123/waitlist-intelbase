@@ -153,9 +153,24 @@ export function Automations() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ op: "create", name, trigger, steps }),
-      }).catch(() => {
-        /* keep optimistic add */
-      });
+      })
+        .then((r) => r.json())
+        .then((data: { ok?: boolean; automation?: Automation }) => {
+          // Swap the optimistic local id for the real persisted row so Run/Toggle/
+          // Delete target the real DB id.
+          const real = data?.automation;
+          if (real?.id) {
+            setRules((prev) =>
+              prev
+                ? prev.map((r) => (r.id === optimistic.id ? real : r))
+                : [real],
+            );
+            setSelectedId(real.id);
+          }
+        })
+        .catch(() => {
+          /* keep optimistic add */
+        });
     },
     [],
   );

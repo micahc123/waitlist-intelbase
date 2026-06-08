@@ -61,21 +61,27 @@ export async function createAutomation(
     steps?: Array<Record<string, unknown>>;
     enabled?: boolean;
   },
-): Promise<WriteResult> {
+): Promise<WriteResult & { automation?: Automation }> {
   if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {
     const supabase = await createClient();
-    const { error } = await supabase.from("automations").insert({
-      org_id: orgId,
-      name: payload.name,
-      trigger: payload.trigger ?? {},
-      steps: payload.steps ?? [],
-      enabled: payload.enabled ?? true,
-    });
+    // Return the inserted row so the client can swap its optimistic local id for
+    // the real DB id (otherwise Run/Toggle/Delete target a stale id).
+    const { data, error } = await supabase
+      .from("automations")
+      .insert({
+        org_id: orgId,
+        name: payload.name,
+        trigger: payload.trigger ?? {},
+        steps: payload.steps ?? [],
+        enabled: payload.enabled ?? true,
+      })
+      .select("*")
+      .single();
     if (error) return { ok: false, reason: error.message };
-    return { ok: true };
+    return { ok: true, automation: data as Automation };
   } catch (e) {
     return { ok: false, reason: e instanceof Error ? e.message : "error" };
   }
