@@ -18,6 +18,8 @@ import {
   Zap,
   X,
   Check,
+  Play,
+  Trash2,
 } from "lucide-react";
 import { ViewHead } from "./view-shell";
 import { ForceGraph, type GraphLink, type GraphNode } from "../graph/force-graph";
@@ -90,10 +92,18 @@ function relative(iso: string | null): string {
   return `${d}d ago`;
 }
 
+// Per-rule transient state for a "Run now" press: a spinner while in flight, a
+// short-lived confirmation line once it lands.
+type RunState =
+  | { phase: "running" }
+  | { phase: "done"; message: string }
+  | { phase: "error"; message: string };
+
 export function Automations() {
   const [rules, setRules] = useState<Automation[] | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  const [runState, setRunState] = useState<Record<string, RunState>>({});
 
   useEffect(() => {
     let active = true;
@@ -150,6 +160,71 @@ export function Automations() {
     [],
   );
 
+  const run = useCallback((id: string) => {
+    setRunState((prev) => ({ ...prev, [id]: { phase: "running" } }));
+    fetch("/api/app/automations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ op: "run", id }),
+    })
+      .then((r) => r.json())
+      .then(
+        (data: {
+          ok?: boolean;
+          demo?: boolean;
+          produced?: { total: number };
+        }) => {
+          if (data.ok === false) {
+            setRunState((prev) => ({
+              ...prev,
+              [id]: { phase: "error", message: "Run failed" },
+            }));
+            return;
+          }
+          // Optimistically reflect the run: bump count + last run.
+          setRules((prev) =>
+            prev
+              ? prev.map((r) =>
+                  r.id === id
+                    ? {
+                        ...r,
+                        runs: r.runs + 1,
+                        last_run_at: new Date().toISOString(),
+                      }
+                    : r,
+                )
+              : prev,
+          );
+          const total = data.produced?.total ?? 0;
+          const message = data.demo
+            ? "Ran (demo) - simulated"
+            : `Ran: produced ${total} item${total === 1 ? "" : "s"}`;
+          setRunState((prev) => ({ ...prev, [id]: { phase: "done", message } }));
+        },
+      )
+      .catch(() => {
+        setRunState((prev) => ({
+          ...prev,
+          [id]: { phase: "error", message: "Run failed" },
+        }));
+      });
+  }, []);
+
+  const remove = useCallback(
+    (id: string) => {
+      setRules((prev) => (prev ? prev.filter((r) => r.id !== id) : prev));
+      setSelectedId((cur) => (cur === id ? null : cur));
+      fetch("/api/app/automations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ op: "delete", id }),
+      }).catch(() => {
+        /* keep optimistic removal */
+      });
+    },
+    [],
+  );
+
   const selected = useMemo(
     () => (rules ?? []).find((r) => r.id === selectedId) ?? null,
     [rules, selectedId],
@@ -196,10 +271,13 @@ export function Automations() {
                 key={r.id}
                 rule={r}
                 selected={selectedId === r.id}
+                runState={runState[r.id] ?? null}
                 onSelect={() =>
                   setSelectedId((id) => (id === r.id ? null : r.id))
                 }
                 onToggle={toggle}
+                onRun={run}
+                onDelete={remove}
               />
             ))}
 
@@ -242,14 +320,21 @@ export function Automations() {
 function RuleCard({
   rule,
   selected,
+  runState,
   onSelect,
   onToggle,
+  onRun,
+  onDelete,
 }: {
   rule: Automation;
   selected: boolean;
+  runState: RunState | null;
   onSelect: () => void;
   onToggle: (id: string, enabled: boolean) => void;
+  onRun: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
+  const running = runState?.phase === "running";
   return (
     <div className={`autos-rule${selected ? " is-selected" : ""}`}>
       <button
@@ -279,20 +364,68 @@ function RuleCard({
             ·
           </span>
           <span className="ibx-mono">last run {relative(rule.last_run_at)}</span>
+          {runState && runState.phase !== "running" && (
+            <>
+              <span className="autos-dot" aria-hidden="true">
+                ·
+              </span>
+              <span
+                className={`autos-run-result${runState.phase === "error" ? " is-error" : ""}`}
+                role="status"
+              >
+                {runState.message}
+              </span>
+            </>
+          )}
         </div>
       </button>
 
-      <label className="autos-toggle" title={rule.enabled ? "Enabled" : "Disabled"}>
-        <input
-          type="checkbox"
-          checked={rule.enabled}
-          onChange={(e) => onToggle(rule.id, e.target.checked)}
-          aria-label={`${rule.enabled ? "Disable" : "Enable"} ${rule.name}`}
-        />
-        <span className="autos-toggle-track" aria-hidden="true">
-          <span className="autos-toggle-thumb" />
-        </span>
-      </label>
+      <div className="autos-rule-actions">
+        <button
+          type="button"
+          className="autos-action-btn"
+          onClick={() => onRun(rule.id)}
+          disabled={running}
+          title="Run now"
+          aria-label={`Run ${rule.name} now`}
+        >
+          <Play size={13} />
+          {running ? "Running..." : "Run now"}
+        </button>
+
+        <label
+          className="autos-toggle"
+          title={rule.enabled ? "Enabled" : "Disabled"}
+        >
+          <input
+            type="checkbox"
+            checked={rule.enabled}
+            onChange={(e) => onToggle(rule.id, e.target.checked)}
+            aria-label={`${rule.enabled ? "Disable" : "Enable"} ${rule.name}`}
+          />
+          <span className="autos-toggle-track" aria-hidden="true">
+            <span className="autos-toggle-thumb" />
+          </span>
+        </label>
+
+        <button
+          type="button"
+          className="autos-action-icon"
+          onClick={() => {
+            if (
+              typeof window !== "undefined" &&
+              !window.confirm(`Delete automation "${rule.name}"?`)
+            ) {
+              return;
+            }
+            onDelete(rule.id);
+          }}
+          title="Delete automation"
+          aria-label={`Delete ${rule.name}`}
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
     </div>
   );
 }

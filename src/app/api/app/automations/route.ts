@@ -8,6 +8,8 @@
 // GET  -> { automations }
 // POST { op: "toggle", id, enabled }                       (enable/disable a rule)
 // POST { op: "create", name, trigger?, steps?, enabled? }  (add a new rule)
+// POST { op: "run", id }                                   (execute a rule now)
+// POST { op: "delete", id }                                (remove a rule)
 //
 // Thin wrapper: all logic lives in src/lib/db/automations.ts. Reads fall back
 // to deterministic DEMO data when Supabase is unconfigured or empty; writes
@@ -17,7 +19,9 @@
 import { getUserAndOrg } from "@/lib/auth";
 import {
   createAutomation,
+  deleteAutomation,
   listAutomations,
+  runAutomation,
   toggleAutomation,
 } from "@/lib/db/automations";
 
@@ -79,6 +83,30 @@ export async function POST(request: Request): Promise<Response> {
       steps,
       enabled: true,
     });
+    return Response.json(result);
+  }
+
+  if (op === "run") {
+    const id = typeof body.id === "string" ? body.id : null;
+    if (!id) {
+      return Response.json(
+        { ok: false, reason: "invalid_input" },
+        { status: 400 },
+      );
+    }
+    const result = await runAutomation(orgId, id);
+    return Response.json(result);
+  }
+
+  if (op === "delete") {
+    const id = typeof body.id === "string" ? body.id : null;
+    if (!id) {
+      return Response.json(
+        { ok: false, reason: "invalid_input" },
+        { status: 400 },
+      );
+    }
+    const result = await deleteAutomation(orgId, id);
     return Response.json(result);
   }
 

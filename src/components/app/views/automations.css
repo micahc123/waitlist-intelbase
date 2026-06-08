@@ -146,6 +146,75 @@
   color: var(--ib-text-4);
 }
 
+/* ---------- run result line ---------- */
+.autos-run-result {
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  color: var(--ib-mint);
+}
+.autos-run-result.is-error {
+  color: var(--ib-danger);
+}
+
+/* ---------- rule actions (run / toggle / delete) ---------- */
+.autos-rule-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--ib-2);
+}
+.autos-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 var(--ib-3);
+  border-radius: var(--ib-r-pill);
+  border: 1px solid var(--ib-border-strong);
+  background: var(--ib-surface-2);
+  color: var(--ib-text-2);
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color var(--ib-dur) var(--ib-ease),
+    border-color var(--ib-dur) var(--ib-ease),
+    background var(--ib-dur) var(--ib-ease);
+}
+.autos-action-btn:hover:not(:disabled) {
+  color: var(--ib-text);
+  border-color: var(--ib-blue);
+}
+.autos-action-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.autos-action-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ib-ring);
+}
+.autos-action-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ib-r-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ib-text-3);
+  cursor: pointer;
+  transition:
+    color var(--ib-dur) var(--ib-ease),
+    border-color var(--ib-dur) var(--ib-ease);
+}
+.autos-action-icon:hover {
+  color: var(--ib-danger);
+  border-color: var(--ib-border-strong);
+}
+.autos-action-icon:focus-visible {
+  outline: none;
+  box-shadow: var(--ib-ring);
+}
+
 /* ---------- toggle ---------- */
 .autos-toggle {
   display: inline-flex;
@@ -312,6 +381,8 @@
   .autos-toggle-thumb,
   .autos-step-add,
   .autos-chip-x,
+  .autos-action-btn,
+  .autos-action-icon,
   .autos-rule-skel {
     transition: none;
     animation: none;
