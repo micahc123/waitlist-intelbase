@@ -1,0 +1,287 @@
+/* Insights - KPI tiles + hand-rolled SVG/CSS charts. Scoped to .ins-*, on the
+ * design tokens and .ibx-* primitives. Tabular numerals, legends, empty states.
+ * Visible focus, 150-200ms hover, reduced-motion respected. */
+
+/* ---------- KPI tiles ---------- */
+.ins-kpis {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--ib-2);
+  margin-bottom: var(--ib-4);
+}
+@media (max-width: 1100px) {
+  .ins-kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .ins-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.ins-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ib-2);
+  padding: var(--ib-3) var(--ib-4);
+  background: var(--ib-surface);
+  border: 1px solid var(--ib-border);
+  border-radius: var(--ib-r-sm);
+}
+.ins-kpi-icon {
+  display: inline-flex;
+}
+.ins-kpi-label {
+  font: 600 var(--ib-fs-xs)/1.2 var(--ib-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ib-text-3);
+}
+.ins-kpi-value {
+  font: 700 var(--ib-fs-xl)/1 var(--ib-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--ib-text);
+}
+
+/* ---------- chart grid ---------- */
+.ins-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ib-3);
+}
+@media (max-width: 900px) {
+  .ins-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.ins-panel {
+  display: flex;
+  flex-direction: column;
+}
+.ins-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ib-3);
+  padding: var(--ib-3) var(--ib-4);
+  border-bottom: 1px solid var(--ib-hairline);
+}
+.ins-panel-title {
+  font: 600 var(--ib-fs-sm)/1 var(--ib-font);
+  color: var(--ib-text);
+}
+.ins-panel-sub {
+  font: 500 var(--ib-fs-xs)/1 var(--ib-mono);
+  color: var(--ib-text-4);
+}
+.ins-panel-body {
+  padding: var(--ib-4);
+  flex: 1;
+}
+
+/* ---------- area chart (SVG) ---------- */
+.ins-chart svg {
+  display: block;
+}
+.ins-gridline {
+  stroke: var(--ib-hairline);
+  stroke-width: 1;
+}
+.ins-axis-y,
+.ins-axis-x {
+  fill: var(--ib-text-4);
+  font-family: var(--ib-mono);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.ins-legend {
+  display: flex;
+  gap: var(--ib-4);
+  margin-top: var(--ib-3);
+}
+.ins-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 var(--ib-fs-xs)/1 var(--ib-mono);
+  color: var(--ib-text-3);
+}
+.ins-legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* ---------- funnel ---------- */
+.ins-funnel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ib-3);
+}
+.ins-funnel-row {
+  display: grid;
+  grid-template-columns: 72px 1fr 44px;
+  align-items: center;
+  gap: var(--ib-3);
+}
+.ins-funnel-label {
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ib-text-3);
+}
+.ins-funnel-track {
+  height: 26px;
+  background: var(--ib-surface-2);
+  border-radius: var(--ib-r-xs);
+  overflow: hidden;
+}
+.ins-funnel-bar {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 8px;
+  border-radius: var(--ib-r-xs);
+  min-width: 22px;
+  transition: width var(--ib-dur) var(--ib-ease);
+}
+.ins-funnel-value {
+  font: 700 var(--ib-fs-xs)/1 var(--ib-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ib-on-accent);
+}
+.ins-funnel-conv {
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ib-text-3);
+  text-align: right;
+}
+
+/* ---------- horizontal bars (pipeline by source) ---------- */
+.ins-hbars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ib-3);
+}
+.ins-hbar-row {
+  display: grid;
+  grid-template-columns: 74px 1fr auto;
+  align-items: center;
+  gap: var(--ib-3);
+}
+.ins-hbar-label {
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  color: var(--ib-text-2);
+}
+.ins-hbar-track {
+  height: 12px;
+  background: var(--ib-surface-2);
+  border-radius: var(--ib-r-pill);
+  overflow: hidden;
+}
+.ins-hbar-fill {
+  height: 100%;
+  border-radius: var(--ib-r-pill);
+  transition: width var(--ib-dur) var(--ib-ease);
+}
+.ins-hbar-value {
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ib-text);
+  text-align: right;
+}
+
+/* ---------- vertical bars (agent activity) ---------- */
+.ins-vbars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: var(--ib-2);
+  height: 180px;
+}
+.ins-vbar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  height: 100%;
+}
+.ins-vbar-value {
+  font: 700 var(--ib-fs-sm)/1 var(--ib-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ib-text);
+}
+.ins-vbar-track {
+  flex: 1;
+  width: 100%;
+  max-width: 38px;
+  display: flex;
+  align-items: flex-end;
+}
+.ins-vbar-fill {
+  width: 100%;
+  min-height: 4px;
+  border-radius: var(--ib-r-xs) var(--ib-r-xs) 0 0;
+  background: linear-gradient(
+    180deg,
+    var(--ib-violet),
+    color-mix(in srgb, var(--ib-violet) 55%, transparent)
+  );
+  transition: height var(--ib-dur) var(--ib-ease);
+}
+.ins-vbar-label {
+  font: 500 var(--ib-fs-xs)/1 var(--ib-mono);
+  color: var(--ib-text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ---------- placeholders ---------- */
+.ins-skel {
+  border-radius: var(--ib-r-sm);
+  background: linear-gradient(
+    90deg,
+    var(--ib-surface-2),
+    var(--ib-elevated),
+    var(--ib-surface-2)
+  );
+  background-size: 200% 100%;
+  animation: insShimmer 1.4s ease-in-out infinite;
+}
+@keyframes insShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.ins-empty-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ib-2);
+  height: 180px;
+  color: var(--ib-text-4);
+  font-size: var(--ib-fs-sm);
+}
+.ins-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ins-funnel-bar,
+  .ins-hbar-fill,
+  .ins-vbar-fill,
+  .ins-skel {
+    transition: none;
+    animation: none;
+  }
+}

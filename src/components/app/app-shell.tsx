@@ -18,6 +18,11 @@ import { Leads } from "./views/leads";
 import { Agents } from "./views/agents";
 import { Knowledge } from "./views/knowledge";
 import { Settings } from "./views/settings";
+import { Contacts } from "./views/contacts";
+import { Tasks } from "./views/tasks";
+import { CalendarView } from "./views/calendar";
+import { Automations } from "./views/automations";
+import { Insights } from "./views/insights";
 
 export type ViewKey =
   | "overview"
@@ -26,7 +31,12 @@ export type ViewKey =
   | "leads"
   | "agents"
   | "knowledge"
-  | "settings";
+  | "settings"
+  | "contacts"
+  | "tasks"
+  | "calendar"
+  | "automations"
+  | "insights";
 
 export function AppShell({
   orgName,
@@ -58,8 +68,13 @@ export function AppShell({
           {active === "approvals" && <Approvals />}
           {active === "inbox" && <Inbox />}
           {active === "leads" && <Leads />}
+          {active === "contacts" && <Contacts />}
+          {active === "tasks" && <Tasks />}
+          {active === "calendar" && <CalendarView />}
           {active === "agents" && <Agents />}
+          {active === "automations" && <Automations />}
           {active === "knowledge" && <Knowledge />}
+          {active === "insights" && <Insights />}
           {active === "settings" && <Settings orgName={orgName} userEmail={userEmail} />}
         </main>
       </div>

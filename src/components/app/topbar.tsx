@@ -13,8 +13,13 @@ const TITLES: Record<ViewKey, { title: string; subtitle: string }> = {
   approvals: { title: "Approvals", subtitle: "Actions waiting for your sign-off" },
   inbox: { title: "Inbox", subtitle: "Every conversation, unified" },
   leads: { title: "Leads", subtitle: "Contacts and pipeline" },
+  contacts: { title: "Contacts", subtitle: "Everyone your business deals with" },
+  tasks: { title: "Tasks", subtitle: "Your work and what your agents queue" },
+  calendar: { title: "Calendar", subtitle: "Bookings and appointments by week" },
   agents: { title: "Agents", subtitle: "Your automations and their runs" },
+  automations: { title: "Automations", subtitle: "The rules that run your business" },
   knowledge: { title: "Knowledge", subtitle: "The brain your agents draw on" },
+  insights: { title: "Insights", subtitle: "Pipeline, conversion, and agent activity" },
   settings: { title: "Settings", subtitle: "Workspace, integrations, and account" },
 };
 

@@ -16,6 +16,11 @@ import {
   Settings,
   Orbit,
   LogOut,
+  Contact2,
+  ListChecks,
+  Calendar,
+  Workflow,
+  BarChart3,
 } from "lucide-react";
 import type { ViewKey } from "./app-shell";
 
@@ -28,11 +33,16 @@ type NavItem = {
 
 const PRIMARY: NavItem[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
-  { key: "approvals", label: "Approvals", icon: ShieldCheck },
   { key: "inbox", label: "Inbox", icon: Inbox },
+  { key: "approvals", label: "Approvals", icon: ShieldCheck },
+  { key: "tasks", label: "Tasks", icon: ListChecks },
   { key: "leads", label: "Leads", icon: Users },
+  { key: "contacts", label: "Contacts", icon: Contact2 },
+  { key: "calendar", label: "Calendar", icon: Calendar },
   { key: "agents", label: "Agents", icon: Bot },
+  { key: "automations", label: "Automations", icon: Workflow },
   { key: "knowledge", label: "Knowledge", icon: BookOpen },
+  { key: "insights", label: "Insights", icon: BarChart3 },
 ];
 
 function initials(orgName: string): string {

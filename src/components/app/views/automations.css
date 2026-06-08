@@ -1,0 +1,319 @@
+/* Automations - rule list (trigger -> step chips, toggle) + a rule-map graph and
+ * a build panel. Scoped to .autos-*, on the design tokens and .ibx-* primitives.
+ * Dark, data-dense. Visible focus, 150-200ms hover, reduced-motion. */
+
+/* ---------- top bar ---------- */
+.autos-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ib-3);
+  margin-bottom: var(--ib-4);
+  flex-wrap: wrap;
+}
+.autos-count {
+  font: 500 var(--ib-fs-sm)/1 var(--ib-mono);
+  color: var(--ib-text-3);
+}
+
+/* ---------- layout ---------- */
+.autos-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--ib-3);
+  align-items: start;
+}
+@media (max-width: 1040px) {
+  .autos-layout {
+    grid-template-columns: 1fr;
+  }
+}
+.autos-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ib-2);
+}
+
+/* ---------- rule card ---------- */
+.autos-rule {
+  display: flex;
+  align-items: stretch;
+  gap: var(--ib-3);
+  padding: var(--ib-3) var(--ib-4);
+  background: var(--ib-surface);
+  border: 1px solid var(--ib-border);
+  border-radius: var(--ib-r-md);
+  transition: border-color var(--ib-dur) var(--ib-ease);
+}
+.autos-rule:hover {
+  border-color: var(--ib-border-strong);
+}
+.autos-rule.is-selected {
+  border-color: var(--ib-blue);
+  background: var(--ib-blue-soft);
+}
+.autos-rule-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ib-2);
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.autos-rule-main:focus-visible {
+  outline: none;
+  box-shadow: var(--ib-ring);
+  border-radius: var(--ib-r-xs);
+}
+.autos-rule-head {
+  display: flex;
+  align-items: center;
+  gap: var(--ib-2);
+}
+.autos-rule-name {
+  font: 600 var(--ib-fs-base)/1.2 var(--ib-font);
+  color: var(--ib-text);
+}
+
+/* trigger -> steps flow */
+.autos-flow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.autos-flow-seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.autos-arrow {
+  color: var(--ib-text-4);
+  flex-shrink: 0;
+}
+.autos-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: var(--ib-r-pill);
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  letter-spacing: 0.02em;
+  color: var(--ib-text-2);
+  background: var(--ib-surface-2);
+  border: 1px solid var(--ib-border);
+}
+.autos-chip-trigger {
+  color: var(--ib-amber);
+  background: var(--ib-amber-soft);
+  border-color: rgba(255, 184, 107, 0.3);
+}
+.autos-chip-removable {
+  padding-right: 5px;
+}
+.autos-chip-x {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ib-text-3);
+  cursor: pointer;
+  transition: color var(--ib-dur) var(--ib-ease);
+}
+.autos-chip-x:hover {
+  color: var(--ib-danger);
+}
+.autos-chip-x:focus-visible {
+  outline: none;
+  box-shadow: var(--ib-ring);
+}
+.autos-rule-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--ib-2);
+  font-size: var(--ib-fs-xs);
+  color: var(--ib-text-3);
+}
+.autos-dot {
+  color: var(--ib-text-4);
+}
+
+/* ---------- toggle ---------- */
+.autos-toggle {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.autos-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.autos-toggle-track {
+  display: inline-flex;
+  align-items: center;
+  width: 38px;
+  height: 22px;
+  padding: 2px;
+  border-radius: var(--ib-r-pill);
+  background: var(--ib-surface-2);
+  border: 1px solid var(--ib-border-strong);
+  transition:
+    background var(--ib-dur) var(--ib-ease),
+    border-color var(--ib-dur) var(--ib-ease);
+}
+.autos-toggle-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--ib-text-3);
+  transition:
+    transform var(--ib-dur) var(--ib-ease),
+    background var(--ib-dur) var(--ib-ease);
+}
+.autos-toggle input:checked + .autos-toggle-track {
+  background: var(--ib-mint-soft);
+  border-color: rgba(125, 245, 200, 0.4);
+}
+.autos-toggle input:checked + .autos-toggle-track .autos-toggle-thumb {
+  transform: translateX(16px);
+  background: var(--ib-mint);
+}
+.autos-toggle input:focus-visible + .autos-toggle-track {
+  box-shadow: var(--ib-ring);
+}
+
+/* ---------- rule map ---------- */
+.autos-map {
+  overflow: hidden;
+}
+.autos-map-title {
+  font: 600 var(--ib-fs-sm)/1 var(--ib-font);
+  color: var(--ib-text);
+}
+.autos-map-empty {
+  padding: var(--ib-7) var(--ib-4);
+  text-align: center;
+  font-size: var(--ib-fs-sm);
+  color: var(--ib-text-4);
+  line-height: 1.5;
+}
+.autos-graph {
+  padding: var(--ib-2);
+}
+
+/* ---------- new automation panel ---------- */
+.autos-new {
+  padding: var(--ib-4);
+  margin-bottom: var(--ib-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ib-3);
+}
+.autos-new-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ib-3);
+}
+@media (max-width: 640px) {
+  .autos-new-row {
+    grid-template-columns: 1fr;
+  }
+}
+.autos-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ib-2);
+}
+.autos-field-label {
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ib-text-3);
+}
+.autos-trigger-select {
+  cursor: pointer;
+}
+.autos-new-steps {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: var(--ib-3);
+  border: 1px solid var(--ib-border);
+  border-radius: var(--ib-r-sm);
+  background: var(--ib-bg);
+}
+.autos-step-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ib-2);
+}
+.autos-step-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 var(--ib-3);
+  border-radius: var(--ib-r-pill);
+  border: 1px dashed var(--ib-border-strong);
+  background: transparent;
+  color: var(--ib-text-3);
+  font: 600 var(--ib-fs-xs)/1 var(--ib-mono);
+  cursor: pointer;
+  transition:
+    color var(--ib-dur) var(--ib-ease),
+    border-color var(--ib-dur) var(--ib-ease);
+}
+.autos-step-add:hover {
+  color: var(--ib-text);
+  border-color: var(--ib-blue);
+}
+.autos-step-add:focus-visible {
+  outline: none;
+  box-shadow: var(--ib-ring);
+}
+.autos-new-actions {
+  display: flex;
+  gap: var(--ib-2);
+}
+
+/* skeleton */
+.autos-rule-skel {
+  height: 96px;
+  border-radius: var(--ib-r-md);
+  background: linear-gradient(
+    90deg,
+    var(--ib-surface-2),
+    var(--ib-elevated),
+    var(--ib-surface-2)
+  );
+  background-size: 200% 100%;
+  animation: autosShimmer 1.4s ease-in-out infinite;
+}
+@keyframes autosShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .autos-rule,
+  .autos-toggle-track,
+  .autos-toggle-thumb,
+  .autos-step-add,
+  .autos-chip-x,
+  .autos-rule-skel {
+    transition: none;
+    animation: none;
+  }
+}
