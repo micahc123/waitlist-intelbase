@@ -63,26 +63,18 @@ const ACCENTS = [
 function IntegrationsSection() {
   const ICONS = Lucide as unknown as Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>>;
 
-  const { loading, isConnected, connect, setConnected } = useConnections();
+  const { loading, isConnected, connect } = useConnections();
 
   // Track which slugs are currently in-flight (showing "Connecting...").
   const [busy, setBusy] = useState<Set<string>>(new Set());
 
   async function handleConnect(slug: string) {
-    if (busy.has(slug)) return;
+    if (busy.has(slug) || isConnected(slug)) return;
     setBusy((prev) => new Set([...prev, slug]));
     try {
-      if (isConnected(slug)) {
-        // Toggle disconnect locally.
-        setConnected(slug, false);
-        return;
-      }
-      const redirecting = await connect(slug);
-      if (!redirecting) {
-        // Simulated fallback: mark connected locally.
-        setConnected(slug, true);
-      }
-      // If redirecting, browser navigates away; no state update needed.
+      // Real connect: redirects to OAuth when Composio is configured, otherwise
+      // a no-op (no fake connected state).
+      await connect(slug);
     } finally {
       setBusy((prev) => {
         const next = new Set(prev);
