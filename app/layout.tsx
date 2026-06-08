@@ -1,10 +1,25 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const SITE_TITLE =
+  "intelbase. The Autonomous AI Operating System for Your Business.";
+const SITE_DESC =
+  "intelbase OS runs your front office and growth on autopilot: an AI that answers visitors, qualifies leads, books calls, nurtures follow-ups, and runs your ads, with guardrails. Join the private beta waitlist.";
+
 export const metadata: Metadata = {
-  title: "Intelbase — The AI Operating System for Business",
-  description:
-    "Intelbase is the all-in-one AI operating system that runs your business operations. Join the waitlist for early access.",
+  title: SITE_TITLE,
+  description: SITE_DESC,
+  openGraph: {
+    type: "website",
+    siteName: "intelbase",
+    title: SITE_TITLE,
+    description: SITE_DESC,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESC,
+  },
 };
 
 export default function RootLayout({
@@ -13,9 +28,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="preconnect" href="https://api.fontshare.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
-          href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=satoshi@400,500,700&display=swap"
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
       </head>

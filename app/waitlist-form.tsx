@@ -16,7 +16,7 @@ export default function WaitlistForm() {
 
     if (!value) return setError("Please enter your email to join.");
     if (!isValidEmail(value))
-      return setError("Hmm, that doesn’t look like a valid email.");
+      return setError("Hmm, that does not look like a valid email.");
 
     setError("");
     setLoading(true);
@@ -33,7 +33,7 @@ export default function WaitlistForm() {
       }
       setDone(true);
     } catch {
-      setError("Network error — please try again.");
+      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -53,9 +53,9 @@ export default function WaitlistForm() {
             <path d="M20 6L9 17l-5-5" />
           </svg>
         </div>
-        <h3>You&apos;re on the list! 🎉</h3>
+        <h3>You are on the list.</h3>
         <p>
-          We&apos;ll email <b>{email}</b> the moment your Intelbase access opens
+          We will email <b>{email}</b> the moment your intelbase access opens
           up.
         </p>
       </div>
@@ -77,14 +77,15 @@ export default function WaitlistForm() {
           }}
         />
         <button className="submit" type="submit" disabled={loading}>
-          {loading ? "Joining…" : "Get early access"}{" "}
+          {loading ? "Joining" : "Request early access"}{" "}
           <span className="arrow">→</span>
         </button>
       </form>
-      <div className="msg">{error}</div>
+      <div className="msg" role="alert">
+        {error}
+      </div>
       <p className="hint">
-        Join <b>2,400+ operators</b> already on the list. No spam — just launch
-        news.
+        14-day free trial at launch. No card to join. No spam, just launch news.
       </p>
     </div>
   );
