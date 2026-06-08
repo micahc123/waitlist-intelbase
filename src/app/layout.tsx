@@ -3,7 +3,6 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import "@/styles/tokens.css";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
-import { ChatWidget } from "@/components/chat-widget";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -68,8 +67,6 @@ export default function RootLayout({
       <body>
         <MetaPixel />
         {children}
-        {/* AGENT-05: the dogfood demo, live site-wide. */}
-        <ChatWidget />
       </body>
     </html>
   );
