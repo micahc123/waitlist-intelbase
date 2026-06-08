@@ -8,7 +8,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ChevronsUpDown, Search, Users } from "lucide-react";
-import { ViewHead } from "./view-shell";
+import { ViewHead, ErrorState } from "./view-shell";
 import type { Lead, LeadStage, LeadStageCounts } from "@/lib/db/types";
 import "./leads.css";
 
@@ -78,14 +78,20 @@ export function Leads() {
   const [leads, setLeads] = useState<Lead[] | null>(null);
   const [counts, setCounts] = useState<LeadStageCounts | null>(null);
   const [pipeline, setPipeline] = useState<number | null>(null);
+  const [error, setError] = useState(false);
   const [query, setQuery] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("created");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
-  useEffect(() => {
+  const load = useCallback(() => {
     let active = true;
+    setError(false);
+    setLeads(null);
     fetch("/api/app/leads")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then(
         (data: {
           leads: Lead[];
@@ -99,12 +105,14 @@ export function Leads() {
         },
       )
       .catch(() => {
-        if (active) setLeads([]);
+        if (active) setError(true);
       });
     return () => {
       active = false;
     };
   }, []);
+
+  useEffect(() => load(), [load]);
 
   // Recompute the header pills + pipeline from the live rows so an optimistic
   // stage change is reflected in the header without a refetch.
@@ -199,6 +207,15 @@ export function Leads() {
         subtitle="People who reached out, captured and qualified automatically."
       />
 
+      {error && (
+        <ErrorState
+          message="We could not load your leads. Check your connection and try again."
+          onRetry={load}
+        />
+      )}
+
+      {!error && (
+      <>
       <div className="leads-bar">
         <div className="leads-pills">
           {PILLS.map((p) => (
@@ -355,6 +372,8 @@ export function Leads() {
           </table>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

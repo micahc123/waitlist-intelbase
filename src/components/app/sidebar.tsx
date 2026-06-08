@@ -2,6 +2,13 @@
 // views via client state (no route per view); "Command Center" is a real link
 // out to the cinematic showpiece at /app/command. Bottom block carries Settings
 // plus the org/user identity and a sign-out affordance (POST to /auth/signout).
+//
+// Responsive: at desktop it is a 240px rail with labels. At the medium
+// breakpoint (or when the user collapses it) it shrinks to a ~64px icon rail
+// (`is-collapsed`) - labels become hover/focus tooltips via title attributes
+// and the org/user footer collapses to just the avatar. On mobile the same
+// component renders inside an overlay drawer (see app-shell.tsx); there it is
+// always expanded.
 
 "use client";
 
@@ -21,6 +28,8 @@ import {
   Calendar,
   Workflow,
   BarChart3,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import type { ViewKey } from "./app-shell";
 
@@ -58,15 +67,24 @@ export function Sidebar({
   orgName,
   userEmail,
   approvalsCount,
+  collapsed = false,
+  onToggleCollapse,
+  inDrawer = false,
 }: {
   active: ViewKey;
   onSelect: (key: ViewKey) => void;
   orgName: string;
   userEmail: string | null;
   approvalsCount?: number;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
+  inDrawer?: boolean;
 }) {
+  // Inside the mobile drawer the sidebar is always fully expanded.
+  const isCollapsed = collapsed && !inDrawer;
+
   return (
-    <aside className="app-sidebar">
+    <aside className={`app-sidebar${isCollapsed ? " is-collapsed" : ""}`}>
       <div className="app-brand">
         <span className="app-brand-mark">
           <Orbit size={16} strokeWidth={2.2} />
@@ -87,10 +105,15 @@ export function Sidebar({
               className={`app-nav-item${isActive ? " is-active" : ""}`}
               aria-current={isActive ? "page" : undefined}
               onClick={() => onSelect(item.key)}
+              title={isCollapsed ? item.label : undefined}
             >
               <Icon className="app-nav-item-icon" size={17} strokeWidth={2} />
               <span className="app-nav-label-text">{item.label}</span>
-              {badge ? <span className="app-nav-badge">{badge}</span> : null}
+              {badge ? (
+                <span className="app-nav-badge" aria-label={`${badge} pending`}>
+                  {badge}
+                </span>
+              ) : null}
             </button>
           );
         })}
@@ -100,6 +123,7 @@ export function Sidebar({
         <Link
           href="/app/command"
           className="app-nav-item app-nav-showpiece"
+          title={isCollapsed ? "Command Center" : undefined}
         >
           <Orbit className="app-nav-item-icon" size={17} strokeWidth={2} />
           <span className="app-nav-label-text">Command Center</span>
@@ -113,6 +137,7 @@ export function Sidebar({
           className={`app-nav-item${active === "settings" ? " is-active" : ""}`}
           aria-current={active === "settings" ? "page" : undefined}
           onClick={() => onSelect("settings")}
+          title={isCollapsed ? "Settings" : undefined}
         >
           <Settings className="app-nav-item-icon" size={17} strokeWidth={2} />
           <span className="app-nav-label-text">Settings</span>
@@ -136,6 +161,24 @@ export function Sidebar({
             </button>
           </form>
         </div>
+
+        {onToggleCollapse ? (
+          <button
+            type="button"
+            className="app-collapse-toggle"
+            onClick={onToggleCollapse}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-pressed={isCollapsed}
+          >
+            {isCollapsed ? (
+              <PanelLeftOpen size={16} strokeWidth={2} />
+            ) : (
+              <PanelLeftClose size={16} strokeWidth={2} />
+            )}
+            <span className="app-nav-label-text">Collapse</span>
+          </button>
+        ) : null}
       </div>
     </aside>
   );

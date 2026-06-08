@@ -1,11 +1,14 @@
-// The work-shell top bar: current view title + subtitle on the left, a working
-// global search launcher (Cmd/Ctrl-K), a notifications bell, a "Connect tools"
-// action that jumps to Settings/integrations, and the user avatar on the right.
-// Calm by design - the data density lives in the views, not the chrome.
+// The work-shell top bar: a mobile hamburger (opens the nav drawer), the
+// current view title + subtitle on the left, a working global search launcher
+// (Cmd/Ctrl-K), a notifications bell, a "Connect tools" action that jumps to
+// Settings/integrations, and the user avatar on the right. Calm by design - the
+// data density lives in the views, not the chrome. Under ~640px the search
+// launcher collapses to an icon (CSS) and "Connect tools" hides its label.
 
 "use client";
 
-import { Plug } from "lucide-react";
+import type { RefObject } from "react";
+import { Plug, Menu } from "lucide-react";
 import type { ViewKey } from "./app-shell";
 import { GlobalSearch } from "./global-search";
 import { Notifications } from "./notifications";
@@ -37,15 +40,29 @@ export function Topbar({
   orgName,
   onConnectTools,
   onNavigate,
+  onOpenDrawer,
+  hamburgerRef,
 }: {
   active: ViewKey;
   orgName: string;
   onConnectTools: () => void;
   onNavigate: (view: ViewKey) => void;
+  onOpenDrawer?: () => void;
+  hamburgerRef?: RefObject<HTMLButtonElement | null>;
 }) {
   const meta = TITLES[active];
   return (
     <header className="app-topbar">
+      <button
+        type="button"
+        className="app-hamburger"
+        onClick={onOpenDrawer}
+        aria-label="Open navigation"
+        ref={hamburgerRef}
+      >
+        <Menu size={18} strokeWidth={2} />
+      </button>
+
       <div className="app-topbar-title">
         <h1>{meta.title}</h1>
         <div className="app-topbar-sub">{meta.subtitle}</div>
@@ -59,9 +76,13 @@ export function Topbar({
 
       <div className="app-topbar-actions">
         <Notifications onNavigate={onNavigate} />
-        <button type="button" className="ibx-btn" onClick={onConnectTools}>
+        <button
+          type="button"
+          className="ibx-btn app-connect-btn"
+          onClick={onConnectTools}
+        >
           <Plug size={15} strokeWidth={2} />
-          Connect tools
+          <span className="app-connect-label">Connect tools</span>
         </button>
         <span className="app-topbar-avatar" aria-hidden="true">
           {avatarInitials(orgName)}

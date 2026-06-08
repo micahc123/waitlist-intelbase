@@ -7,7 +7,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Contact2,
   Search,
@@ -18,7 +18,7 @@ import {
   Tag,
   Clock,
 } from "lucide-react";
-import { ViewHead } from "./view-shell";
+import { ViewHead, ErrorState } from "./view-shell";
 import type { Contact, ContactType, ContactTypeCounts } from "@/lib/db/types";
 import "./contacts.css";
 
@@ -50,26 +50,34 @@ function relative(iso: string | null): string {
 export function Contacts() {
   const [contacts, setContacts] = useState<Contact[] | null>(null);
   const [counts, setCounts] = useState<ContactTypeCounts | null>(null);
+  const [error, setError] = useState(false);
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<ContactType | "all">("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     let active = true;
+    setError(false);
+    setContacts(null);
     fetch("/api/app/contacts")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then((data: { contacts: Contact[]; counts: ContactTypeCounts }) => {
         if (!active) return;
         setContacts(data.contacts ?? []);
         setCounts(data.counts ?? null);
       })
       .catch(() => {
-        if (active) setContacts([]);
+        if (active) setError(true);
       });
     return () => {
       active = false;
     };
   }, []);
+
+  useEffect(() => load(), [load]);
 
   const liveCounts = useMemo<ContactTypeCounts>(() => {
     const base: ContactTypeCounts = {
@@ -113,6 +121,15 @@ export function Contacts() {
         subtitle="Everyone your business deals with - customers, vendors, partners, your team - in one directory."
       />
 
+      {error && (
+        <ErrorState
+          message="We could not load your contacts. Check your connection and try again."
+          onRetry={load}
+        />
+      )}
+
+      {!error && (
+      <>
       <div className="contacts-pills">
         <button
           type="button"
@@ -256,6 +273,8 @@ export function Contacts() {
           </table>
         </div>
       </div>
+      </>
+      )}
 
       {selected && (
         <ContactDrawer contact={selected} onClose={() => setSelectedId(null)} />

@@ -7,25 +7,66 @@
 
 .app-shell {
   --app-sidebar-w: 240px;
+  --app-sidebar-w-collapsed: 64px;
   --app-topbar-h: 60px;
+  /* The effective rail width; updated by collapse state + media queries. */
+  --app-rail-w: var(--app-sidebar-w);
   min-height: 100vh;
   background: var(--ib-bg);
   color: var(--ib-text);
   font-family: var(--ib-font);
   -webkit-font-smoothing: antialiased;
 }
+.app-shell.is-collapsed {
+  --app-rail-w: var(--app-sidebar-w-collapsed);
+}
+
+/* Accessibility safety net: focusable elements inside the shell that have NOT
+   opted into the token ring fall back to a visible outline. We only target the
+   default state so elements that set their own ring (outline:none + box-shadow,
+   higher or equal specificity) keep it and are never double-ringed. */
+.app-shell a,
+.app-shell button,
+.app-shell [tabindex],
+.app-shell select,
+.app-shell textarea {
+  outline-color: var(--ib-blue);
+}
+.app-shell a:focus-visible,
+.app-shell button:focus-visible,
+.app-shell [tabindex]:focus-visible,
+.app-shell select:focus-visible,
+.app-shell textarea:focus-visible {
+  outline-offset: 2px;
+}
+
+/* Screen-reader-only utility (visually hidden, still announced). */
+.ib-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 /* ---------- Sidebar ---------- */
 .app-sidebar {
   position: fixed;
   inset: 0 auto 0 0;
-  width: var(--app-sidebar-w);
+  width: var(--app-rail-w);
   display: flex;
   flex-direction: column;
   background: var(--ib-surface);
   border-right: 1px solid var(--ib-border);
   z-index: 40;
+  transition: width var(--ib-dur) var(--ib-ease);
 }
+/* The slot is only a positioning wrapper; the sidebar itself is fixed. */
+.app-sidebar-slot { display: contents; }
 
 .app-brand {
   display: flex;
@@ -235,10 +276,11 @@
 
 /* ---------- Topbar ---------- */
 .app-main {
-  margin-left: var(--app-sidebar-w);
+  margin-left: var(--app-rail-w);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: margin-left var(--ib-dur) var(--ib-ease);
 }
 .app-topbar {
   position: sticky;
@@ -318,14 +360,212 @@
   max-width: 60ch;
 }
 
-@media (max-width: 880px) {
-  .app-sidebar { transform: translateX(-100%); }
+/* ---------- Collapse toggle (footer button) ---------- */
+.app-collapse-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ib-3);
+  width: 100%;
+  margin-top: var(--ib-1);
+  padding: 8px var(--ib-3);
+  border-radius: var(--ib-r-sm);
+  border: none;
+  background: transparent;
+  color: var(--ib-text-3);
+  font: 500 var(--ib-fs-sm)/1 var(--ib-font);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--ib-dur) var(--ib-ease),
+    color var(--ib-dur) var(--ib-ease);
+}
+.app-collapse-toggle:hover { background: var(--ib-surface-2); color: var(--ib-text); }
+.app-collapse-toggle:focus-visible { outline: none; box-shadow: var(--ib-ring); }
+.app-collapse-toggle svg { flex: 0 0 auto; }
+
+/* ---------- Collapsed icon-rail mode ---------- */
+.app-sidebar.is-collapsed .app-brand-name,
+.app-sidebar.is-collapsed .app-nav-label,
+.app-sidebar.is-collapsed .app-nav-label-text,
+.app-sidebar.is-collapsed .app-nav-showpiece-tag,
+.app-sidebar.is-collapsed .app-user-meta,
+.app-sidebar.is-collapsed .app-signout {
+  display: none;
+}
+.app-sidebar.is-collapsed .app-brand { justify-content: center; padding: 0; }
+.app-sidebar.is-collapsed .app-nav-item,
+.app-sidebar.is-collapsed .app-collapse-toggle {
+  justify-content: center;
+  padding: 8px;
+  gap: 0;
+}
+.app-sidebar.is-collapsed .app-user {
+  justify-content: center;
+  padding: var(--ib-2);
+}
+/* Badge becomes a small dot anchored to the icon when labels are hidden. */
+.app-sidebar.is-collapsed .app-nav-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+}
+
+/* ---------- Mobile hamburger ---------- */
+.app-hamburger {
+  display: none;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--ib-r-sm);
+  border: 1px solid var(--ib-border);
+  background: var(--ib-surface-2);
+  color: var(--ib-text-2);
+  cursor: pointer;
+  transition: background var(--ib-dur) var(--ib-ease),
+    color var(--ib-dur) var(--ib-ease);
+}
+.app-hamburger:hover { background: var(--ib-elevated); color: var(--ib-text); }
+.app-hamburger:focus-visible { outline: none; box-shadow: var(--ib-ring); }
+
+/* ---------- Mobile drawer ---------- */
+.app-drawer-root {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+.app-drawer-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: ib-fade-in var(--ib-dur) var(--ib-ease);
+}
+.app-drawer {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(var(--app-sidebar-w), 86vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--ib-surface);
+  border-right: 1px solid var(--ib-border);
+  box-shadow: var(--ib-shadow-3);
+  animation: ib-slide-in var(--ib-dur) var(--ib-ease);
+}
+/* The sidebar inside the drawer is in normal flow, full height. */
+.app-drawer .app-sidebar {
+  position: static;
+  width: 100%;
+  flex: 1 1 auto;
+  border-right: none;
+}
+.app-drawer-close {
+  flex: 0 0 auto;
+  margin: var(--ib-2);
+  justify-content: center;
+}
+
+@keyframes ib-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ib-slide-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+/* ---------- Shared loading skeleton ---------- */
+.ib-loading { display: flex; flex-direction: column; gap: var(--ib-3); }
+.ib-skel {
+  border-radius: var(--ib-r-sm);
+  background: linear-gradient(
+    90deg,
+    var(--ib-surface-2) 0%,
+    var(--ib-elevated) 50%,
+    var(--ib-surface-2) 100%
+  );
+  background-size: 200% 100%;
+  animation: ib-shimmer 1.4s ease-in-out infinite;
+}
+.ib-skel-head { height: 20px; width: 38%; }
+.ib-skel-row { height: 44px; width: 100%; }
+@keyframes ib-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ---------- Shared error state ---------- */
+.ib-errorstate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ib-3);
+  padding: var(--ib-7) var(--ib-5);
+  text-align: center;
+}
+.ib-errorstate-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ib-r-pill);
+  background: var(--ib-danger-soft);
+  color: var(--ib-danger);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+.ib-errorstate-msg {
+  max-width: 46ch;
+  font-size: var(--ib-fs-sm);
+  color: var(--ib-text-2);
+}
+
+/* ====================================================================== */
+/* Responsive breakpoints                                                 */
+/* ====================================================================== */
+
+/* Medium (768-1099px): the rail defaults to collapsed (handled at mount in
+   app-shell.tsx by seeding the collapsed preference). Collapse visuals are
+   driven entirely by .is-collapsed, so expand/collapse behaves the same here
+   as on desktop - no breakpoint-specific overrides needed. */
+
+/* Compact search: shrink the launcher to an icon under 640px. */
+@media (max-width: 640px) {
+  .app-topbar-search { flex: 0 0 auto; max-width: none; }
+  .app-gsearch-placeholder,
+  .app-gsearch-kbd { display: none; }
+  .app-gsearch-trigger { width: 36px; padding: 0; justify-content: center; }
+  .app-gsearch-trigger .app-search-icon {
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .app-connect-label { display: none; }
+  .app-connect-btn { padding-left: 10px; padding-right: 10px; }
+  .app-topbar-sub { display: none; }
+}
+
+/* Mobile: hide the rail, show the hamburger, full-width content. */
+@media (max-width: 767px) {
+  .app-sidebar-slot { display: none; }
   .app-main { margin-left: 0; }
-  .app-topbar-search { display: none; }
+  .app-hamburger { display: grid; }
+  .app-content { padding: var(--ib-5) var(--ib-4); }
+}
+
+/* Tiny phones: keep the title from crowding the actions. */
+@media (max-width: 380px) {
+  .app-topbar-title h1 { font-size: var(--ib-fs-base); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .app-nav-item,
   .app-nav-item-icon,
-  .app-signout { transition: none; }
+  .app-signout,
+  .app-collapse-toggle,
+  .app-hamburger,
+  .app-sidebar,
+  .app-main { transition: none; }
+  .app-drawer-scrim,
+  .app-drawer { animation: none; }
+  .ib-skel { animation: none; }
 }
