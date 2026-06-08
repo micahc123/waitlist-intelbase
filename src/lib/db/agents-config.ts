@@ -1,24 +1,20 @@
 // Data access for the Agents config surface (agent_configs table).
 //
-// Resilience contract: see src/lib/db/leads.ts. Config lists fall back to demo
-// when empty so all six agents always render with sensible defaults. Writes
-// no-op gracefully when unconfigured.
+// Resilience contract: see src/lib/db/leads.ts. Demo configs only in a demo
+// context (no org, the "demo-org" pass, or Supabase unconfigured). A real
+// signed-in org gets its own configs, even when empty; query errors return the
+// empty equivalent ([] / null), not demo. Writes no-op gracefully when
+// unconfigured.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoAgentConfigs } from "./demo";
 import type { AgentConfig, WriteResult } from "./types";
-
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
+import { isDemoContext, supabaseConfigured } from "./util";
 
 export async function listAgentConfigs(
   orgId: string | null,
 ): Promise<AgentConfig[]> {
-  if (!orgId || !configured()) return demoAgentConfigs();
+  if (isDemoContext(orgId)) return demoAgentConfigs();
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -26,10 +22,10 @@ export async function listAgentConfigs(
       .select("*")
       .eq("org_id", orgId)
       .order("agent_id", { ascending: true });
-    if (error || !data || data.length === 0) return demoAgentConfigs();
-    return data as AgentConfig[];
+    if (error) return [];
+    return (data as AgentConfig[] | null) ?? [];
   } catch {
-    return demoAgentConfigs();
+    return [];
   }
 }
 
@@ -37,7 +33,7 @@ export async function getAgentConfig(
   orgId: string | null,
   agentId: string,
 ): Promise<AgentConfig | null> {
-  if (!orgId || !configured()) {
+  if (isDemoContext(orgId)) {
     return demoAgentConfigs().find((c) => c.agent_id === agentId) ?? null;
   }
   try {
@@ -48,12 +44,10 @@ export async function getAgentConfig(
       .eq("org_id", orgId)
       .eq("agent_id", agentId)
       .maybeSingle();
-    if (error || !data) {
-      return demoAgentConfigs().find((c) => c.agent_id === agentId) ?? null;
-    }
+    if (error || !data) return null;
     return data as AgentConfig;
   } catch {
-    return demoAgentConfigs().find((c) => c.agent_id === agentId) ?? null;
+    return null;
   }
 }
 
@@ -66,7 +60,7 @@ export async function saveAgentConfig(
     Pick<AgentConfig, "enabled" | "autonomy" | "instructions" | "guardrails">
   >,
 ): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {
@@ -92,7 +86,7 @@ export async function pauseAllAgents(
   orgId: string | null,
   paused: boolean,
 ): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {

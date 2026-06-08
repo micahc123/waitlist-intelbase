@@ -1,7 +1,9 @@
 // Data access for the Inbox surface (conversations + messages).
 //
-// Resilience contract: see src/lib/db/leads.ts. Conversation lists fall back to
-// demo when empty so the inbox stays populated in the early product state.
+// Resilience contract: see src/lib/db/leads.ts. Demo data only in a demo
+// context (no org, the "demo-org" pass, or Supabase unconfigured). A real
+// signed-in org gets its own conversations, even when empty; query errors
+// return the empty equivalent, not demo.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoConversation, demoConversations } from "./demo";
@@ -12,20 +14,14 @@ import type {
   ConversationWithMessages,
   Message,
 } from "./types";
-
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
+import { isDemoContext } from "./util";
 
 const ALL_STATUSES: ConversationStatus[] = ["open", "waiting", "closed"];
 
 export async function listConversations(
   orgId: string | null,
 ): Promise<Conversation[]> {
-  if (!orgId || !configured()) return demoConversations();
+  if (isDemoContext(orgId)) return demoConversations();
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -33,10 +29,10 @@ export async function listConversations(
       .select("*")
       .eq("org_id", orgId)
       .order("last_at", { ascending: false });
-    if (error || !data || data.length === 0) return demoConversations();
-    return data as Conversation[];
+    if (error) return [];
+    return (data as Conversation[] | null) ?? [];
   } catch {
-    return demoConversations();
+    return [];
   }
 }
 
@@ -44,7 +40,7 @@ export async function getConversation(
   orgId: string | null,
   id: string,
 ): Promise<ConversationWithMessages | null> {
-  if (!orgId || !configured()) return demoConversation(id);
+  if (isDemoContext(orgId)) return demoConversation(id);
   try {
     const supabase = await createClient();
     const { data: conversation, error } = await supabase
@@ -53,7 +49,7 @@ export async function getConversation(
       .eq("org_id", orgId)
       .eq("id", id)
       .maybeSingle();
-    if (error || !conversation) return demoConversation(id);
+    if (error || !conversation) return null;
 
     const { data: messages } = await supabase
       .from("messages")
@@ -66,7 +62,7 @@ export async function getConversation(
       messages: (messages as Message[]) ?? [],
     };
   } catch {
-    return demoConversation(id);
+    return null;
   }
 }
 

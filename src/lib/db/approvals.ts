@@ -1,18 +1,14 @@
 // Data access for the Approvals surface and agent audit log (actions table).
 //
-// Resilience contract: see src/lib/db/leads.ts. Action lists fall back to demo
-// when empty so the approvals queue and audit trail stay populated early on.
+// Resilience contract: see src/lib/db/leads.ts. Demo actions only in a demo
+// context (no org, the "demo-org" pass, or Supabase unconfigured). A real
+// signed-in org gets its own actions, even when empty; query errors return the
+// empty equivalent, not demo.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoActions } from "./demo";
 import type { ActionItem, ActionStatus, WriteResult } from "./types";
-
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
+import { isDemoContext, supabaseConfigured } from "./util";
 
 export async function listActions(
   orgId: string | null,
@@ -20,7 +16,7 @@ export async function listActions(
 ): Promise<ActionItem[]> {
   const { status } = opts;
 
-  if (!orgId || !configured()) {
+  if (isDemoContext(orgId)) {
     const demo = demoActions();
     return status ? demo.filter((a) => a.status === status) : demo;
   }
@@ -35,14 +31,10 @@ export async function listActions(
     if (status) query = query.eq("status", status);
 
     const { data, error } = await query;
-    if (error || !data || data.length === 0) {
-      const demo = demoActions();
-      return status ? demo.filter((a) => a.status === status) : demo;
-    }
-    return data as ActionItem[];
+    if (error) return [];
+    return (data as ActionItem[] | null) ?? [];
   } catch {
-    const demo = demoActions();
-    return status ? demo.filter((a) => a.status === status) : demo;
+    return [];
   }
 }
 
@@ -57,7 +49,7 @@ export async function decideAction(
   decision: "approved" | "rejected",
   by: string,
 ): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {

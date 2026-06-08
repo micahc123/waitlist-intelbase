@@ -1,25 +1,20 @@
 // Data access for the Automations / workflow rules surface.
 //
-// Resilience contract: see src/lib/db/leads.ts. Automation lists fall back to
-// demo when empty so the surface stays populated in the early product state.
-// Writes no-op gracefully (return { ok: false }) when unconfigured and never
-// throw.
+// Resilience contract: see src/lib/db/leads.ts. Demo automations only in a demo
+// context (no org, the "demo-org" pass, or Supabase unconfigured). A real
+// signed-in org gets its own automations, even when empty; query errors return
+// the empty equivalent, not demo. Writes no-op gracefully (return
+// { ok: false }) when unconfigured and never throw.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoAutomations } from "./demo";
 import type { Automation, WriteResult } from "./types";
-
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
+import { isDemoContext, supabaseConfigured } from "./util";
 
 export async function listAutomations(
   orgId: string | null,
 ): Promise<Automation[]> {
-  if (!orgId || !configured()) return demoAutomations();
+  if (isDemoContext(orgId)) return demoAutomations();
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -27,10 +22,10 @@ export async function listAutomations(
       .select("*")
       .eq("org_id", orgId)
       .order("created_at", { ascending: false });
-    if (error || !data || data.length === 0) return demoAutomations();
-    return data as Automation[];
+    if (error) return [];
+    return (data as Automation[] | null) ?? [];
   } catch {
-    return demoAutomations();
+    return [];
   }
 }
 
@@ -39,7 +34,7 @@ export async function toggleAutomation(
   id: string,
   enabled: boolean,
 ): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {
@@ -65,7 +60,7 @@ export async function createAutomation(
     enabled?: boolean;
   },
 ): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {

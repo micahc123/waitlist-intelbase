@@ -1,25 +1,20 @@
 // Data access for the in-app Notifications feed.
 //
-// Resilience contract: see src/lib/db/leads.ts. Notification lists fall back to
-// demo when empty so the feed stays populated in the early product state.
-// Writes no-op gracefully (return { ok: false }) when unconfigured and never
-// throw.
+// Resilience contract: see src/lib/db/leads.ts. Demo notifications only in a
+// demo context (no org, the "demo-org" pass, or Supabase unconfigured). A real
+// signed-in org gets its own notifications, even when empty; query errors
+// return the empty equivalent, not demo. Writes no-op gracefully (return
+// { ok: false }) when unconfigured and never throw.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoNotifications } from "./demo";
 import type { AppNotification, WriteResult } from "./types";
-
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
+import { isDemoContext, supabaseConfigured } from "./util";
 
 export async function listNotifications(
   orgId: string | null,
 ): Promise<AppNotification[]> {
-  if (!orgId || !configured()) return demoNotifications();
+  if (isDemoContext(orgId)) return demoNotifications();
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -27,10 +22,10 @@ export async function listNotifications(
       .select("*")
       .eq("org_id", orgId)
       .order("created_at", { ascending: false });
-    if (error || !data || data.length === 0) return demoNotifications();
-    return data as AppNotification[];
+    if (error) return [];
+    return (data as AppNotification[] | null) ?? [];
   } catch {
-    return demoNotifications();
+    return [];
   }
 }
 
@@ -43,7 +38,7 @@ export async function markRead(
   orgId: string | null,
   id: string,
 ): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {
@@ -61,7 +56,7 @@ export async function markRead(
 }
 
 export async function markAllRead(orgId: string | null): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {

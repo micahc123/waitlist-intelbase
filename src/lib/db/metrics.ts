@@ -1,27 +1,33 @@
 // Data access for the Overview / dashboard metrics.
 //
-// getOverviewMetrics computes real, honest numbers from the live tables when an
-// org has data. If there is no org, Supabase is unconfigured, an error occurs,
-// or the org has no leads yet, it falls back to demoMetrics() so the dashboard
-// always shows a populated, believable state.
+// getOverviewMetrics computes real, honest numbers from the live tables for a
+// real signed-in org, returning zeros when that org has no data yet (proper
+// empty state). Demo metrics appear ONLY in a demo context (no org, the
+// "demo-org" pass, or Supabase unconfigured). A genuine query error for a real
+// org returns zeros, not demo.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoMetrics } from "./demo";
 import type { Conversation, Lead, OverviewMetrics } from "./types";
-
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
+import { isDemoContext } from "./util";
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+function emptyMetrics(): OverviewMetrics {
+  return {
+    leadsThisWeek: 0,
+    bookings: 0,
+    responseTimeSeconds: 0,
+    conversionRate: 0,
+    messagesHandled: 0,
+    pipelineValueCents: 0,
+  };
+}
 
 export async function getOverviewMetrics(
   orgId: string | null,
 ): Promise<OverviewMetrics> {
-  if (!orgId || !configured()) return demoMetrics();
+  if (isDemoContext(orgId)) return demoMetrics();
 
   try {
     const supabase = await createClient();
@@ -31,11 +37,10 @@ export async function getOverviewMetrics(
       supabase.from("conversations").select("*").eq("org_id", orgId),
     ]);
 
+    // Genuine error reading the real org -> honest zeros, never demo.
+    if (leadsRes.error) return emptyMetrics();
+
     const leads = (leadsRes.data as Lead[] | null) ?? [];
-
-    // No real leads yet -> keep the dashboard populated with demo metrics.
-    if (leadsRes.error || leads.length === 0) return demoMetrics();
-
     const conversations =
       (convRes.data as Conversation[] | null) ?? [];
 
@@ -71,9 +76,9 @@ export async function getOverviewMetrics(
       messagesHandled = count ?? 0;
     }
 
-    // Response time is not yet derivable from stored data; surface the demo
-    // baseline so the tile is never blank. Replace once turn timing is logged.
-    const responseTimeSeconds = demoMetrics().responseTimeSeconds;
+    // Response time is not yet derivable from stored data. For a real org we
+    // report 0 (honest empty) until turn timing is logged.
+    const responseTimeSeconds = 0;
 
     return {
       leadsThisWeek,
@@ -84,6 +89,6 @@ export async function getOverviewMetrics(
       pipelineValueCents,
     };
   } catch {
-    return demoMetrics();
+    return emptyMetrics();
   }
 }

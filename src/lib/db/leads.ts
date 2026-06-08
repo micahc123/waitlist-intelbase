@@ -1,22 +1,18 @@
 // Data access for the Leads / CRM surface.
 //
 // Resilience contract (shared by every module in src/lib/db):
-//   - Reads return DEMO data when there is no org, Supabase is unconfigured, the
-//     query errors, OR the table is empty. Leads should stay populated in the
-//     early product state, so an empty result also falls back to demo.
+//   - Reads return DEMO data ONLY in a demo context (no org, the public
+//     "demo-org" pass, or Supabase unconfigured). A real signed-in org always
+//     gets its OWN real data back, even when that data is empty (proper empty
+//     state, never faked demo content). A genuine query error for a real org
+//     returns the empty equivalent, not demo.
 //   - Writes no-op gracefully (return { ok: false }) when unconfigured and never
 //     throw.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoLeads } from "./demo";
 import type { Lead, LeadStage, LeadStageCounts, WriteResult } from "./types";
-
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
+import { isDemoContext, supabaseConfigured } from "./util";
 
 const ALL_STAGES: LeadStage[] = ["new", "qualified", "booked", "won", "lost"];
 
@@ -25,7 +21,7 @@ function emptyStageCounts(): LeadStageCounts {
 }
 
 export async function listLeads(orgId: string | null): Promise<Lead[]> {
-  if (!orgId || !configured()) return demoLeads();
+  if (isDemoContext(orgId)) return demoLeads();
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -33,10 +29,10 @@ export async function listLeads(orgId: string | null): Promise<Lead[]> {
       .select("*")
       .eq("org_id", orgId)
       .order("created_at", { ascending: false });
-    if (error || !data || data.length === 0) return demoLeads();
-    return data as Lead[];
+    if (error) return [];
+    return (data as Lead[] | null) ?? [];
   } catch {
-    return demoLeads();
+    return [];
   }
 }
 
@@ -65,7 +61,7 @@ export async function updateLeadStage(
   id: string,
   stage: LeadStage,
 ): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {

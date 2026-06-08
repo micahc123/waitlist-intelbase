@@ -1,23 +1,19 @@
 // Data access for the Knowledge surface (knowledge_docs table).
 //
-// Resilience contract: see src/lib/db/leads.ts. The doc list falls back to demo
-// when empty so the knowledge base looks ingested in the early product state.
+// Resilience contract: see src/lib/db/leads.ts. Demo docs only in a demo
+// context (no org, the "demo-org" pass, or Supabase unconfigured). A real
+// signed-in org gets its own docs, even when empty; query errors return the
+// empty equivalent, not demo.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoKnowledge } from "./demo";
 import type { KnowledgeDoc, WriteResult } from "./types";
-
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
+import { isDemoContext, supabaseConfigured } from "./util";
 
 export async function listKnowledge(
   orgId: string | null,
 ): Promise<KnowledgeDoc[]> {
-  if (!orgId || !configured()) return demoKnowledge();
+  if (isDemoContext(orgId)) return demoKnowledge();
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -25,10 +21,10 @@ export async function listKnowledge(
       .select("*")
       .eq("org_id", orgId)
       .order("created_at", { ascending: false });
-    if (error || !data || data.length === 0) return demoKnowledge();
-    return data as KnowledgeDoc[];
+    if (error) return [];
+    return (data as KnowledgeDoc[] | null) ?? [];
   } catch {
-    return demoKnowledge();
+    return [];
   }
 }
 
@@ -49,7 +45,7 @@ export async function addKnowledge(
     created_at: new Date().toISOString(),
   };
 
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured", doc: fakeDoc };
   }
 

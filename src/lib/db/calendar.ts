@@ -1,21 +1,17 @@
 // Data access for the Calendar surface (calendar_events table).
 //
-// Resilience contract: see src/lib/db/leads.ts. Event lists fall back to demo
-// when empty so the calendar stays populated in the early product state.
+// Resilience contract: see src/lib/db/leads.ts. Demo events only in a demo
+// context (no org, the "demo-org" pass, or Supabase unconfigured). A real
+// signed-in org gets its own events, even when empty; query errors return the
+// empty equivalent, not demo.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoCalendar } from "./demo";
 import type { CalendarEvent } from "./types";
+import { isDemoContext } from "./util";
 
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
-
-// Filter a demo set to a [from, to] window (used as the demo fallback for the
-// same range applied to a Supabase query).
+// Filter a demo set to a [from, to] window (used as the demo result for the
+// same range applied to a Supabase query in a demo context).
 function withinRange(
   events: CalendarEvent[],
   from?: string,
@@ -34,7 +30,7 @@ export async function listEvents(
 ): Promise<CalendarEvent[]> {
   const { from, to } = opts;
 
-  if (!orgId || !configured()) {
+  if (isDemoContext(orgId)) {
     return withinRange(demoCalendar(), from, to);
   }
   try {
@@ -48,12 +44,10 @@ export async function listEvents(
     if (to) query = query.lte("start_at", to);
 
     const { data, error } = await query;
-    if (error || !data || data.length === 0) {
-      return withinRange(demoCalendar(), from, to);
-    }
-    return data as CalendarEvent[];
+    if (error) return [];
+    return (data as CalendarEvent[] | null) ?? [];
   } catch {
-    return withinRange(demoCalendar(), from, to);
+    return [];
   }
 }
 
@@ -63,7 +57,7 @@ export async function upcomingEvents(
 ): Promise<CalendarEvent[]> {
   const now = new Date().toISOString();
 
-  if (!orgId || !configured()) {
+  if (isDemoContext(orgId)) {
     return demoCalendar()
       .filter((e) => e.start_at >= now && e.status !== "cancelled")
       .sort((a, b) => (a.start_at < b.start_at ? -1 : 1))
@@ -79,17 +73,9 @@ export async function upcomingEvents(
       .gte("start_at", now)
       .order("start_at", { ascending: true })
       .limit(limit);
-    if (error || !data || data.length === 0) {
-      return demoCalendar()
-        .filter((e) => e.start_at >= now && e.status !== "cancelled")
-        .sort((a, b) => (a.start_at < b.start_at ? -1 : 1))
-        .slice(0, limit);
-    }
-    return data as CalendarEvent[];
+    if (error) return [];
+    return (data as CalendarEvent[] | null) ?? [];
   } catch {
-    return demoCalendar()
-      .filter((e) => e.start_at >= now && e.status !== "cancelled")
-      .sort((a, b) => (a.start_at < b.start_at ? -1 : 1))
-      .slice(0, limit);
+    return [];
   }
 }

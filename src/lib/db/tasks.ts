@@ -1,8 +1,10 @@
 // Data access for the Tasks board surface.
 //
-// Resilience contract: see src/lib/db/leads.ts. Task lists fall back to demo
-// when empty so the board stays populated in the early product state. Writes
-// no-op gracefully (return { ok: false }) when unconfigured and never throw.
+// Resilience contract: see src/lib/db/leads.ts. Demo tasks only in a demo
+// context (no org, the "demo-org" pass, or Supabase unconfigured). A real
+// signed-in org gets its own tasks, even when empty; query errors return the
+// empty equivalent, not demo. Writes no-op gracefully (return { ok: false })
+// when unconfigured and never throw.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoTasks } from "./demo";
@@ -13,13 +15,7 @@ import type {
   TaskStatusCounts,
   WriteResult,
 } from "./types";
-
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
+import { isDemoContext, supabaseConfigured } from "./util";
 
 const ALL_STATUSES: TaskStatus[] = ["todo", "doing", "done"];
 
@@ -28,7 +24,7 @@ function emptyStatusCounts(): TaskStatusCounts {
 }
 
 export async function listTasks(orgId: string | null): Promise<Task[]> {
-  if (!orgId || !configured()) return demoTasks();
+  if (isDemoContext(orgId)) return demoTasks();
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -36,10 +32,10 @@ export async function listTasks(orgId: string | null): Promise<Task[]> {
       .select("*")
       .eq("org_id", orgId)
       .order("created_at", { ascending: false });
-    if (error || !data || data.length === 0) return demoTasks();
-    return data as Task[];
+    if (error) return [];
+    return (data as Task[] | null) ?? [];
   } catch {
-    return demoTasks();
+    return [];
   }
 }
 
@@ -59,7 +55,7 @@ export async function updateTaskStatus(
   id: string,
   status: TaskStatus,
 ): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {
@@ -80,7 +76,7 @@ export async function createTask(
   orgId: string | null,
   payload: { title: string; priority?: TaskPriority; due_at?: string },
 ): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {

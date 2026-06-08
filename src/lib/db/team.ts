@@ -1,22 +1,18 @@
 // Data access for the Team / members surface.
 //
-// Resilience contract: see src/lib/db/leads.ts. Team lists fall back to demo
-// when empty so the surface stays populated in the early product state. Writes
-// no-op gracefully (return { ok: false }) when unconfigured and never throw.
+// Resilience contract: see src/lib/db/leads.ts. Demo team only in a demo
+// context (no org, the "demo-org" pass, or Supabase unconfigured). A real
+// signed-in org gets its own members, even when empty; query errors return the
+// empty equivalent, not demo. Writes no-op gracefully (return { ok: false })
+// when unconfigured and never throw.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoTeam } from "./demo";
 import type { TeamMember, TeamRole, WriteResult } from "./types";
-
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
+import { isDemoContext, supabaseConfigured } from "./util";
 
 export async function listTeam(orgId: string | null): Promise<TeamMember[]> {
-  if (!orgId || !configured()) return demoTeam();
+  if (isDemoContext(orgId)) return demoTeam();
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -24,10 +20,10 @@ export async function listTeam(orgId: string | null): Promise<TeamMember[]> {
       .select("*")
       .eq("org_id", orgId)
       .order("created_at", { ascending: true });
-    if (error || !data || data.length === 0) return demoTeam();
-    return data as TeamMember[];
+    if (error) return [];
+    return (data as TeamMember[] | null) ?? [];
   } catch {
-    return demoTeam();
+    return [];
   }
 }
 
@@ -35,7 +31,7 @@ export async function inviteTeamMember(
   orgId: string | null,
   payload: { email: string; role: TeamRole },
 ): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {
@@ -59,7 +55,7 @@ export async function updateMemberRole(
   id: string,
   role: TeamRole,
 ): Promise<WriteResult> {
-  if (!orgId || !configured()) {
+  if (!orgId || !supabaseConfigured()) {
     return { ok: false, reason: "unconfigured" };
   }
   try {

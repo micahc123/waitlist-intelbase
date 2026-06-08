@@ -1,19 +1,14 @@
 // Data access for the Contacts / CRM surface.
 //
-// Resilience contract: see src/lib/db/leads.ts. Contact lists fall back to demo
-// when there is no org, Supabase is unconfigured, the query errors, OR the
-// table is empty, so the CRM stays populated in the early product state.
+// Resilience contract: see src/lib/db/leads.ts. Demo contacts only in a demo
+// context (no org, the "demo-org" pass, or Supabase unconfigured). A real
+// signed-in org gets its own contacts, even when empty; query errors return the
+// empty equivalent, not demo.
 
 import { createClient } from "@/lib/supabase/server";
 import { demoContacts } from "./demo";
 import type { Contact, ContactType, ContactTypeCounts } from "./types";
-
-function configured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
+import { isDemoContext } from "./util";
 
 const ALL_TYPES: ContactType[] = [
   "customer",
@@ -28,7 +23,7 @@ function emptyTypeCounts(): ContactTypeCounts {
 }
 
 export async function listContacts(orgId: string | null): Promise<Contact[]> {
-  if (!orgId || !configured()) return demoContacts();
+  if (isDemoContext(orgId)) return demoContacts();
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -36,10 +31,10 @@ export async function listContacts(orgId: string | null): Promise<Contact[]> {
       .select("*")
       .eq("org_id", orgId)
       .order("created_at", { ascending: false });
-    if (error || !data || data.length === 0) return demoContacts();
-    return data as Contact[];
+    if (error) return [];
+    return (data as Contact[] | null) ?? [];
   } catch {
-    return demoContacts();
+    return [];
   }
 }
 
@@ -47,7 +42,7 @@ export async function getContact(
   orgId: string | null,
   id: string,
 ): Promise<Contact | null> {
-  if (!orgId || !configured()) {
+  if (isDemoContext(orgId)) {
     return demoContacts().find((c) => c.id === id) ?? null;
   }
   try {
@@ -58,12 +53,10 @@ export async function getContact(
       .eq("org_id", orgId)
       .eq("id", id)
       .maybeSingle();
-    if (error || !data) {
-      return demoContacts().find((c) => c.id === id) ?? null;
-    }
+    if (error || !data) return null;
     return data as Contact;
   } catch {
-    return demoContacts().find((c) => c.id === id) ?? null;
+    return null;
   }
 }
 
