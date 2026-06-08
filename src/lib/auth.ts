@@ -12,6 +12,7 @@
 // throwing at build time.
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 // supabase-js re-exports the auth user type as `AuthUser` (not `User`).
 import type { AuthUser as User } from "@supabase/supabase-js";
 
@@ -61,7 +62,48 @@ export async function getUserAndOrg(): Promise<{
     .limit(1)
     .maybeSingle();
 
-  return { user, org: (org as Organization | null) ?? null };
+  if (org) return { user, org: org as Organization };
+
+  // The user is authenticated but has no organization (the signup trigger did
+  // not run, e.g. they signed up before the schema existed). Create a REAL org
+  // now so an authenticated user NEVER falls back to the demo path / demo data.
+  return { user, org: await ensureOrg(user) };
+}
+
+async function ensureOrg(user: User): Promise<Organization | null> {
+  const fallbackName =
+    (user.email ? user.email.split("@")[0].replace(/[._-]+/g, " ") : "") ||
+    "My business";
+
+  // Prefer the service-role client so the insert reliably bypasses RLS.
+  const admin = createAdminClient();
+  try {
+    if (admin) {
+      const { data: again } = await admin
+        .from("organizations")
+        .select("*")
+        .eq("owner_id", user.id)
+        .limit(1)
+        .maybeSingle();
+      if (again) return again as Organization;
+      const { data: created } = await admin
+        .from("organizations")
+        .insert({ owner_id: user.id, name: fallbackName, onboarded: false })
+        .select("*")
+        .single();
+      return (created as Organization) ?? null;
+    }
+    // No service-role key: try with the user-scoped client (needs an insert policy).
+    const supabase = await createClient();
+    const { data: created } = await supabase
+      .from("organizations")
+      .insert({ owner_id: user.id, name: fallbackName, onboarded: false })
+      .select("*")
+      .maybeSingle();
+    return (created as Organization | null) ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export async function requireUser(): Promise<User | null> {
