@@ -8,8 +8,9 @@ export default function WaitlistForm() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const value = email.trim();
 
@@ -17,9 +18,25 @@ export default function WaitlistForm() {
     if (!isValidEmail(value))
       return setError("Hmm, that doesn’t look like a valid email.");
 
-    // TODO: swap this for your real provider (Resend, Mailchimp, an API route…)
     setError("");
-    setDone(true);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: value }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+      setDone(true);
+    } catch {
+      setError("Network error — please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (done) {
@@ -59,8 +76,9 @@ export default function WaitlistForm() {
             if (error) setError("");
           }}
         />
-        <button className="submit" type="submit">
-          Get early access <span className="arrow">→</span>
+        <button className="submit" type="submit" disabled={loading}>
+          {loading ? "Joining…" : "Get early access"}{" "}
+          <span className="arrow">→</span>
         </button>
       </form>
       <div className="msg">{error}</div>
