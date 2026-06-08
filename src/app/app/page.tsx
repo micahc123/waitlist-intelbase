@@ -16,6 +16,7 @@
 // node_modules/next/dist/docs.
 
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { getUserAndOrg } from "@/lib/auth";
 import { AppShell } from "@/components/app/app-shell";
 
@@ -29,6 +30,14 @@ export const dynamic = "force-dynamic";
 
 export default async function AppPage() {
   const { user, org } = await getUserAndOrg();
+
+  // Gate: a signed-in user whose org exists but has not finished onboarding is
+  // routed through the setup flow first. The demo / no-org pass (org === null,
+  // e.g. Supabase env missing) is NOT redirected -- it renders the app as today.
+  if (org && org.onboarded === false) {
+    redirect("/onboarding");
+  }
+
   const orgName = org?.name || "Your business";
   const userEmail = user?.email ?? null;
 

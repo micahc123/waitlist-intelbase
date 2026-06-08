@@ -133,6 +133,44 @@
   flex-direction: column;
 }
 
+/* Centered intro / finish panes (Welcome, Finish) */
+.ob-pane-center {
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  min-height: 360px;
+  padding: 8px 12px;
+}
+
+.ob-hero-mark {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  margin-bottom: 22px;
+  color: var(--ob-bg);
+  background: linear-gradient(135deg, var(--ob-blue), var(--ob-violet));
+  box-shadow: 0 14px 40px rgba(110, 168, 255, 0.34);
+}
+
+.ob-hero-mark-done {
+  background: linear-gradient(135deg, var(--ob-mint), var(--ob-blue));
+  box-shadow: 0 14px 40px rgba(125, 245, 200, 0.32);
+}
+
+.ob-sub-center {
+  max-width: 440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ob-btn-hero {
+  margin-top: 6px;
+  padding: 13px 26px;
+  font-size: 15px;
+}
+
 .ob-title {
   margin: 0 0 8px;
   font-size: 26px;
@@ -500,6 +538,32 @@
   font-size: 13px;
   color: var(--ob-mint);
   text-align: center;
+}
+
+/* "Skip for now" link on the Plan step */
+.ob-skip {
+  align-self: center;
+  margin-top: 20px;
+  background: none;
+  border: none;
+  color: var(--ob-faint);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.ob-skip:hover:not(:disabled) {
+  color: var(--ob-ink);
+  background: var(--ob-card-hover);
+}
+
+.ob-skip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ---- Footer / buttons ---- */

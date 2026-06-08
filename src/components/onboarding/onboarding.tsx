@@ -1,18 +1,22 @@
 "use client";
 
-// The Intelbase onboarding wizard. A centered, premium 4-step flow:
-//   1. Business   -> name + optional "what do you do" (saveBusiness)
-//   2. Connect    -> 6 connector cards (real OAuth when Composio configured,
-//                   honest "needs API key" note when not; no fake connections)
-//   3. Goals      -> multi-select chips (local only)
+// The Intelbase onboarding wizard. A centered, premium post-login setup flow:
+//   1. Welcome    -> welcoming intro + Get started
+//   2. Workspace  -> name your workspace + what your business does (saveBusiness)
+//   3. Focus      -> what Intelbase should focus on first (multi-select, local)
 //   4. Plan       -> 3 plans + monthly/annual toggle + start 14-day trial
+//   5. Connect    -> connect your tools (real OAuth when Composio configured,
+//                   honest "needs API key" note when not; no fake connections)
+//   6. Finish     -> "You are all set" + completeOnboarding() -> /app
 //
-// Resilience: when billing/Supabase env is missing, the server actions are
-// safe no-ops and the plan step falls back to completeOnboarding() + navigate
-// to /app. The wizard never crashes in a logged-out/dev state.
-// Connect step: saveConnections is only called with slugs that are genuinely
-// connected (real OAuth round-trip completed). No fake/simulated rows are
-// written to the connections table.
+// Resilience: when billing/Supabase/Composio env is missing, the server actions
+// are safe no-ops and every step is skippable. The wizard never crashes in a
+// logged-out/dev state and never throws.
+//
+// Onboarded gating: completeOnboarding() runs before navigating to /app so the
+// /app gate lets the user in. If the user starts a Stripe checkout (redirects
+// away), the Plan step calls completeOnboarding() FIRST so that when Stripe's
+// success_url returns them to /app they are already marked onboarded.
 
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -54,7 +58,18 @@ const ACCENT_VAR: Record<ConnectorAccent, string> = {
   pink: "var(--ob-pink)",
 };
 
-const TOTAL_STEPS = 4;
+// Step indices for readability.
+const STEP_WELCOME = 0;
+const STEP_WORKSPACE = 1;
+const STEP_FOCUS = 2;
+const STEP_PLAN = 3;
+const STEP_CONNECT = 4;
+const STEP_FINISH = 5;
+const TOTAL_STEPS = 6;
+
+// The progress indicator counts the setup steps (Workspace..Finish). The
+// Welcome screen is an intro and is not counted, so the bar starts on Workspace.
+const PROGRESS_STEPS = TOTAL_STEPS - 1; // 5 numbered setup steps
 
 const STEP_VARIANTS = {
   enter: { opacity: 0, y: 16 },
@@ -68,6 +83,15 @@ const PLAN_ACCENT: Record<PlanId, ConnectorAccent> = {
   scale: "violet",
 };
 
+// A few business-type chips for the Workspace step. Local state only.
+const BUSINESS_TYPES = [
+  "Clinic",
+  "Agency",
+  "Ecommerce",
+  "Services",
+  "Other",
+];
+
 export function Onboarding({
   initialName,
   userEmail,
@@ -75,26 +99,32 @@ export function Onboarding({
   initialName: string;
   userEmail: string | null;
 }) {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(STEP_WELCOME);
 
-  // Step 1
+  // Workspace
   const [name, setName] = useState(initialName);
-  const [what, setWhat] = useState("");
+  const [bizType, setBizType] = useState<string>("");
 
-  // Step 2 - only tracks slugs that completed a real OAuth round-trip.
-  const [connected, setConnected] = useState<Set<string>>(new Set());
-
-  // Step 3
+  // Focus (local only)
   const [goals, setGoals] = useState<Set<string>>(new Set());
 
-  // Step 4
+  // Plan
   const [interval, setInterval] = useState<BillingInterval>("monthly");
   const [starting, setStarting] = useState<PlanId | null>(null);
   const [statusNote, setStatusNote] = useState<string>("");
 
-  const [busy, setBusy] = useState(false);
+  // Connect - only tracks slugs that completed a real OAuth round-trip.
+  const [connected, setConnected] = useState<Set<string>>(new Set());
 
-  const { loading: connLoading, configured: composioConfigured, isConnected: realIsConnected, connect: realConnect } = useConnections();
+  const [busy, setBusy] = useState(false);
+  const [finishing, setFinishing] = useState(false);
+
+  const {
+    loading: connLoading,
+    configured: composioConfigured,
+    isConnected: realIsConnected,
+    connect: realConnect,
+  } = useConnections();
 
   // Once the status fetch resolves, seed local `connected` with whatever the
   // server already knows (e.g. the user returning after an OAuth round-trip).
@@ -153,9 +183,9 @@ export function Onboarding({
     if (busy) return;
     setBusy(true);
     try {
-      if (step === 0) {
+      if (step === STEP_WORKSPACE) {
         await saveBusiness(name);
-      } else if (step === 1) {
+      } else if (step === STEP_CONNECT) {
         // Only persist connections that completed a real OAuth round-trip.
         // When connected is empty (Composio unconfigured or user skipped),
         // saveConnections is skipped entirely to avoid writing fake rows.
@@ -172,7 +202,7 @@ export function Onboarding({
   }
 
   function goBack() {
-    if (busy) return;
+    if (busy || finishing) return;
     setStep((s) => Math.max(s - 1, 0));
   }
 
@@ -190,24 +220,44 @@ export function Onboarding({
       if (res.ok) {
         const data = (await res.json().catch(() => ({}))) as { url?: string };
         if (data.url) {
+          // Mark onboarded BEFORE leaving for Stripe, so the success_url
+          // (/app?welcome=1) passes the /app gate when the user returns.
+          await completeOnboarding();
           window.location.href = data.url;
           return;
         }
       }
 
-      // Billing not configured (503), or no URL came back: dev/preview path.
-      setStatusNote("Starting your workspace...");
-      await completeOnboarding();
-      window.location.href = "/app";
+      // Billing not configured (503), or no URL came back: continue the flow
+      // to the Connect step. Record nothing.
+      setStarting(null);
+      setStep(STEP_CONNECT);
     } catch {
-      // Network/other failure: still get the user into the app.
-      setStatusNote("Starting your workspace...");
-      await completeOnboarding();
-      window.location.href = "/app";
+      // Network/other failure: still advance the user through setup.
+      setStarting(null);
+      setStep(STEP_CONNECT);
     }
   }
 
-  const canContinue = step === 0 ? name.trim().length > 0 : true;
+  function skipPlan() {
+    if (starting) return;
+    setStep(STEP_CONNECT);
+  }
+
+  async function finish() {
+    if (finishing) return;
+    setFinishing(true);
+    try {
+      // Mark onboarded so the /app gate lets the user in.
+      await completeOnboarding();
+    } catch {
+      // completeOnboarding never throws; stay defensive.
+    }
+    window.location.href = "/app";
+  }
+
+  // Progress index within the numbered setup steps (Workspace = 1 .. Finish = 5).
+  const progressIndex = Math.max(0, step - 1); // 0-based; -1 on Welcome -> clamps to 0
 
   return (
     <div className="ob-root">
@@ -223,19 +273,21 @@ export function Onboarding({
           <p className="ob-welcome">
             Welcome to Intelbase{userEmail ? `, ${userEmail}` : ""}.
           </p>
-          <div className="ob-progress">
-            <span className="ob-progress-label">
-              Step {step + 1} of {TOTAL_STEPS}
-            </span>
-            <div className="ob-progress-track">
-              {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-                <span
-                  key={i}
-                  className={`ob-progress-dot ${i <= step ? "is-on" : ""}`}
-                />
-              ))}
+          {step !== STEP_WELCOME && (
+            <div className="ob-progress">
+              <span className="ob-progress-label">
+                Step {progressIndex + 1} of {PROGRESS_STEPS}
+              </span>
+              <div className="ob-progress-track">
+                {Array.from({ length: PROGRESS_STEPS }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={`ob-progress-dot ${i <= progressIndex ? "is-on" : ""}`}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </header>
 
         <div className="ob-stage">
@@ -249,15 +301,31 @@ export function Onboarding({
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
               className="ob-step"
             >
-              {step === 0 && (
-                <StepBusiness
+              {step === STEP_WELCOME && (
+                <StepWelcome onStart={() => setStep(STEP_WORKSPACE)} />
+              )}
+              {step === STEP_WORKSPACE && (
+                <StepWorkspace
                   name={name}
                   setName={setName}
-                  what={what}
-                  setWhat={setWhat}
+                  bizType={bizType}
+                  setBizType={setBizType}
                 />
               )}
-              {step === 1 && (
+              {step === STEP_FOCUS && (
+                <StepFocus goals={goals} toggle={toggleGoal} />
+              )}
+              {step === STEP_PLAN && (
+                <StepPlan
+                  interval={interval}
+                  setInterval={setInterval}
+                  starting={starting}
+                  statusNote={statusNote}
+                  onStart={startTrial}
+                  onSkip={skipPlan}
+                />
+              )}
+              {step === STEP_CONNECT && (
                 <StepConnect
                   connected={connected}
                   toggle={toggleConnector}
@@ -265,29 +333,27 @@ export function Onboarding({
                   configured={composioConfigured}
                 />
               )}
-              {step === 2 && (
-                <StepGoals goals={goals} toggle={toggleGoal} />
-              )}
-              {step === 3 && (
-                <StepPlan
-                  interval={interval}
-                  setInterval={setInterval}
-                  starting={starting}
-                  statusNote={statusNote}
-                  onStart={startTrial}
+              {step === STEP_FINISH && (
+                <StepFinish
+                  name={name}
+                  finishing={finishing}
+                  onFinish={finish}
                 />
               )}
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {step < TOTAL_STEPS - 1 && (
+        {/* Welcome: no footer nav (the Get started button lives in the pane). */}
+
+        {/* Workspace + Focus + Connect: standard Back/Continue footer. */}
+        {(step === STEP_WORKSPACE || step === STEP_FOCUS || step === STEP_CONNECT) && (
           <footer className="ob-foot">
             <button
               type="button"
               className="ob-btn ob-btn-ghost"
               onClick={goBack}
-              disabled={step === 0 || busy}
+              disabled={busy}
             >
               <ArrowLeft size={16} /> Back
             </button>
@@ -295,7 +361,7 @@ export function Onboarding({
               type="button"
               className="ob-btn ob-btn-primary"
               onClick={goNext}
-              disabled={!canContinue || busy}
+              disabled={!canContinueFor(step, name) || busy}
             >
               {busy ? "Saving..." : "Continue"}
               {!busy && <ArrowRight size={16} />}
@@ -303,7 +369,8 @@ export function Onboarding({
           </footer>
         )}
 
-        {step === TOTAL_STEPS - 1 && (
+        {/* Plan: Back + trial note (plan cards / Skip drive navigation). */}
+        {step === STEP_PLAN && (
           <footer className="ob-foot">
             <button
               type="button"
@@ -316,31 +383,73 @@ export function Onboarding({
             <span className="ob-foot-note">14-day free trial. Cancel anytime.</span>
           </footer>
         )}
+
+        {/* Finish: Back only (the Go to Intelbase button lives in the pane). */}
+        {step === STEP_FINISH && (
+          <footer className="ob-foot">
+            <button
+              type="button"
+              className="ob-btn ob-btn-ghost"
+              onClick={goBack}
+              disabled={finishing}
+            >
+              <ArrowLeft size={16} /> Back
+            </button>
+            <span className="ob-foot-note">You can change all of this later in Settings.</span>
+          </footer>
+        )}
       </div>
     </div>
   );
 }
 
-function StepBusiness({
+function canContinueFor(step: number, name: string): boolean {
+  if (step === STEP_WORKSPACE) return name.trim().length > 0;
+  return true;
+}
+
+function StepWelcome({ onStart }: { onStart: () => void }) {
+  return (
+    <div className="ob-pane ob-pane-center">
+      <span className="ob-hero-mark">
+        <Sparkles size={26} strokeWidth={2} />
+      </span>
+      <h1 className="ob-title">Let us set up your Intelbase</h1>
+      <p className="ob-sub ob-sub-center">
+        A few quick steps to name your workspace, choose what to focus on, and
+        connect your tools. It takes about a minute.
+      </p>
+      <button
+        type="button"
+        className="ob-btn ob-btn-primary ob-btn-hero"
+        onClick={onStart}
+      >
+        Get started <ArrowRight size={16} />
+      </button>
+    </div>
+  );
+}
+
+function StepWorkspace({
   name,
   setName,
-  what,
-  setWhat,
+  bizType,
+  setBizType,
 }: {
   name: string;
   setName: (v: string) => void;
-  what: string;
-  setWhat: (v: string) => void;
+  bizType: string;
+  setBizType: (v: string) => void;
 }) {
   return (
     <div className="ob-pane">
-      <h1 className="ob-title">What is your business called?</h1>
+      <h1 className="ob-title">Name your workspace</h1>
       <p className="ob-sub">
-        We will use this to set up your workspace.
+        This is what your team and Intelbase will call your business.
       </p>
       <div className="ob-field">
         <label className="ob-label" htmlFor="ob-name">
-          Business name
+          Workspace name
         </label>
         <input
           id="ob-name"
@@ -354,18 +463,146 @@ function StepBusiness({
         />
       </div>
       <div className="ob-field">
-        <label className="ob-label" htmlFor="ob-what">
-          What do you do? <span className="ob-optional">optional</span>
-        </label>
-        <input
-          id="ob-what"
-          className="ob-input"
-          type="text"
-          value={what}
-          onChange={(e) => setWhat(e.target.value)}
-          placeholder="e.g. We help dentists get more patients"
-        />
+        <span className="ob-label">
+          What does your business do? <span className="ob-optional">optional</span>
+        </span>
+        <div className="ob-chips">
+          {BUSINESS_TYPES.map((t) => {
+            const on = bizType === t;
+            return (
+              <button
+                key={t}
+                type="button"
+                className={`ob-chip ${on ? "is-on" : ""}`}
+                onClick={() => setBizType(on ? "" : t)}
+                aria-pressed={on}
+              >
+                {on && <Check size={14} strokeWidth={3} />}
+                {t}
+              </button>
+            );
+          })}
+        </div>
       </div>
+    </div>
+  );
+}
+
+function StepFocus({
+  goals,
+  toggle,
+}: {
+  goals: Set<string>;
+  toggle: (id: string) => void;
+}) {
+  return (
+    <div className="ob-pane">
+      <h1 className="ob-title">What should Intelbase focus on first?</h1>
+      <p className="ob-sub">Pick as many as you like. You can adjust this anytime.</p>
+      <div className="ob-chips">
+        {GOALS.map((g) => {
+          const on = goals.has(g.id);
+          return (
+            <button
+              key={g.id}
+              type="button"
+              className={`ob-chip ${on ? "is-on" : ""}`}
+              onClick={() => toggle(g.id)}
+              aria-pressed={on}
+            >
+              {on && <Check size={14} strokeWidth={3} />}
+              {g.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function StepPlan({
+  interval,
+  setInterval,
+  starting,
+  statusNote,
+  onStart,
+  onSkip,
+}: {
+  interval: BillingInterval;
+  setInterval: (v: BillingInterval) => void;
+  starting: PlanId | null;
+  statusNote: string;
+  onStart: (plan: PlanId) => void;
+  onSkip: () => void;
+}) {
+  return (
+    <div className="ob-pane">
+      <h1 className="ob-title">Choose your plan</h1>
+      <p className="ob-sub">No charge today. Start with a 14-day free trial.</p>
+
+      <div className="ob-toggle" role="tablist" aria-label="Billing interval">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={interval === "monthly"}
+          className={`ob-toggle-opt ${interval === "monthly" ? "is-on" : ""}`}
+          onClick={() => setInterval("monthly")}
+        >
+          Monthly
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={interval === "annual"}
+          className={`ob-toggle-opt ${interval === "annual" ? "is-on" : ""}`}
+          onClick={() => setInterval("annual")}
+        >
+          Annual <span className="ob-toggle-save">2 months free</span>
+        </button>
+      </div>
+
+      <div className="ob-plans">
+        {PLAN_LIST.map((p) => {
+          const accent = ACCENT_VAR[PLAN_ACCENT[p.id]];
+          const price = interval === "annual" ? p.priceAnnual : p.priceMonthly;
+          const unit = interval === "annual" ? "/yr" : "/mo";
+          const featured = p.id === "growth";
+          const isStarting = starting === p.id;
+          return (
+            <div
+              key={p.id}
+              className={`ob-plan ${featured ? "is-featured" : ""}`}
+              style={{ ["--plan-accent" as string]: accent }}
+            >
+              {featured && <span className="ob-plan-tag">Most popular</span>}
+              <h2 className="ob-plan-name">{p.name}</h2>
+              <div className="ob-plan-price">
+                <span className="ob-plan-amount">${price}</span>
+                <span className="ob-plan-unit">{unit}</span>
+              </div>
+              <button
+                type="button"
+                className="ob-btn ob-btn-plan"
+                onClick={() => onStart(p.id)}
+                disabled={!!starting}
+              >
+                {isStarting ? "Starting..." : "Start 14-day free trial"}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      {statusNote && <p className="ob-status">{statusNote}</p>}
+
+      <button
+        type="button"
+        className="ob-skip"
+        onClick={onSkip}
+        disabled={!!starting}
+      >
+        Skip for now
+      </button>
     </div>
   );
 }
@@ -451,110 +688,35 @@ function StepConnect({
   );
 }
 
-function StepGoals({
-  goals,
-  toggle,
+function StepFinish({
+  name,
+  finishing,
+  onFinish,
 }: {
-  goals: Set<string>;
-  toggle: (id: string) => void;
+  name: string;
+  finishing: boolean;
+  onFinish: () => void;
 }) {
+  const workspace = name.trim() || "your workspace";
   return (
-    <div className="ob-pane">
-      <h1 className="ob-title">What should Intelbase focus on?</h1>
-      <p className="ob-sub">Pick as many as you like.</p>
-      <div className="ob-chips">
-        {GOALS.map((g) => {
-          const on = goals.has(g.id);
-          return (
-            <button
-              key={g.id}
-              type="button"
-              className={`ob-chip ${on ? "is-on" : ""}`}
-              onClick={() => toggle(g.id)}
-              aria-pressed={on}
-            >
-              {on && <Check size={14} strokeWidth={3} />}
-              {g.label}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function StepPlan({
-  interval,
-  setInterval,
-  starting,
-  statusNote,
-  onStart,
-}: {
-  interval: BillingInterval;
-  setInterval: (v: BillingInterval) => void;
-  starting: PlanId | null;
-  statusNote: string;
-  onStart: (plan: PlanId) => void;
-}) {
-  return (
-    <div className="ob-pane">
-      <h1 className="ob-title">Start your 14-day free trial</h1>
-      <p className="ob-sub">No charge today. Pick a plan to get started.</p>
-
-      <div className="ob-toggle" role="tablist" aria-label="Billing interval">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={interval === "monthly"}
-          className={`ob-toggle-opt ${interval === "monthly" ? "is-on" : ""}`}
-          onClick={() => setInterval("monthly")}
-        >
-          Monthly
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={interval === "annual"}
-          className={`ob-toggle-opt ${interval === "annual" ? "is-on" : ""}`}
-          onClick={() => setInterval("annual")}
-        >
-          Annual <span className="ob-toggle-save">2 months free</span>
-        </button>
-      </div>
-
-      <div className="ob-plans">
-        {PLAN_LIST.map((p) => {
-          const accent = ACCENT_VAR[PLAN_ACCENT[p.id]];
-          const price = interval === "annual" ? p.priceAnnual : p.priceMonthly;
-          const unit = interval === "annual" ? "/yr" : "/mo";
-          const featured = p.id === "growth";
-          const isStarting = starting === p.id;
-          return (
-            <div
-              key={p.id}
-              className={`ob-plan ${featured ? "is-featured" : ""}`}
-              style={{ ["--plan-accent" as string]: accent }}
-            >
-              {featured && <span className="ob-plan-tag">Most popular</span>}
-              <h2 className="ob-plan-name">{p.name}</h2>
-              <div className="ob-plan-price">
-                <span className="ob-plan-amount">${price}</span>
-                <span className="ob-plan-unit">{unit}</span>
-              </div>
-              <button
-                type="button"
-                className="ob-btn ob-btn-plan"
-                onClick={() => onStart(p.id)}
-                disabled={!!starting}
-              >
-                {isStarting ? "Starting..." : "Start 14-day free trial"}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-
-      {statusNote && <p className="ob-status">{statusNote}</p>}
+    <div className="ob-pane ob-pane-center">
+      <span className="ob-hero-mark ob-hero-mark-done">
+        <Check size={26} strokeWidth={2.6} />
+      </span>
+      <h1 className="ob-title">You are all set</h1>
+      <p className="ob-sub ob-sub-center">
+        {workspace} is ready. Intelbase will start working on what you chose.
+        You can fine-tune everything from inside the app.
+      </p>
+      <button
+        type="button"
+        className="ob-btn ob-btn-primary ob-btn-hero"
+        onClick={onFinish}
+        disabled={finishing}
+      >
+        {finishing ? "Opening Intelbase..." : "Go to Intelbase"}
+        {!finishing && <ArrowRight size={16} />}
+      </button>
     </div>
   );
 }
