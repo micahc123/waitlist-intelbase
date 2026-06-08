@@ -2,13 +2,17 @@
 
 // The Intelbase onboarding wizard. A centered, premium 4-step flow:
 //   1. Business   -> name + optional "what do you do" (saveBusiness)
-//   2. Connect    -> 6 toggleable connector cards (saveConnections)
+//   2. Connect    -> 6 connector cards (real OAuth when Composio configured,
+//                   honest "needs API key" note when not; no fake connections)
 //   3. Goals      -> multi-select chips (local only)
 //   4. Plan       -> 3 plans + monthly/annual toggle + start 14-day trial
 //
 // Resilience: when billing/Supabase env is missing, the server actions are
 // safe no-ops and the plan step falls back to completeOnboarding() + navigate
 // to /app. The wizard never crashes in a logged-out/dev state.
+// Connect step: saveConnections is only called with slugs that are genuinely
+// connected (real OAuth round-trip completed). No fake/simulated rows are
+// written to the connections table.
 
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -23,6 +27,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Sparkles,
+  AlertCircle,
   type LucideIcon,
 } from "lucide-react";
 import { CONNECTORS, GOALS, type ConnectorAccent } from "@/lib/onboarding";
@@ -76,7 +81,7 @@ export function Onboarding({
   const [name, setName] = useState(initialName);
   const [what, setWhat] = useState("");
 
-  // Step 2
+  // Step 2 - only tracks slugs that completed a real OAuth round-trip.
   const [connected, setConnected] = useState<Set<string>>(new Set());
 
   // Step 3
@@ -89,7 +94,7 @@ export function Onboarding({
 
   const [busy, setBusy] = useState(false);
 
-  const { loading: connLoading, isConnected: realIsConnected, connect: realConnect, setConnected: realSetConnected } = useConnections();
+  const { loading: connLoading, configured: composioConfigured, isConnected: realIsConnected, connect: realConnect } = useConnections();
 
   // Once the status fetch resolves, seed local `connected` with whatever the
   // server already knows (e.g. the user returning after an OAuth round-trip).
@@ -110,38 +115,29 @@ export function Onboarding({
   async function toggleConnector(id: string) {
     const slug = toolkitForConnector(id);
 
-    // Null slug (e.g. website-chat): always simulated.
-    if (!slug) {
-      setConnected((prev) => {
-        const next = new Set(prev);
-        if (next.has(id)) next.delete(id);
-        else next.add(id);
-        return next;
-      });
-      return;
-    }
-
-    // If already connected, just toggle off locally.
+    // If already connected (real), allow toggling off locally.
     if (connected.has(id)) {
       setConnected((prev) => {
         const next = new Set(prev);
         next.delete(id);
         return next;
       });
-      realSetConnected(slug, false);
       return;
     }
 
-    // Attempt real OAuth.
-    const redirecting = await realConnect(slug);
-    if (redirecting) {
+    // No slug (e.g. website-chat without toolkit): not connectable.
+    if (!slug) return;
+
+    // Composio not configured: do nothing (button is disabled, but guard here too).
+    if (!composioConfigured) return;
+
+    // Attempt real OAuth redirect. Browser navigates away on success.
+    const result = await realConnect(slug);
+    if (result === "redirecting") {
       // Browser will navigate away; mark pending in local state to give feedback.
       setConnected((prev) => new Set([...prev, id]));
-      return;
     }
-
-    // Simulated fallback: just toggle locally.
-    setConnected((prev) => new Set([...prev, id]));
+    // "unconfigured" or "error": do not fake a connected state.
   }
 
   function toggleGoal(id: string) {
@@ -160,7 +156,12 @@ export function Onboarding({
       if (step === 0) {
         await saveBusiness(name);
       } else if (step === 1) {
-        await saveConnections([...connected]);
+        // Only persist connections that completed a real OAuth round-trip.
+        // When connected is empty (Composio unconfigured or user skipped),
+        // saveConnections is skipped entirely to avoid writing fake rows.
+        if (connected.size > 0) {
+          await saveConnections([...connected]);
+        }
       }
     } catch {
       // Actions never throw, but stay defensive.
@@ -261,6 +262,7 @@ export function Onboarding({
                   connected={connected}
                   toggle={toggleConnector}
                   connLoading={connLoading}
+                  configured={composioConfigured}
                 />
               )}
               {step === 2 && (
@@ -372,17 +374,28 @@ function StepConnect({
   connected,
   toggle,
   connLoading,
+  configured,
 }: {
   connected: Set<string>;
   toggle: (id: string) => void;
   connLoading: boolean;
+  configured: boolean;
 }) {
   return (
     <div className="ob-pane">
       <h1 className="ob-title">Connect your tools</h1>
       <p className="ob-sub">
-        Connect now or later, you can change this anytime.
+        {configured
+          ? "Connect now or skip - you can change this anytime in Settings."
+          : "You can connect your tools later in Settings once your workspace is set up."}
       </p>
+      {!connLoading && !configured && (
+        <div className="ob-unconfigured-note">
+          <AlertCircle size={13} style={{ flexShrink: 0 }} />
+          Connecting requires a Composio API key. Add{" "}
+          <code>COMPOSIO_API_KEY</code> to enable real connections.
+        </div>
+      )}
       <div className="ob-grid">
         {CONNECTORS.map((c) => {
           const Icon = ICONS[c.icon] ?? MessageSquare;
@@ -392,17 +405,19 @@ function StepConnect({
           const toolkit = slug ? TOOLKITS_BY_SLUG[slug] : null;
           const gated = toolkit?.gated ?? false;
           const gatedNote = toolkit?.note ?? null;
-          // Null slug = always simulated (website-chat); show demo tag only for
-          // toolkits that have a slug (could have gone real but fell back).
-          const isAlwaysSimulated = slug === null;
+          // A card is actionable only when Composio is configured and the
+          // toolkit has a slug. Cards with no slug (website-chat) are shown
+          // but not clickable (never had real connect).
+          const canConnect = configured && slug !== null && !gated;
+          const isDisabled = connLoading || !canConnect;
           return (
             <button
               key={c.id}
               type="button"
-              className={`ob-card ${on ? "is-on" : ""}`}
+              className={`ob-card ${on ? "is-on" : ""} ${isDisabled && !on ? "is-disabled" : ""}`}
               style={{ ["--card-accent" as string]: accent }}
-              onClick={() => { void toggle(c.id); }}
-              disabled={connLoading}
+              onClick={() => { if (!isDisabled) void toggle(c.id); }}
+              disabled={isDisabled && !on}
               aria-pressed={on}
             >
               <span className="ob-card-icon">
@@ -411,9 +426,6 @@ function StepConnect({
               <span className="ob-card-body">
                 <span className="ob-card-label">
                   {c.label}
-                  {isAlwaysSimulated && (
-                    <span className="ob-card-demo-tag">demo</span>
-                  )}
                 </span>
                 <span className="ob-card-desc">{c.description}</span>
                 {gated && gatedNote && (
@@ -426,7 +438,9 @@ function StepConnect({
                     <Check size={14} strokeWidth={3} /> Connected
                   </span>
                 ) : (
-                  <span className="ob-card-connect">Connect</span>
+                  <span className="ob-card-connect">
+                    {!configured ? "Needs setup" : gated ? "Needs review" : "Connect"}
+                  </span>
                 )}
               </span>
             </button>

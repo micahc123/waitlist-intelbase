@@ -1,35 +1,40 @@
 "use client";
 
 // Client hook for fetching real integration connection status and initiating
-// Composio OAuth. Falls back gracefully to a simulated "connected" toggle when
-// Composio is not configured (503 response or any network/fetch error).
+// Composio OAuth. When Composio is not configured (503 or configured:false),
+// connect() returns "unconfigured" and does NOT fake a connected toggle.
 //
 // Usage:
-//   const { isConnected, connect, loading } = useConnections();
-//   isConnected("gmail")    // true|false
-//   await connect("gmail")  // returns true = real OAuth redirect initiated
-//                           //           false = simulated fallback used
+//   const { isConnected, connect, loading, configured } = useConnections();
+//   isConnected("gmail")    // true|false (from real server rows only)
+//   await connect("gmail")  // "redirecting"    - real OAuth redirect started
+//                           // "unconfigured"   - no COMPOSIO_API_KEY, do nothing
+//                           // "error"          - configured but SDK failed
 
 import { useState, useEffect, useCallback } from "react";
 
 type ConnectionEntry = { provider: string; connected: boolean };
 
+export type ConnectResult = "redirecting" | "unconfigured" | "error";
+
 type UseConnectionsReturn = {
   // Whether the hook has finished its initial status fetch.
   loading: boolean;
-  // True if the given toolkit slug is currently connected.
+  // Whether Composio is configured server-side (COMPOSIO_API_KEY is set).
+  configured: boolean;
+  // True if the given toolkit slug is currently connected (real rows only).
   isConnected: (slug: string) => boolean;
   // Initiate a connect for the given slug.
-  // Returns true when a real OAuth redirect was initiated (browser will navigate
-  // away), false when the simulated fallback was used (caller should toggle
-  // local state itself).
-  connect: (slug: string) => Promise<boolean>;
-  // Force-set a slug as connected locally (for simulated path).
-  setConnected: (slug: string, value: boolean) => void;
+  // "redirecting"  - real OAuth redirect initiated (browser will navigate away).
+  // "unconfigured" - Composio is not configured; caller should show honest note.
+  // "error"        - configured but something went wrong; caller may show error.
+  // NEVER fakes a connected state locally.
+  connect: (slug: string) => Promise<ConnectResult>;
 };
 
 export function useConnections(): UseConnectionsReturn {
   const [loading, setLoading] = useState(true);
+  const [configured, setConfigured] = useState(false);
   const [statuses, setStatuses] = useState<Record<string, boolean>>({});
 
   // On mount, fetch the real status from the server.
@@ -42,8 +47,10 @@ export function useConnections(): UseConnectionsReturn {
         });
         if (!cancelled && res.ok) {
           const data = (await res.json()) as {
+            configured?: boolean;
             connections?: ConnectionEntry[];
           };
+          setConfigured(Boolean(data.configured));
           const map: Record<string, boolean> = {};
           for (const c of data.connections ?? []) {
             map[c.provider] = c.connected;
@@ -51,7 +58,7 @@ export function useConnections(): UseConnectionsReturn {
           setStatuses(map);
         }
       } catch {
-        // Network error: continue with empty statuses; simulated path handles it.
+        // Network error: leave configured=false, statuses empty.
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -66,12 +73,8 @@ export function useConnections(): UseConnectionsReturn {
     [statuses],
   );
 
-  const setConnected = useCallback((slug: string, value: boolean) => {
-    setStatuses((prev) => ({ ...prev, [slug]: value }));
-  }, []);
-
   const connect = useCallback(
-    async (slug: string): Promise<boolean> => {
+    async (slug: string): Promise<ConnectResult> => {
       try {
         const res = await fetch("/api/integrations/connect", {
           method: "POST",
@@ -83,22 +86,31 @@ export function useConnections(): UseConnectionsReturn {
         if (res.ok) {
           const data = (await res.json()) as { url?: string };
           if (data.url) {
-            // Real OAuth: redirect the browser. Returns true so caller knows
-            // NOT to toggle local state (page will navigate away).
+            // Real OAuth: redirect the browser away.
             window.location.href = data.url;
-            return true;
+            return "redirecting";
           }
+          // ok but no url - treat as error, not simulated.
+          return "error";
         }
 
-        // 503 simulated, 4xx, network error, or no url: use simulated path.
-        // Caller is responsible for local toggling; we return false.
-        return false;
+        if (res.status === 503) {
+          const data = (await res.json().catch(() => ({}))) as {
+            configured?: boolean;
+          };
+          if (data.configured === false) {
+            return "unconfigured";
+          }
+          return "error";
+        }
+
+        return "error";
       } catch {
-        return false;
+        return "error";
       }
     },
     [],
   );
 
-  return { loading, isConnected, connect, setConnected };
+  return { loading, configured, isConnected, connect };
 }

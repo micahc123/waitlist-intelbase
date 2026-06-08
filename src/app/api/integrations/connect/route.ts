@@ -3,7 +3,7 @@
 // Begins a per-org Composio OAuth connect for a toolkit. Body: { toolkit }.
 // On success returns { url } (the Composio redirectUrl the client should send
 // the browser to). When Composio is not configured, returns 503 with
-// { simulated: true } so the UI can fall back to its simulated toggle.
+// { error, configured: false } - no simulated fallback, no fake connected state.
 //
 // FORK NOTE: standard route-handler conventions (see 15-route-handlers.md).
 
@@ -20,7 +20,11 @@ export const dynamic = "force-dynamic";
 export async function POST(request: Request): Promise<Response> {
   if (!isComposioConfigured()) {
     return Response.json(
-      { error: "Integrations not configured", simulated: true },
+      {
+        error:
+          "Integrations require a Composio API key. Add COMPOSIO_API_KEY to connect your tools.",
+        configured: false,
+      },
       { status: 503 },
     );
   }
@@ -44,11 +48,11 @@ export async function POST(request: Request): Promise<Response> {
 
   const result = await startConnect(org.id, toolkit);
 
-  if (result.simulated || !result.redirectUrl) {
-    // Composio rejected the authorize call (or returned no redirect). Surface
-    // the simulated fallback so the UI degrades gracefully.
+  if (!result.redirectUrl) {
+    // Composio rejected the authorize call or returned no redirect URL.
+    // Surface an honest error; the UI must not show a fake connected state.
     return Response.json(
-      { error: "Integrations not configured", simulated: true },
+      { error: "Could not start connection. Check your Composio configuration.", configured: true },
       { status: 503 },
     );
   }

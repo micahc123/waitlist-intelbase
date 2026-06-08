@@ -1,11 +1,12 @@
 // Settings - integrations, account, profile, team, and workspace. Integrations
-// connect via real Composio OAuth (useConnections), with a simulated fallback
-// when Composio is unconfigured so toggles still work in demo. Account shows
-// the org/user, opens the Stripe billing portal (or notes when billing is not
-// configured), and signs out. Profile lets the user set a display name, timezone,
-// and notification preferences (local/best-effort, persisted to localStorage).
-// Team lists members with role/status chips and an inline invite form. Workspace
-// holds a couple of honest local preference toggles.
+// connect via real Composio OAuth (useConnections). When Composio is not
+// configured the Connect buttons are disabled with an honest note - no fake
+// simulated connected state. Account shows the org/user, opens the Stripe
+// billing portal (or notes when billing is not configured), and signs out.
+// Profile lets the user set a display name, timezone, and notification
+// preferences (local/best-effort, persisted to localStorage). Team lists
+// members with role/status chips and an inline invite form. Workspace holds a
+// couple of honest local preference toggles.
 
 "use client";
 
@@ -26,6 +27,7 @@ import {
   LogOut,
   CreditCard,
   UserPlus,
+  AlertCircle,
   type LucideIcon,
 } from "lucide-react";
 import { ViewHead } from "./view-shell";
@@ -74,22 +76,29 @@ export function Settings({
 }
 
 function IntegrationsSection() {
-  const { loading, isConnected, connect, setConnected } = useConnections();
+  const { loading, configured, isConnected, connect } = useConnections();
   const [busy, setBusy] = useState<string | null>(null);
+  const [connectErr, setConnectErr] = useState<string | null>(null);
 
   const handleConnect = useCallback(
     async (slug: string) => {
       setBusy(slug);
+      setConnectErr(null);
       try {
-        const wentToOAuth = await connect(slug);
-        // Real OAuth navigates away (true). Simulated fallback returns false, so
-        // we mark it connected locally to reflect the toggle.
-        if (!wentToOAuth) setConnected(slug, true);
+        const result = await connect(slug);
+        if (result === "redirecting") {
+          // Browser will navigate to Composio OAuth; nothing more to do.
+          return;
+        }
+        if (result === "error") {
+          setConnectErr("Could not start connection. Please try again.");
+        }
+        // "unconfigured" is handled by the disabled button + banner below.
       } finally {
         setBusy(null);
       }
     },
-    [connect, setConnected],
+    [connect],
   );
 
   return (
@@ -99,6 +108,19 @@ function IntegrationsSection() {
         <p>Connect the tools your agents act through. Each one uses a secure OAuth connection.</p>
       </div>
       <div className="set-section-body">
+        {!loading && !configured && (
+          <div className="set-inline-note set-integrations-unconfigured">
+            <AlertCircle size={13} style={{ flexShrink: 0 }} />
+            Connecting your tools requires a Composio API key. Add{" "}
+            <code>COMPOSIO_API_KEY</code> to your environment to enable real
+            connections.
+          </div>
+        )}
+        {connectErr && (
+          <div className="set-inline-note" style={{ color: "var(--ib-amber)" }}>
+            {connectErr}
+          </div>
+        )}
         {TOOLKITS.map((tk) => {
           const Icon = ICONS[tk.icon] ?? Plug;
           const connected = isConnected(tk.slug);
@@ -127,8 +149,13 @@ function IntegrationsSection() {
                 <button
                   type="button"
                   className="ibx-btn"
-                  disabled={loading || busy === tk.slug}
+                  disabled={loading || !configured || busy === tk.slug}
                   onClick={() => handleConnect(tk.slug)}
+                  title={
+                    !configured
+                      ? "Add COMPOSIO_API_KEY to enable connections"
+                      : undefined
+                  }
                 >
                   {busy === tk.slug ? (
                     <Loader2 size={14} className="ibx-spin" />

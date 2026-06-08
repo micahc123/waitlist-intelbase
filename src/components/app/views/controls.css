@@ -439,6 +439,29 @@
   color: var(--ib-text-3);
 }
 
+/* Honest warning shown in Integrations section when Composio is not configured */
+.set-integrations-unconfigured {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: var(--ib-fs-xs);
+  line-height: 1.5;
+  color: var(--ib-amber);
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.15);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: var(--ib-3);
+}
+
+.set-integrations-unconfigured code {
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
 /* profile inputs (constrained width so they don't stretch full panel) */
 .set-profile-input,
 .set-profile-select {
